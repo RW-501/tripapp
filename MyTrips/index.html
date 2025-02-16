@@ -14,66 +14,252 @@
 <body>
 
     <div class="container">
-        <h2>Create a Trip</h2>
-        
-        <input type="text" id="tripName" placeholder="Trip Name">
-        <input type="text" id="destination" placeholder="Destination">
-        <input type="date" id="startDate">
-        <input type="date" id="endDate">
-        <input type="email" id="invitees" placeholder="Invite people (comma-separated emails)">
-        
-        <button onclick="">Create Trip</button>
-        
-        <p id="tripLink"></p>
+        <div id="createTripArea" style="display:block;">
+            <h2>Create a Trip</h2>
+            <input type="text" id="tripName" placeholder="Trip Name">
+            <input type="text" id="destination" placeholder="Destination">
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+            <label>
+                <input type="checkbox" id="noDates"> Dates Not Available
+            </label>
+            <textarea type="text" id="description">
+
+            <button id="createTripBtn">Create Trip</button>
+            <p id="tripLink"></p>
+        </div>
+    
+        <h2>Your Trips</h2>
+        <div id="tripList"></div>
+        <button id="toggleCreateTripBtn">+ Create Trip</button>
+    
+        <div id="inviteArea" style="display:none;">
+            <h3>Invite Users</h3>
+            <div id="inviteUsersContainer">
+                <div class="invite-user">
+                    <input type="text" class="inviteUser" placeholder="Enter Username">
+                </div>
+            </div>
+            <button id="addInviteFieldBtn">+ Add Another User</button>
+            <button id="generateInviteCodeBtn">Generate Invite Code</button>
+            <p id="inviteCode"></p>
+        </div>
     </div>
+    
     <script type="module">
         import {
-            db, doc, getDoc, query, updateDoc,
-            setDoc, ref, signInWithPopup, orderBy,limit, 
-            uploadBytes, OAuthProvider, arrayUnion, getStorage,
-            signOut, addDoc, increment, onAuthStateChanged,
-            createUserWithEmailAndPassword, signInWithEmailAndPassword,
-            where, getDocs, storage, collection, deleteObject, 
-            auth, analytics, deleteDoc, getDownloadURL
+            db, auth, userId, collection, addDoc, getDocs, updateDoc, doc, serverTimestamp
         } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
-      
-      
-    async function createTrip() {
-    const tripName = document.getElementById("tripName").value;
-    const destination = document.getElementById("destination").value;
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById("endDate").value;
-    const invitees = document.getElementById("invitees").value.split(",").map(email => email.trim());
+    
+        document.getElementById("toggleCreateTripBtn").addEventListener("click", () => {
+            document.getElementById("createTripArea").style.display = "block";
+        });
+    
+        document.getElementById("noDates").addEventListener("change", function() {
+            const disabled = this.checked;
+            document.getElementById("startDate").disabled = disabled;
+            document.getElementById("endDate").disabled = disabled;
+        });
+    
+        document.getElementById("createTripBtn").addEventListener("click", async function () {
+            const tripName = document.getElementById("tripName").value;
+            const destination = document.getElementById("destination").value;
+            const noDates = document.getElementById("noDates").checked;
+            const startDate = noDates ? null : document.getElementById("startDate").value;
+            const endDate = noDates ? null : document.getElementById("endDate").value;
+            const description  = document.getElementById("description").value;
+    
+            if (!tripName || !destination) {
+                showToast("Please fill all required fields!");
+                return;
+            }
+    
+            const tripRef = await addDoc(collection(db, "trips"), {
+                tripName, destination, startDate, endDate,description, coverPhoto: '', contributers: [], tripModerators: [],
+                createdBy: userId,createdAt: new date(), invitees: [], timestamp: serverTimestamp()
+            });
+    
+            const tripLink = `https://rw-501.github.io/tripapp/join/${tripRef.id}`;
+            await updateDoc(doc(db, "trips", tripRef.id), { tripLink });
+    
+            document.getElementById("tripLink").innerHTML = `<a href="${tripLink}" target="_blank">${tripLink}</a>`;
+            loadTrips();
+            showToast("Trip Created Successfully!");
+        });
+    
+        async function loadTrips() {
+            const tripListDiv = document.getElementById("tripList");
+            tripListDiv.innerHTML = "";
+    
+            const tripsQuery = await getDocs(collection(db, "trips"));
+    
+            if (tripsQuery.empty) {
+                document.getElementById("inviteArea").style.display = "block";
+            }
+    
+            tripsQuery.forEach((tripDoc) => {
+                const trip = tripDoc.data();
+                const tripItem = document.createElement("div");
+                tripItem.classList.add("trip-item");
+                tripItem.innerHTML = `
+                    <strong>${trip.tripName}</strong> - ${trip.destination}
+                    <button class="viewTripBtn" data-id="${tripDoc.id}">View</button>
+                    <button class="editTripBtn" data-id="${tripDoc.id}">Edit</button>
+                    <button class="inviteTripBtn" data-id="${tripDoc.id}">Invite</button>
+                `;
+                tripListDiv.appendChild(tripItem);
+            });
+    
+            document.querySelectorAll(".inviteTripBtn").forEach(button => {
+                button.addEventListener("click", function () {
+                    invite(this.getAttribute("data-id"));
+                });
+            });
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+    const inviteArea = document.getElementById("inviteArea");
+    const inviteUsersContainer = document.getElementById("inviteUsersContainer");
+    const addInviteFieldBtn = document.getElementById("addInviteFieldBtn");
+    const generateInviteCodeBtn = document.getElementById("generateInviteCodeBtn");
+    const inviteCodeDisplay = document.getElementById("inviteCode");
 
-    if (!tripName || !destination || !startDate || !endDate) {
-        alert("Please fill all fields!");
+    // Function to show the invite area and set trip ID
+    function invite(tripId) {
+        inviteArea.style.display = "block";
+        inviteArea.setAttribute("data-trip-id", tripId);
+    }
+
+    // Event Listener: Add New Invite Field
+    addInviteFieldBtn.addEventListener("click", () => {
+        const newInviteField = document.createElement("div");
+        newInviteField.classList.add("invite-user");
+        newInviteField.innerHTML = `<input type="text" class="inviteUser" placeholder="Enter Username">`;
+        inviteUsersContainer.appendChild(newInviteField);
+    });
+
+    // Function to generate an invite code
+    async function generateInviteCode() {
+        const tripId = inviteArea.getAttribute("data-trip-id");
+        if (!tripId) {
+            showToast("Invalid trip. Please try again.");
+            return;
+        }
+
+        // Get user inputs and validate
+        const inviteInputs = document.querySelectorAll(".inviteUser");
+        const inviteUsers = Array.from(inviteInputs)
+            .map(input => input.value.trim())
+            .filter(Boolean);
+
+        if (inviteUsers.length === 0) {
+            showToast("Enter at least one username to invite!");
+            return;
+        }
+
+        // Generate a unique invite code
+        const inviteCode = `${Math.random().toString(36).substr(2, 8)}-${Date.now()}`;
+        const inviteLink = `https://rw-501.github.io/tripapp/?trip=${tripId}&invite=${inviteCode}`;
+
+        // Update Firestore
+        try {
+            await updateDoc(doc(db, "trips", tripId), { invitees: inviteUsers });
+
+            // Display invite link
+            inviteCodeDisplay.innerHTML = `Invite Code: <strong>${inviteCode}</strong> (Expires in 12 hours) <br>
+                <a href="${inviteLink}" target="_blank">${inviteLink}</a>`;
+
+            showToast("Invite Code Generated Successfully!");
+
+            // Clear input fields after invite generation
+            inviteUsersContainer.innerHTML = `<div class="invite-user">
+                <input type="text" class="inviteUser" placeholder="Enter Username">
+            </div>`;
+        } catch (error) {
+            console.error("Error updating invitees:", error);
+            showToast("Failed to generate invite. Please try again.");
+        }
+    }
+
+    // Event Listener: Generate Invite Code
+    generateInviteCodeBtn.addEventListener("click", generateInviteCode);
+
+    // Function to show toast messages
+    function showToast(message) {
+        alert(message); // Replace with a better toast system if needed
+    }
+
+    // Expose the invite function globally
+    window.invite = invite;
+});
+
+        async function editTrip(tripId) {
+    const tripRef = doc(db, "trips", tripId);
+    const tripSnap = await getDoc(tripRef);
+
+    if (!tripSnap.exists()) {
+        showToast("Trip not found!");
         return;
     }
 
-    // Create trip in Firestore
-    const tripRef = await db.collection("trips").add({
-        tripName,
-        destination,
-        startDate,
-        endDate,
-        createdBy: "user123", // Replace with actual logged-in user ID
-        invitees,
-        tripLink: "" // Placeholder, will update after getting trip ID
-    });
+    const tripData = tripSnap.data();
 
-    // Generate trip access link
-    const tripLink = `https://yourapp.com/join/${tripRef.id}`;
+    // Check if the current user is the trip creator
+    if (tripData.createdBy !== userId) {
+        showToast("You are not authorized to edit this trip!");
+        return;
+    }
 
-    // Update trip with link
-    await db.collection("trips").doc(tripRef.id).update({ tripLink });
+    // Populate the input fields with existing trip data
+    document.getElementById("tripName").value = tripData.tripName;
+    document.getElementById("destination").value = tripData.destination;
+    document.getElementById("startDate").value = tripData.startDate || "";
+    document.getElementById("endDate").value = tripData.endDate || "";
+    document.getElementById("description").value = tripData.description || "";
 
-    // Show link
-    document.getElementById("tripLink").innerHTML = `<a href="${tripLink}" target="_blank">${tripLink}</a>`;
+    // Show the create/edit trip section for editing
+    document.getElementById("createTripArea").style.display = "block";
 
-    alert("Trip Created Successfully!");
+    // Change the button to "Save Changes"
+    const createBtn = document.getElementById("createTripBtn");
+    createBtn.textContent = "Save Changes";
+    createBtn.onclick = async function () {
+        const updatedTripData = {
+            tripName: document.getElementById("tripName").value,
+            destination: document.getElementById("destination").value,
+            startDate: document.getElementById("startDate").value || null,
+            endDate: document.getElementById("endDate").value || null,
+            description: document.getElementById("description").value
+        };
+
+        // Update the trip in the database
+        await updateDoc(tripRef, updatedTripData);
+        showToast("Trip updated successfully!");
+
+        // Reset button back to "Create Trip"
+        createBtn.textContent = "Create Trip";
+        createBtn.onclick = createTrip;
+
+        // Reload trips
+        loadTrips();
+    };
 }
 
+// Attach event listeners to Edit buttons
+document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("editTripBtn")) {
+        const tripId = event.target.getAttribute("data-id");
+        editTrip(tripId);
+    }
+});
 
-</script>
+    
+        function showToast(message) {
+            alert(message); // Replace this with a proper toast notification
+        }
+    
+        loadTrips();
+    </script>
+    
+    
 </body>
 </html>

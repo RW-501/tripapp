@@ -44,6 +44,7 @@ let analytics;
 let userId;
 let batch;
 let USER;
+
 document.addEventListener('DOMContentLoaded', () => {
   initializeFirebase(); // Initialize Firebase only after the DOM is ready
 });
@@ -1210,13 +1211,15 @@ window.showUserSignedOutMessage = showUserSignedOutMessage;
 
 // Export Firestore, Storage, and Auth instances for use in other modules
 export {
-  db, getStorage, ref, uploadBytes, getDownloadURL, limit,
-  doc, arrayUnion, RecaptchaVerifier, increment, getDoc, arrayRemove, signInWithPhoneNumber,
-  query, updateDoc, setDoc, addDoc, signInAnonymously, orderBy, onAuthStateChanged,
-  uploadBytesResumable, signInWithPopup, FacebookAuthProvider, GoogleAuthProvider, startAfter,
-  OAuthProvider, signOut, deleteDoc, getFirestore, serverTimestamp, userId,  
-  createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
-  where, getDocs, storage, getAuth, collection, auth, analytics,EmailAuthProvider,
-  googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
-  facebookProvider};
+    db, doc, getDoc, query, updateDoc,
+    auth, analytics, deleteDoc, getDownloadURL,  userId, 
+db, getStorage, ref, uploadBytes, getDownloadURL, limit,
+doc, arrayUnion, RecaptchaVerifier, increment, getDoc, arrayRemove, signInWithPhoneNumber,
+query, updateDoc, setDoc, addDoc, signInAnonymously, orderBy, onAuthStateChanged,
+uploadBytesResumable, signInWithPopup, FacebookAuthProvider, GoogleAuthProvider, startAfter,
+OAuthProvider, signOut, deleteDoc, getFirestore, serverTimestamp,  
+createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
+where, getDocs, storage, getAuth, collection, auth, analytics,EmailAuthProvider,
+googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
+facebookProvider};
 
