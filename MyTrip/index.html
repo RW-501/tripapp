@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a Trip</title>
+    <script type="module" src="scripts/js/main.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Create a Trip</h2>
+        
+        <input type="text" id="tripName" placeholder="Trip Name">
+        <input type="text" id="destination" placeholder="Destination">
+        <input type="date" id="startDate">
+        <input type="date" id="endDate">
+        <input type="email" id="invitees" placeholder="Invite people (comma-separated emails)">
+        
+        <button onclick="">Create Trip</button>
+        
+        <p id="tripLink"></p>
+    </div>
+    <script type="module">
+        import {
+            db, doc, getDoc, query, updateDoc,
+            setDoc, ref, signInWithPopup, orderBy,limit, 
+            uploadBytes, OAuthProvider, arrayUnion, getStorage,
+            signOut, addDoc, increment, onAuthStateChanged,
+            createUserWithEmailAndPassword, signInWithEmailAndPassword,
+            where, getDocs, storage, collection, deleteObject, 
+            auth, analytics, deleteDoc, getDownloadURL
+        } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
+      
+      
+    async function createTrip() {
+    const tripName = document.getElementById("tripName").value;
+    const destination = document.getElementById("destination").value;
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const invitees = document.getElementById("invitees").value.split(",").map(email => email.trim());
+
+    if (!tripName || !destination || !startDate || !endDate) {
+        alert("Please fill all fields!");
+        return;
+    }
+
+    // Create trip in Firestore
+    const tripRef = await db.collection("trips").add({
+        tripName,
+        destination,
+        startDate,
+        endDate,
+        createdBy: "user123", // Replace with actual logged-in user ID
+        invitees,
+        tripLink: "" // Placeholder, will update after getting trip ID
+    });
+
+    // Generate trip access link
+    const tripLink = `https://yourapp.com/join/${tripRef.id}`;
+
+    // Update trip with link
+    await db.collection("trips").doc(tripRef.id).update({ tripLink });
+
+    // Show link
+    document.getElementById("tripLink").innerHTML = `<a href="${tripLink}" target="_blank">${tripLink}</a>`;
+
+    alert("Trip Created Successfully!");
+}
+
+
+</script>
+</body>
+</html>

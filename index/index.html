@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Trip</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script defer src="view-trip.js"></script>
+    <script defer src="firebase-config.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        button { width: 100%; padding: 10px; margin-top: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .tripDetails { padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        h2, p { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>View Trip</h2>
+        <div id="tripDetails" class="tripDetails"></div>
+        <button id="joinButton" style="display:none;" onclick="joinTrip()">Join Trip</button>
+    </div>
+
+    <body>
+        <h2>Media Storage for Your Trip</h2>
+        <div id="space-used"></div>
+        <input type="file" id="file-upload" />
+        <button onclick="uploadFile()">Upload File</button>
+    
+        <h3>Your Media</h3>
+        <ul id="media-list"></ul>
+    </body>
+    <body>
+        <h2>Guest List</h2>
+        <ul id="guest-list"></ul>
+        <button onclick="joinTrip()">Join Trip</button>
+    </body>
+
+
+    <script type="module">
+        import {
+            db, doc, getDoc, query, updateDoc,
+            setDoc, ref, signInWithPopup, orderBy,limit, 
+            uploadBytes, OAuthProvider, arrayUnion, getStorage,
+            signOut, addDoc, increment, onAuthStateChanged,
+            createUserWithEmailAndPassword, signInWithEmailAndPassword,
+            where, getDocs, storage, collection, deleteObject, 
+            auth, analytics, deleteDoc, getDownloadURL
+        } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
+      
+          // Get trip ID and invite code from the URL
+const urlParams = new URLSearchParams(window.location.search);
+const inviteCode = urlParams.get('inviteCode'); // e.g., "inviteCode123"
+
+// Initialize Firestore
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+const tripId = getTripIdFromURL();
+const userEmail = auth.currentUser ? auth.currentUser.email : null;
+
+function getTripIdFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('tripId');
+}
+
+// Real-time listener for the guest list
+function displayGuestList() {
+    const guestListElement = document.getElementById('guest-list');
+    const tripRef = db.collection('trips').doc(tripId);
+
+    tripRef.onSnapshot(snapshot => {
+        guestListElement.innerHTML = ''; // Clear the list
+        const guests = snapshot.data().guests || {};
+
+        for (const email in guests) {
+            const guest = guests[email];
+            const li = document.createElement('li');
+            li.textContent = `${email} - ${guest.status}`;
+            guestListElement.appendChild(li);
+        }
+    });
+}
+
+// Join the trip and update Firestore
+function joinTrip() {
+    const inviteCode = new URLSearchParams(window.location.search).get('inviteCode');
+    const tripRef = db.collection('trips').doc(tripId);
+
+    tripRef.get().then(doc => {
+        const tripData = doc.data();
+        if (tripData.inviteCodes[userEmail] === inviteCode) {
+            // Code matches, proceed to join the trip
+            tripRef.update({
+                [`guests.${userEmail}.status`]: "accepted"
+            })
+            .then(() => {
+                alert("You have successfully joined the trip!");
+                displayGuestList();
+            })
+            .catch(error => {
+                alert("Error joining trip: " + error.message);
+            });
+        } else {
+            alert("Invalid invite code.");
+        }
+    });
+}
+
+
+// Display space used in the trip
+function displaySpaceUsed() {
+    const spaceUsedElement = document.getElementById('space-used');
+    const tripRef = db.collection('trips').doc(tripId);
+    tripRef.get().then(doc => {
+        const tripData = doc.data();
+        const totalSpaceUsed = tripData.media ? tripData.media.totalSpaceUsed : 0;
+        const spaceInMB = (totalSpaceUsed / 1024 / 1024).toFixed(2); // Convert bytes to MB
+        spaceUsedElement.innerHTML = `Total Space Used: ${spaceInMB} MB`;
+    });
+}
+
+// Upload a file to Firebase Storage
+function uploadFile() {
+    const fileInput = document.getElementById('file-upload');
+    const file = fileInput.files[0];
+
+    if (file) {
+        const fileName = `${userEmail}_${file.name}`;
+        const fileRef = storage.ref(`trips/${tripId}/media/${fileName}`);
+        
+        // Upload the file
+        fileRef.put(file).then(snapshot => {
+            console.log('File uploaded:', snapshot);
+
+            // Get file metadata
+            snapshot.ref.getMetadata().then(metadata => {
+                const fileSize = metadata.size; // in bytes
+                const fileType = metadata.contentType;
+
+                // Save file metadata to Firestore
+                const mediaData = {
+                    fileName: file.name,
+                    fileSize: fileSize,
+                    fileType: fileType,
+                    url: snapshot.ref.getDownloadURL()
+                };
+
+                // Update Firestore with the new media file and total space used
+                const tripRef = db.collection('trips').doc(tripId);
+                tripRef.update({
+                    [`media.files.${fileName}`]: mediaData,
+                    'media.totalSpaceUsed': firebase.firestore.FieldValue.increment(fileSize)
+                }).then(() => {
+                    alert('File uploaded successfully!');
+                    displaySpaceUsed();
+                    displayMediaList(); // Refresh the media list
+                }).catch(error => {
+                    console.error('Error uploading file to Firestore:', error);
+                });
+            });
+        }).catch(error => {
+            console.error('Error uploading file to Firebase Storage:', error);
+        });
+    } else {
+        alert('Please select a file to upload');
+    }
+}
+
+// Display the media files in the trip
+function displayMediaList() {
+    const mediaListElement = document.getElementById('media-list');
+    const tripRef = db.collection('trips').doc(tripId);
+
+    tripRef.get().then(doc => {
+        const tripData = doc.data();
+        const mediaFiles = tripData.media ? tripData.media.files : {};
+        
+        mediaListElement.innerHTML = ''; // Clear the list
+
+        for (const fileId in mediaFiles) {
+            const media = mediaFiles[fileId];
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <a href="${media.url}" target="_blank">${media.fileName}</a>
+                <br>Size: ${(media.fileSize / 1024 / 1024).toFixed(2)} MB
+            `;
+            mediaListElement.appendChild(li);
+        }
+    });
+}
+
+// Initialize the page
+window.onload = function() {
+    displaySpaceUsed();
+    displayMediaList();
+};
+
+// Initialize the page by displaying the guest list
+window.onload = displayGuestList;
+
+
+// Display trip details and check invite code
+function displayTripDetails(tripData, inviteCode) {
+    // Show trip information
+    const tripDetailsDiv = document.getElementById('tripDetails');
+    tripDetailsDiv.innerHTML = `
+        <h3>${tripData.tripName}</h3>
+        <p><strong>Destination:</strong> ${tripData.destination}</p>
+        <p><strong>Start Date:</strong> ${tripData.startDate}</p>
+        <p><strong>End Date:</strong> ${tripData.endDate}</p>
+        <p><strong>Invitees:</strong> ${tripData.invitees.join(', ')}</p>
+    `;
+
+    // Check if the invite code exists and matches any in the trip's invite list
+    if (inviteCode) {
+        const invitees = tripData.inviteCodes || {};
+        const userEmail = Object.keys(invitees).find(email => invitees[email] === inviteCode);
+        
+        if (userEmail) {
+            // If invite code is valid, show "Join Trip" button
+            document.getElementById('joinButton').style.display = 'block';
+        } else {
+            alert("Invalid invite code.");
+        }
+    }
+}
+
+// Function to join trip
+// view-trip.js (after checking invite code)
+function joinTrip() {
+    const userId = firebase.auth().currentUser.uid; // Current logged in user ID
+
+    const tripRef = db.collection("trips").doc(tripId);
+    tripRef.update({
+        participants: firebase.firestore.FieldValue.arrayUnion(userId)
+    })
+    .then(() => {
+        alert("You have successfully joined the trip!");
+        // Optionally, you could redirect to a new page or update the UI.
+    })
+    .catch(error => {
+        alert("Error joining trip: " + error.message);
+    });
+}
+
+
+// chat.js
+const chatBox = document.getElementById('chat-box');
+const messageInput = document.getElementById('message-input');
+const tripRef = db.collection("trips").doc(tripId);
+
+function sendMessage() {
+    const message = messageInput.value;
+    const userId = firebase.auth().currentUser.uid;
+    
+    tripRef.collection("messages").add({
+        sender: userId,
+        text: message,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+    messageInput.value = ''; // Clear input
+}
+
+function displayMessages() {
+    tripRef.collection("messages")
+        .orderBy("timestamp")
+        .onSnapshot(snapshot => {
+            chatBox.innerHTML = ''; // Clear previous messages
+            snapshot.forEach(doc => {
+                const message = doc.data();
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = `${message.sender}: ${message.text}`;
+                chatBox.appendChild(messageDiv);
+            });
+        });
+}
+
+window.onload = async() => {
+
+    if (!tripId) {
+        alert("Trip ID is missing!");
+        return;
+    }
+
+    // Fetch trip data from Firestore
+    const tripRef = db.collection("trips").doc(tripId);
+    const tripSnapshot = await tripRef.get();
+
+    if (!tripSnapshot.exists) {
+        alert("Trip not found!");
+        return;
+    }
+
+    const tripData = tripSnapshot.data();
+    displayTripDetails(tripData, inviteCode);
+    displayMessages();
+};
+
+</script>
+</body>
+</html>
