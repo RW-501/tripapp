@@ -93,11 +93,23 @@ facebookProvider
                 showToast("Please fill all required fields!");
                 return;
             }
-    
-            const tripRef = await addDoc(collection(db, "trips"), {
-                tripName, destination, startDate, endDate,description, coverPhoto: '', contributers: [], tripModerators: [],
-                createdBy: userId,createdAt: new date(), invitees: [], timestamp: serverTimestamp()
-            });
+
+            try {
+        // Create trip document in Firestore
+        const tripRef = await addDoc(collection(db, "trips"), {
+            tripName,
+            destination,
+            startDate,
+            endDate,
+            description,
+            coverPhoto: "",
+            contributers: [],
+            tripModerators: [],
+            createdBy: userId,
+            createdAt: new Date(), // Fixed typo
+            invitees: [],
+            timestamp: serverTimestamp(),
+        });
     
             const tripLink = `https://rw-501.github.io/tripapp/join/${tripRef.id}`;
             await updateDoc(doc(db, "trips", tripRef.id), { tripLink });
@@ -105,12 +117,17 @@ facebookProvider
             document.getElementById("tripLink").innerHTML = `<a href="${tripLink}" target="_blank">${tripLink}</a>`;
             loadTrips();
             showToast("Trip Created Successfully!");
-        });
+        } catch (error) {
+        console.error("Error creating trip:", error);
+        showToast("Failed to create trip. Please try again.");
+    }
+});
     
         async function loadTrips() {
             const tripListDiv = document.getElementById("tripList");
             tripListDiv.innerHTML = "";
-    
+            try {
+
             const tripsQuery = await getDocs(collection(db, "trips"));
     
             if (tripsQuery.empty) {
@@ -132,7 +149,10 @@ facebookProvider
                 `;
                 tripListDiv.appendChild(tripItem);
             });
-    
+    } catch (error) {
+        console.error("Error loading trips:", error);
+        showToast("Failed to load trips.");
+    }    
             document.querySelectorAll(".inviteTripBtn").forEach(button => {
                 button.addEventListener("click", function () {
                     invite(this.getAttribute("data-id"));
