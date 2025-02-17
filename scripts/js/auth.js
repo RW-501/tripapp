@@ -99,30 +99,7 @@ function initializeFirebase() {
         localStorage.setItem('userEmail', user.email);
     
         userId = user.uid;
-        
-        if (DEBUG)  console.log("No user signed in");
-    
-        // Clear local storage
-        localStorage.removeItem('userLoggedIn');
-        localStorage.removeItem('userID');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem("obituaryMemberID");
-    
-        userId = null;
-    
-        // Set userLoggedIn to false in local storage
-        localStorage.setItem('userLoggedIn', false);
 
-
-        const allUserBtns = document.querySelectorAll('.side-user-btn');
-        allUserBtns.forEach((btns) => {
-          if (btns) btns.style.display = 'none';
-        });
-    
-        const joinArea = document.getElementById('btn-join-area');
-        if (joinArea) joinArea.style.display = 'block';
-   
- 
     } else{
         if (DEBUG)  console.log("No user signed in");
 
