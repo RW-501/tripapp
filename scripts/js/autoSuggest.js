@@ -256,7 +256,7 @@ const airports = [
 // Auto-suggest function with debounce and improved accessibility
 function destinationAutoSuggest(inputId) {
     addSuggestionBox();
-    console.log("destinationAutoSuggest:", inputId);
+   // console.log("destinationAutoSuggest:", inputId);
 
     const input = document.getElementById(inputId);
     const suggestionBox = document.createElement("div");
