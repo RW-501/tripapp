@@ -253,19 +253,16 @@ const airports = [
 
 
 
-
-
 // Auto-suggest function with debounce and improved accessibility
 function destinationAutoSuggest(inputId) {
     addSuggestionBox();
     console.log("destinationAutoSuggest:", inputId);
 
-
     const input = document.getElementById(inputId);
     const suggestionBox = document.createElement("div");
     suggestionBox.className = "suggestion-box";
     suggestionBox.setAttribute('role', 'listbox');
-    input.appendChild(suggestionBox);
+    document.body.appendChild(suggestionBox);  // Append to body to avoid clipping
 
     let debounceTimeout;
     input.addEventListener("input", function () {
@@ -298,6 +295,9 @@ function destinationAutoSuggest(inputId) {
             if (filteredAirports.length === 0) {
                 suggestionBox.innerHTML = "<div class='suggestion'>No results found</div>";
             }
+
+            // Position suggestion box correctly
+            positionSuggestionBox(input, suggestionBox);
         }, 300);  // Debounce delay
     });
 
@@ -330,9 +330,7 @@ function destinationAutoSuggest(inputId) {
 }
 
 window.destinationAutoSuggest = destinationAutoSuggest;
-export {          
-    destinationAutoSuggest
-};
+export { destinationAutoSuggest };
 
 function addSuggestionBox() {
     const style = document.createElement('style');
@@ -346,8 +344,6 @@ function addSuggestionBox() {
             width: 100%;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             z-index: 1000;
-            top: 100%;
-            left: 0;
         }
 
         .suggestion {
@@ -370,4 +366,13 @@ function addSuggestionBox() {
         }
     `;
     document.head.appendChild(style);
+}
+
+function positionSuggestionBox(input, suggestionBox) {
+    const inputRect = input.getBoundingClientRect();
+    const offset = 5; // Distance between input and suggestion box
+
+    suggestionBox.style.left = `${inputRect.left + window.scrollX}px`;
+    suggestionBox.style.top = `${inputRect.bottom + window.scrollY + offset}px`;
+    suggestionBox.style.width = `${inputRect.width}px`;  // Match the width of the input
 }
