@@ -282,12 +282,15 @@ function destinationAutoSuggest(inputId) {
 
             filteredAirports.forEach(airport => {
                 const suggestion = document.createElement("div");
+                suggestionBox.style.display = "block";
                 suggestion.className = "suggestion";
                 suggestion.setAttribute('role', 'option');
                 suggestion.textContent = `${airport.code} - ${airport.name} (${airport.city}, ${airport.country})`;
                 suggestion.addEventListener("click", function () {
                     input.value = `${airport.code} - ${airport.name}`;
                     suggestionBox.innerHTML = "";
+                    suggestionBox.style.display = "none";
+
                 });
                 suggestionBox.appendChild(suggestion);
             });
@@ -305,6 +308,7 @@ function destinationAutoSuggest(inputId) {
     document.addEventListener("click", function (e) {
         if (!input.contains(e.target) && !suggestionBox.contains(e.target)) {
             suggestionBox.innerHTML = "";
+            suggestionBox.style.display = "none";
         }
     });
 
@@ -336,6 +340,7 @@ function addSuggestionBox() {
     const style = document.createElement('style');
     style.innerHTML = `
         .suggestion-box { 
+        display: none;
             position: absolute;
             background: white;
             border: 1px solid #ccc;
