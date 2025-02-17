@@ -73,6 +73,11 @@
             const endDate = noDates ? null : document.getElementById("endDate").value;
             const description  = document.getElementById("description").value;
     
+            if(!userId){
+                openPopupLogin();
+            }
+
+            
             if (!tripName || !destination) {
                 showToast("Please fill all required fields!");
                 return;
