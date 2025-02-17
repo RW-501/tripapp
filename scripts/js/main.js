@@ -1,7 +1,7 @@
 
 import {            db, doc, getDoc, query, updateDoc,
     auth, analytics, deleteDoc, getDownloadURL,  userId, 
-db, getStorage, ref, uploadBytes, getDownloadURL, limit,
+getStorage, ref, uploadBytes, getDownloadURL, limit,
 doc, arrayUnion, RecaptchaVerifier, increment, getDoc, arrayRemove, signInWithPhoneNumber,
 query, updateDoc, setDoc, addDoc, signInAnonymously, orderBy, onAuthStateChanged,
 uploadBytesResumable, signInWithPopup, FacebookAuthProvider, GoogleAuthProvider, startAfter,
@@ -22,7 +22,7 @@ facebookProvider
 // Export Firestore, Storage, and Auth instances for use in other modules
 export {           db, doc, getDoc, query, updateDoc,
     auth, analytics, deleteDoc, getDownloadURL,  userId, 
-db, getStorage, ref, uploadBytes, getDownloadURL, limit,
+getStorage, ref, uploadBytes, getDownloadURL, limit,
 doc, arrayUnion, RecaptchaVerifier, increment, getDoc, arrayRemove, signInWithPhoneNumber,
 query, updateDoc, setDoc, addDoc, signInAnonymously, orderBy, onAuthStateChanged,
 uploadBytesResumable, signInWithPopup, FacebookAuthProvider, GoogleAuthProvider, startAfter,
