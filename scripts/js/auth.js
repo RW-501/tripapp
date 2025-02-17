@@ -909,12 +909,19 @@ function closePopupLogin() {
 window.openPopupLogin = openPopupLogin;
 window.closePopupLogin = closePopupLogin;
 
+/*
+
+
+
 if (currentUrl == "https://reelcareer.co/views/auth"){
 
   addAuthEventListener();
 
 
 }
+
+
+*/
 
 
 // Example call} to open the popup from anywhere in main.js
