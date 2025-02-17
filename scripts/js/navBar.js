@@ -15,6 +15,7 @@ facebookProvider
       } from 'https://rw-501.github.io/tripapp/scripts/js/auth.js';
 
   let userINFO;
+  console.log(auth);  // Check if this is properly initialized
 
   onAuthStateChanged(auth, (user) => {
     userINFO = user;

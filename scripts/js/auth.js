@@ -1190,4 +1190,4 @@ where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
 googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
 facebookProvider
 };
-
+console.log("???????????//// ",auth);  // Check if this is properly initialized
