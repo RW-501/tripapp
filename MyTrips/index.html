@@ -123,7 +123,7 @@ facebookProvider
 
 // Generate the trip link
 const tripLink = `https://rw-501.github.io/tripapp/join/${tripRef.id}`;
-await updateDoc(doc(db, "trips", tripRef.id), { tripLink });
+await updateDoc(doc(db, "Trips", tripRef.id), { tripLink });
 
 // ✅ Add the trip ID to the user's collection (ensure document exists)
 const userRef = doc(db, "Users", userId);
