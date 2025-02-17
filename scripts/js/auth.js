@@ -212,28 +212,7 @@ loadScript('https://reelcareer.co/scripts/js/load/elements/showToast.js', { defe
   logExecutionTime('Toast Notifications', performance.now());
 });
 
-loadScript('https://reelcareer.co/scripts/js/load/elements/loadLogo.js', { async: false }, () => {
-  logExecutionTime('Logo', performance.now());
 
-  loadScript('https://reelcareer.co/scripts/js/load/ecode.js', { async: false, defer: false }, () => {
-      logExecutionTime('ecode Script', performance.now());
-
-      loadScript('https://reelcareer.co/scripts/js/load/auth.js', { async: false, type: 'module' }, () => {
-          logExecutionTime('auth Script', performance.now());
-
-          loadScript('https://reelcareer.co/scripts/js/load/elements/navBar.js', { async: false, defer: false, type: 'module' }, () => {
-              logExecutionTime('Navigation Bar', performance.now());
-
-              loadScript('https://reelcareer.co/scripts/js/load/elements/sideNav.js', { async: false, defer: true, type: 'module' }, () => {
-                logExecutionTime('Side Navigation Bar', performance.now());
-  
-                
-            });
-              
-          });
-      });
-  });
-});
 
 
 
