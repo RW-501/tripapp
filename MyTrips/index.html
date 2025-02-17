@@ -52,7 +52,18 @@
     
     <script type="module">
         import {
-            db, auth, userId, collection, addDoc, getDocs, updateDoc, doc, serverTimestamp
+            db, doc, getDoc, updateDoc,
+    auth, deleteDoc,  userId, getStorage, ref, uploadBytes, 
+    getDownloadURL, limit, arrayUnion, RecaptchaVerifier, increment,
+     arrayRemove, signInWithPhoneNumber, query, setDoc, 
+     addDoc, signInAnonymously, orderBy, onAuthStateChanged, 
+     uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
+     GoogleAuthProvider, startAfter, OAuthProvider, signOut, deleteDoc,
+      getFirestore, serverTimestamp,  
+createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
+where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
+googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
+facebookProvider
         } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
     
         document.getElementById("toggleCreateTripBtn").addEventListener("click", () => {
@@ -77,7 +88,7 @@
                 openPopupLogin();
             }
 
-            
+
             if (!tripName || !destination) {
                 showToast("Please fill all required fields!");
                 return;
