@@ -43,7 +43,7 @@ let storage;
 let analytics;
 let userId;
 let batch;
-let USER;
+let userInfo;
 
 document.addEventListener('DOMContentLoaded', () => {
   initializeFirebase(); // Initialize Firebase only after the DOM is ready
@@ -79,7 +79,7 @@ function initializeFirebase() {
         if (DEBUG)  console.log("No User");
       }
           
-      USER = user;
+      userInfo = user;
 
       if (user) {
         const allUserBtns = document.querySelectorAll('.side-user-btn');
@@ -96,7 +96,6 @@ function initializeFirebase() {
         // Store user ID and email in local storage
         localStorage.setItem('userLoggedIn', true);
         localStorage.setItem('userID', user.uid);
-        localStorage.setItem('userEmail', user.email);
     
         userId = user.uid;
 
@@ -106,10 +105,10 @@ function initializeFirebase() {
         // Clear local storage
         localStorage.removeItem('userLoggedIn');
         localStorage.removeItem('userID');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem("obituaryMemberID");
+
     
         userId = null;
+        userInfo = null;
     
         // Set userLoggedIn to false in local storage
         localStorage.setItem('userLoggedIn', false);
@@ -1181,7 +1180,7 @@ export {
      addDoc, signInAnonymously, orderBy, onAuthStateChanged, 
      uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
      GoogleAuthProvider, startAfter, OAuthProvider, signOut,
-      getFirestore, serverTimestamp,  
+      getFirestore, serverTimestamp,  userInfo,
 createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
 where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
 googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,

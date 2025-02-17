@@ -59,7 +59,7 @@
      addDoc, signInAnonymously, orderBy, onAuthStateChanged, 
      uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
      GoogleAuthProvider, startAfter, OAuthProvider, signOut,
-      getFirestore, serverTimestamp,  
+      getFirestore, serverTimestamp,  userInfo,
 createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
 where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
 googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
@@ -77,61 +77,82 @@ facebookProvider
         });
     
         document.getElementById("createTripBtn").addEventListener("click", async function () {
-            const tripName = document.getElementById("tripName").value;
-            const destination = document.getElementById("destination").value;
-            const noDates = document.getElementById("noDates").checked;
-            const startDate = noDates ? null : document.getElementById("startDate").value;
-            const endDate = noDates ? null : document.getElementById("endDate").value;
-            const description  = document.getElementById("description").value;
-    
-            if(!userId){
-                openPopupLogin();
-            }
+    const tripName = document.getElementById("tripName").value;
+    const destination = document.getElementById("destination").value;
+    const noDates = document.getElementById("noDates").checked;
+    const startDate = noDates ? null : document.getElementById("startDate").value;
+    const endDate = noDates ? null : document.getElementById("endDate").value;
+    const description = document.getElementById("description").value;
 
+    if (!userId) {
+        openPopupLogin();
+        return;
+    }
 
-            if (!tripName || !destination) {
-                showToast("Please fill all required fields!");
-                return;
-            }
+    if (!tripName || !destination) {
+        showToast("Please fill all required fields!");
+        return;
+    }
 
-            try {
+    try {
         // Create trip document in Firestore
-        const tripRef = await addDoc(collection(db, "trips"), {
-            tripName,
-            destination,
-            startDate,
-            endDate,
-            description,
-            coverPhoto: "",
-            contributers: [],
-            tripModerators: [],
-            createdBy: userId,
-            createdAt: new Date(), // Fixed typo
-            invitees: [],
-            timestamp: serverTimestamp(),
-        });
-    
-            const tripLink = `https://rw-501.github.io/tripapp/join/${tripRef.id}`;
-            await updateDoc(doc(db, "trips", tripRef.id), { tripLink });
-    
-            document.getElementById("tripLink").innerHTML = `<a href="${tripLink}" target="_blank">${tripLink}</a>`;
-            loadTrips();
-            showToast("Trip Created Successfully!");
-        } catch (error) {
+        const tripRef = await addDoc(collection(db, "Trips"), {
+    tripName,
+    destination,
+    startDate,
+    endDate,
+    description,
+    coverPhoto: "",
+    contributors: [
+        {
+            userId: userId,
+            email: "",
+            phone: "",
+            role: "admin",  
+            status: "accepted",
+            invitedBy: "",
+            joinedAt: new Date(),
+        }
+    ],
+    tripModerators: [userId], // Fixed incorrect array nesting
+    createdBy: userId,
+    createdAt: new Date(),
+    invitees: [],
+    timestamp: serverTimestamp(),
+});
+
+// Generate the trip link
+const tripLink = `https://rw-501.github.io/tripapp/join/${tripRef.id}`;
+await updateDoc(doc(db, "trips", tripRef.id), { tripLink });
+
+// ✅ Add the trip ID to the user's collection (ensure document exists)
+const userRef = doc(db, "Users", userId);
+await setDoc(userRef, {
+    userTrips: arrayUnion(tripRef.id) // Adds trip ID, creates document if missing
+}, { merge: true });
+
+        document.getElementById("tripLink").innerHTML = `<a href="${tripLink}" target="_blank">${tripLink}</a>`;
+        if(userId){
+        loadTrips(userId);
+       }
+       
+       showToast("Trip Created Successfully!");
+
+    } catch (error) {
         console.error("Error creating trip:", error);
         showToast("Failed to create trip. Please try again.");
     }
 });
-    
+
 
 // Function to load trips from Firestore
-async function loadTrips() {
+async function loadTrips(userId) {
     const tripListDiv = document.getElementById("tripList");
     tripListDiv.innerHTML = "";
 
     try {
         // Fetch trips collection from Firestore
-        const tripsSnapshot = await getDocs(collection(db, "trips"));
+        const tripsSnapshot = await getDocs(collection(db, "Trips", userId));
 
         // Check if the collection is empty
         if (tripsSnapshot.empty) {
@@ -217,7 +238,7 @@ async function loadTrips() {
 
         // Update Firestore
         try {
-            await updateDoc(doc(db, "trips", tripId), { invitees: inviteUsers });
+            await updateDoc(doc(db, "Trips", tripId), { invitees: inviteUsers });
 
             // Display invite link
             inviteCodeDisplay.innerHTML = `Invite Code: <strong>${inviteCode}</strong> (Expires in 12 hours) <br>
@@ -248,7 +269,7 @@ async function loadTrips() {
 });
 
         async function editTrip(tripId) {
-    const tripRef = doc(db, "trips", tripId);
+    const tripRef = doc(db, "Trips", tripId);
     const tripSnap = await getDoc(tripRef);
 
     if (!tripSnap.exists()) {
@@ -295,7 +316,10 @@ async function loadTrips() {
         createBtn.onclick = createTrip;
 
         // Reload trips
-        loadTrips();
+        if(userId){
+        loadTrips(userId);
+       }
+    
     };
 }
 
@@ -312,7 +336,10 @@ document.addEventListener("click", function (event) {
             alert(message); // Replace this with a proper toast notification
         }
     
-        loadTrips();
+       
+       if(userId){
+        loadTrips(userId);
+       }
     </script>
     
     
