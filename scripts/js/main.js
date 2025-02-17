@@ -14,6 +14,10 @@ googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
 facebookProvider
       } from 'https://rw-501.github.io/tripapp/scripts/js/auth.js';
 
+  
+      import { 
+
+      } from 'https://rw-501.github.io/tripapp/scripts/js/navBar.js';
 
   
       import { 
