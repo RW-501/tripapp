@@ -69,11 +69,11 @@ function initializeFirebase() {
     analytics = initializeAnalytics(app);
     batch = writeBatch(db); // db is the Firestore database reference
 
-    console.log("???????????//// ",auth);  // Check if this is properly initialized
 
 
      onAuthStateChanged(auth, (user) => {
       if (DEBUG)  console.log("currentUrl   ",currentUrl);
+      console.log("???????????//// ",auth);  // Check if this is properly initialized
 
       if (user){
         if (DEBUG)  console.log("User")

@@ -17,28 +17,28 @@ facebookProvider
   let userINFO;
  // console.log(auth);  // Check if this is properly initialized
 
-  onAuthStateChanged(auth, (user) => {
-    userINFO = user;
+ document.addEventListener("DOMContentLoaded", () => {
+    onAuthStateChanged(auth, (user) => {
+      userINFO = user;
   
-    if (!userINFO) {
-      console.log('No user is authenticated');
-      return; // Exit early if no user is logged in
-    }
+      if (!userINFO) {
+        console.log("No user is authenticated");
+        return; // Exit early if no user is logged in
+      }
   
+      console.log("userINFO: ", userINFO);
   
-  console.log("userINFO: ", userINFO);
+      const path = window.location.pathname;
   
+      // Check if user is trying to access the backend/admin area
+      const isBackendArea = path.includes("/backend") || path.includes("/backend/");
   
-    const path = window.location.pathname;
-  
-    // Check if user is trying to access the backend/admin area
-    const isBackendArea = path.includes('/backend') || path.includes('/backend/');  
-  
-    if (!isBackendArea) {
-      handleAuthStateChanged(userINFO); // Call your function to handle authenticated user
-    } else {
-     // checkAdminLogin(userINFO); // Ensure login is valid on page load
-    }
+      if (!isBackendArea) {
+        handleAuthStateChanged(userINFO); // Call your function to handle authenticated user
+      } else {
+        // checkAdminLogin(userINFO); // Ensure login is valid on page load
+      }
+    });
   });
   
   function createNavbar() {
