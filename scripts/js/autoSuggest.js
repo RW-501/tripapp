@@ -265,7 +265,7 @@ function destinationAutoSuggest(inputId) {
     const suggestionBox = document.createElement("div");
     suggestionBox.className = "suggestion-box";
     suggestionBox.setAttribute('role', 'listbox');
-    input.parentNode.appendChild(suggestionBox);
+    input.appendChild(suggestionBox);
 
     let debounceTimeout;
     input.addEventListener("input", function () {
@@ -330,6 +330,9 @@ function destinationAutoSuggest(inputId) {
 }
 
 window.destinationAutoSuggest = destinationAutoSuggest;
+export {          
+    destinationAutoSuggest
+};
 
 function addSuggestionBox() {
     const style = document.createElement('style');

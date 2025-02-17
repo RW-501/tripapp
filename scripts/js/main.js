@@ -21,7 +21,7 @@ facebookProvider
       } from 'https://rw-501.github.io/tripapp/scripts/js/showToast.js';
 
 
-      import { 
+      import { destinationAutoSuggest
 
       } from 'https://rw-501.github.io/tripapp/scripts/js/autoSuggest.js';
 
@@ -44,7 +44,7 @@ export {
 createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
 where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
 googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
-facebookProvider
+facebookProvider, destinationAutoSuggest
 };
   
   
