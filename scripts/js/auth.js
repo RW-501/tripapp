@@ -1191,7 +1191,7 @@ window.showUserSignedOutMessage = showUserSignedOutMessage;
 // Export Firestore, Storage, and Auth instances for use in other modules
 export {
     db, doc, getDoc, updateDoc,
-    auth, analytics, deleteDoc, getDownloadURL,  userId, 
+    auth, analytics, deleteDoc,  userId, 
 getStorage, ref, uploadBytes, getDownloadURL, limit, arrayUnion, RecaptchaVerifier, increment, getDoc, arrayRemove, signInWithPhoneNumber,
 query, updateDoc, setDoc, addDoc, signInAnonymously, orderBy, onAuthStateChanged,
 uploadBytesResumable, signInWithPopup, FacebookAuthProvider, GoogleAuthProvider, startAfter,
