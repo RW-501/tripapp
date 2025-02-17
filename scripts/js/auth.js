@@ -1192,7 +1192,7 @@ window.showUserSignedOutMessage = showUserSignedOutMessage;
 export {
     db, doc, getDoc, query, updateDoc,
     auth, analytics, deleteDoc, getDownloadURL,  userId, 
-db, getStorage, ref, uploadBytes, getDownloadURL, limit,
+getStorage, ref, uploadBytes, getDownloadURL, limit,
 doc, arrayUnion, RecaptchaVerifier, increment, getDoc, arrayRemove, signInWithPhoneNumber,
 query, updateDoc, setDoc, addDoc, signInAnonymously, orderBy, onAuthStateChanged,
 uploadBytesResumable, signInWithPopup, FacebookAuthProvider, GoogleAuthProvider, startAfter,
