@@ -22,7 +22,11 @@ facebookProvider
         } from 'https://rw-501.github.io/tripapp/scripts/js/ecode.js';
   
   
+        import { 
 
+        } from 'https://rw-501.github.io/tripapp/scripts/js/trackers.js';
+  
+  
 
 // Function to update or create user information in Firestore
 const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) => {
