@@ -179,6 +179,8 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
       userAccountStatusCount: userAccountStatusCount,            // Account status count (could be attempts, etc.)
       lastUpdateTime: userDataSaved.lastUpdateTime || new Date(), // Last update timestamp
 
+      tripsOwned: userDataSaved.tripsOwned || [],
+      tripsJoined: userDataSaved.tripsJoined || [],
   
       // Security and Reporting
       reportedCount: userDataSaved.reportedCount || 0,          // Count of times the user has been reported
@@ -196,7 +198,7 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
       // Financial and Membership Information
       accountBalance: userDataSaved.accountBalance || 0,        // User's account balance
       accountBalanceUpdateDate: userDataSaved.accountBalanceUpdateDate || new Date(), // Date when account balance was last updated
-      userRoles: userDataSaved.userRoles || ['jobSeeker'],      // Roles associated with the user (e.g., jobSeeker, recruiter)
+
       membershipType: userDataSaved.membershipType || "free",   // Type of membership (e.g., free, pro)
       membershipMonthCount: userDataSaved.membershipMonthCount || 0, // Number of months the user has been a member
       membershipStartDate: userDataSaved.membershipStartDate || joinedDate, // Start date of membership

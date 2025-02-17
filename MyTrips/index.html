@@ -15,7 +15,7 @@
 
     <header id="dynamicHeader"></header>
     <main id="mainContainer">
-        
+
     <div class="container">
         <div id="createTripArea" style="display:block;">
             <h2>Create a Trip</h2>
@@ -135,7 +135,7 @@ await updateDoc(doc(db, "Trips", tripRef.id), { tripLink });
 // ✅ Add the trip ID to the user's collection (ensure document exists)
 const userRef = doc(db, "Users", userId);
 await setDoc(userRef, {
-    userTrips: arrayUnion(tripRef.id) // Adds trip ID, creates document if missing
+    tripsOwned: arrayUnion(tripRef.id) // Adds trip ID, creates document if missing
 }, { merge: true });
 
         document.getElementById("tripLink").innerHTML = `<a href="${tripLink}" target="_blank">${tripLink}</a>`;
@@ -159,7 +159,24 @@ async function loadTrips(userId) {
 
     try {
         // Fetch trips collection from Firestore
-        const tripsSnapshot = await getDocs(collection(db, "Trips", userId));
+// Query for trips where the user is the creator
+const createdTripsQuery = query(collection(db, "Trips"), where("createdBy", "==", userId));
+const createdTripsSnapshot = await getDocs(createdTripsQuery);
+
+// Query for trips where the user is a contributor
+const contributedTripsQuery = query(collection(db, "Trips"), where("contributors", "array-contains", { userId: userId }));
+const contributedTripsSnapshot = await getDocs(contributedTripsQuery);
+
+// Merge results
+const tripsSnapshot = [];
+createdTripsSnapshot.forEach(doc => tripsSnapshot.push({ id: doc.id, ...doc.data() }));
+contributedTripsSnapshot.forEach(doc => {
+    if (!tripsSnapshot.some(trip => trip.id === doc.id)) { // Avoid duplicates
+        tripsSnapshot.push({ id: doc.id, ...doc.data() });
+    }
+});
+
+console.log(trips); // This will contain all trips the user is part of
 
         // Check if the collection is empty
         if (tripsSnapshot.empty) {
