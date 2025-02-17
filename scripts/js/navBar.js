@@ -8,17 +8,26 @@ import {
      uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
      GoogleAuthProvider, startAfter, OAuthProvider, signOut,
       getFirestore, serverTimestamp,  userInfo,
-  createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
-  where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
-  googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
-  facebookProvider
+createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
+where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
+googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
+facebookProvider
       } from 'https://rw-501.github.io/tripapp/scripts/js/auth.js';
-  
-  
+
   let userINFO;
+
+  onAuthStateChanged(auth, (user) => {
+    userINFO = user;
   
-  onAuthStateChanged(auth, (USER) => {
-    userINFO = USER;
+    if (!userINFO) {
+      console.log('No user is authenticated');
+      return; // Exit early if no user is logged in
+    }
+  
+  
+  console.log("userINFO: ", userINFO);
+  
+  
     const path = window.location.pathname;
   
     // Check if user is trying to access the backend/admin area
@@ -27,7 +36,7 @@ import {
     if (!isBackendArea) {
       handleAuthStateChanged(userINFO); // Call your function to handle authenticated user
     } else {
-      checkAdminLogin(userINFO); // Ensure login is valid on page load
+     // checkAdminLogin(userINFO); // Ensure login is valid on page load
     }
   });
   
@@ -224,5 +233,25 @@ import {
     });
   }
   
-  highlightActiveLink();
-  
+ 
+const currentPage = window.location.pathname; // Get the current path from the URL
+let excludedPages = ["/backend/", "/admin/", "/settings/"];
+
+// Replace the navbar if not on an excluded page
+if (!excludedPages.some((excluded) => currentPage.startsWith(excluded))) {
+  let existingNavbar = document.querySelector("#dynamicHeader");
+
+  // If an existing navbar is found, replace it
+  if (existingNavbar) {
+    existingNavbar.outerHTML = createNavbar();
+  } else {
+// If no existing navbar, append it to the body
+document.body.insertAdjacentHTML("afterbegin", createNavbar());
+
+  }
+
+
+ // setupEventListeners(); // Initialize event listeners
+  highlightActiveLink(); // Highlight the active link
+
+}
