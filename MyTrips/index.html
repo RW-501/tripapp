@@ -123,42 +123,54 @@ facebookProvider
     }
 });
     
-        async function loadTrips() {
-            const tripListDiv = document.getElementById("tripList");
-            tripListDiv.innerHTML = "";
-            try {
 
-            const tripsQuery = await getDocs(collection(db, "trips"));
-    
-            if (tripsQuery.empty) {
-                document.getElementById("inviteArea").style.display = "block";
-                document.getElementById("tripArea").style.display = "none";
-            }else{
-                document.getElementById("tripArea").style.display = "block";
-            }
-    
-            tripsQuery.forEach((tripDoc) => {
-                const trip = tripDoc.data();
-                const tripItem = document.createElement("div");
-                tripItem.classList.add("trip-item");
-                tripItem.innerHTML = `
-                    <strong>${trip.tripName}</strong> - ${trip.destination}
-                    <button class="viewTripBtn" data-id="${tripDoc.id}">View</button>
-                    <button class="editTripBtn" data-id="${tripDoc.id}">Edit</button>
-                    <button class="inviteTripBtn" data-id="${tripDoc.id}">Invite</button>
-                `;
-                tripListDiv.appendChild(tripItem);
+// Function to load trips from Firestore
+async function loadTrips() {
+    const tripListDiv = document.getElementById("tripList");
+    tripListDiv.innerHTML = "";
+
+    try {
+        // Fetch trips collection from Firestore
+        const tripsSnapshot = await getDocs(collection(db, "trips"));
+
+        // Check if the collection is empty
+        if (tripsSnapshot.empty) {
+            document.getElementById("inviteArea").style.display = "block";
+            document.getElementById("tripArea").style.display = "none";
+        } else {
+            document.getElementById("tripArea").style.display = "block";
+        }
+
+        // Loop through each trip document
+        tripsSnapshot.forEach((tripDoc) => {
+            const trip = tripDoc.data();
+            const tripItem = document.createElement("div");
+            tripItem.classList.add("trip-item");
+            tripItem.innerHTML = `
+                <strong>${trip.tripName}</strong> - ${trip.destination}
+                <button class="viewTripBtn" data-id="${tripDoc.id}">View</button>
+                <button class="editTripBtn" data-id="${tripDoc.id}">Edit</button>
+                <button class="inviteTripBtn" data-id="${tripDoc.id}">Invite</button>
+            `;
+            tripListDiv.appendChild(tripItem);
+        });
+
+        // ✅ Ensure event listeners are attached AFTER elements are created
+        document.querySelectorAll(".inviteTripBtn").forEach(button => {
+            button.addEventListener("click", function () {
+                invite(this.getAttribute("data-id"));
             });
+        });
+
     } catch (error) {
         console.error("Error loading trips:", error);
-        showToast("Failed to load trips.");
-    }    
-            document.querySelectorAll(".inviteTripBtn").forEach(button => {
-                button.addEventListener("click", function () {
-                    invite(this.getAttribute("data-id"));
-                });
-            });
-        }
+        showToast("Failed to load trips. Please try again.");
+    }
+}
+
+
+
+
         document.addEventListener("DOMContentLoaded", () => {
     const inviteArea = document.getElementById("inviteArea");
     const inviteUsersContainer = document.getElementById("inviteUsersContainer");
