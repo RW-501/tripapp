@@ -32,6 +32,7 @@ import { getDownloadURL, uploadBytes, uploadBytesResumable, ref, getStorage, del
 // Analytics import
 import { initializeAnalytics } from 'https://www.gstatic.com/firebasejs/9.17.2/firebase-analytics.js';
 
+import {  } from 'https://rw-501.github.io/tripapp/scripts/js/loginState.js';
 
 const DEBUG = false;
 if (DEBUG) console.log("Module Debug on");
@@ -808,7 +809,7 @@ button[type="submit"] {
             popupContainer.style.opacity = '1';     // Fade in
         }, 50); // Small delay to ensure transition works
       }, 100); 
-      
+
     addAuthEventListener();
 
     const closePopup = document.getElementById("popup-login-close");

@@ -1,20 +1,27 @@
 
-import {
-  db, getStorage, ref, uploadBytes, getDownloadURL, limit,
-  doc, arrayUnion, RecaptchaVerifier, increment, getDoc, arrayRemove, signInWithPhoneNumber,
-  query, updateDoc, setDoc, addDoc, signInAnonymously, orderBy, onAuthStateChanged,
-  uploadBytesResumable, signInWithPopup, FacebookAuthProvider, GoogleAuthProvider, startAfter,
-  OAuthProvider, signOut, deleteDoc, getFirestore, serverTimestamp,
-  createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
-  where, getDocs, storage, getAuth, collection, auth, analytics,
-  googleProvider, onSnapshot, writeBatch, batch,
-  facebookProvider,
-  getUserId
-} from 'https://reelcareer.co/scripts/js/load/module.js';
+import { 
+  db, doc, getDoc, updateDoc,
+  auth, deleteDoc,  userId, getStorage, ref, uploadBytes, 
+  getDownloadURL, limit, arrayUnion, RecaptchaVerifier, increment,
+   arrayRemove, signInWithPhoneNumber, query, setDoc, 
+   addDoc, signInAnonymously, orderBy, onAuthStateChanged, 
+   uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
+   GoogleAuthProvider, startAfter, OAuthProvider, signOut,
+    getFirestore, serverTimestamp,  userInfo,
+createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
+where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
+googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
+facebookProvider
+    } from 'https://rw-501.github.io/tripapp/scripts/js/auth.js';
 
 
 
 
+    import { 
+
+        } from 'https://rw-501.github.io/tripapp/scripts/js/ecode.js';
+  
+  
 
 
 // Function to update or create user information in Firestore
@@ -121,136 +128,20 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
 
 
 
-    const videoResumesRef = collection(db, "VideoResumes");
 
-    // Query to fetch video resumes where createdByID matches userID
-    const reelsQuery = query(videoResumesRef, where("createdByID", "==", userID));
-
-    let videoResumeData = [];
-
+    /* 
     const connectionsRef = collection(db, 'Connections');
     const q = query(connectionsRef, where('participants', 'array-contains', userID));
 
     const qConnectionSnapshot = await getDocs(q);
     const connectionCount = qConnectionSnapshot.size; // Number of matching documents
-
+ */
     const { email, uid, emailVerified, displayName, phoneNumber, photoURL } = user;
 
 
     
-
-    const querySnapshot = await getDocs(reelsQuery);
-
-   
-  
-    // Process each document from the query snapshot
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-    
-      // Ensure videoResumeData is an array before pushing
-      if (Array.isArray(videoResumeData)) {
-        videoResumeData.push({
-          reelID: data.reelID,
-          videoResumeURL: data.videoResumeURL,
-          videoResumeTitle: data.videoResumeTitle,
-          thumbnailURL: data.thumbnailURL,
-          reported: data.reported,
-          isPinned: data.isPinned,
-          isPublic: data.isPublic,
-          isSponsoredPost: data.isSponsoredPost || false,
-          isBoostedPost: data.isBoostedPost || false,
-          notificationsBool: data.notificationsBool || false,
-          relatedReels: data.relatedReels || [],
-          views: data.views || 0,
-          reach: data.reach || 0,
-          rating: data.rating || 0,
-          duration: data.duration || 0,
-          timestamp: data.timestamp,
-          watchTime: data.watchTime || 0,
-          tags: data.tags || [], // Default to empty array if no tags
-          gifts: data.gifts || [], // Default to empty array if no gifts
-          createdAt: data.createdAt.toDate(), // Assuming createdAt is a Firestore timestamp
-          status: data.status || 'posted', // Default to 'posted' if no status
-          reelURL: `https://reelcareer.co/watch/?v=${data.reelID}` // Construct reel URL
-        });
-      }
-    });
-    
-    // Filter for public and valid reels
-    const publicReels = videoResumeData.filter(item => item.isPublic && item.status === 'posted');
-    
-    // Sort public reels by rating (descending) and then limit to top 4
-    const topRatedReels = publicReels
-      .sort((a, b) => b.rating - a.rating)
-      .slice(0, 4);
-    
-    // Process videoResumeData to create sortedAndLimitedData
-    let sortedAndLimitedData = [];
-    
-    if (Array.isArray(videoResumeData)) {
-      sortedAndLimitedData = [...videoResumeData]
-        .filter(item => item && item.status === 'posted' && item.createdAt) // Ensure valid status and createdAt
-        .sort((a, b) => b.createdAt - a.createdAt) // Sort by createdAt (descending)
-        .slice(0, 10); // Limit to 10 items
-    
-      // Check each item's relatedReels
-      sortedAndLimitedData.forEach((item) => {
-        if (!item.relatedReels || item.relatedReels.length === 0) {
-          // If relatedReels is empty, populate with topRatedReels
-          item.relatedReels = topRatedReels.map(reel => ({
-            reelID: reel.reelID,
-            videoResumeTitle: reel.videoResumeTitle,
-            videoUrl: reel.videoResumeURL,
-            reelURL: reel.reelURL,
-            reelTags: reel.tags,
-            reelCreatedDate: new Date(reel.createdAt)
-          }));
-        }
-      });
-    } else {
-      console.error('videoResumeData is not an array.');
-    }
-    
-    // Log the final sortedAndLimitedData for debugging
-    console.log("Final sortedAndLimitedData:", sortedAndLimitedData);
-    
- 
-    
-    if (Array.isArray(videoResumeData)) {
-      // Make a copy of videoResumeData
-      sortedAndLimitedData = [...videoResumeData]
-        .filter(item => {
-          // Skip items that are invalid or missing required properties
-          return item && item.status === 'posted' && item.createdAt;  // Check for valid status and createdAt
-        })
-        .sort((a, b) => b.createdAt - a.createdAt) // Sort in descending order by createdAt
-        .slice(0, 10); // Limit to 10 items
-
-    } else {
-      console.error('videoResumeData is not an array.');
-    }
-
    
     
-
-
-
-
-
-
-
-
-
-
-    let totalGiftAmountReceived = 0;
-
-    // Check if gifts is an array and has length
-    if (Array.isArray(videoResumeData.gifts)) {
-      totalGiftAmountReceived = videoResumeData.gifts.length;
-    } else {
-      // Handle the case where gifts is undefined or not an array
-      //  console.warn('Gifts data is not available or not an array');
-    }
 
 
 
@@ -270,52 +161,10 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
 
 
     let userAccountStatusCount = 0;
+    let userAccountStatus = "OK";
 
-
-
-    let videoPostRestriction = false;
-    let videoPostStatus = "OK";
-    if (videoResumeData.reported <= 3) {
-      userAccountStatusCount += VILATON_INCUMENT_1;
-      videoPostStatus = "OK";
-    } else if (videoResumeData.reported > 3 && videoResumeData.reported < 10) {
-      userAccountStatusCount += VILATON_INCUMENT_2;
-      videoPostStatus = "Warning";
-    } else
-      if (videoResumeData.reported > 10) {
-        userAccountStatusCount += VILATON_INCUMENT_3;
-        videoPostStatus = "Restricted";
-        videoPostRestriction = true;
-      }
-
-
-    const getUserAccountStatus = (userData, currentIP, loginProvider) => {
-
-      if (userData.securityQuestionFailCount >= MAX_SECURITY_FAIL_COUNT) userAccountStatusCount += VILATON_INCUMENT_1;
-      if (userData.userIP !== currentIP) userAccountStatusCount += VILATON_INCUMENT_1;
-      if (userData.loginMethod !== loginProvider) userAccountStatusCount += VILATON_INCUMENT_1;
-      if (userData.obituaryReportCount >= MAX_SECURITY_FAIL_COUNT) userAccountStatusCount += VILATON_INCUMENT_2;
-      if (userData.reportedCount >= MAX_SECURITY_FAIL_COUNT) userAccountStatusCount += VILATON_INCUMENT_2;
-      if (!userData.email && !userData.phoneNumber) count += VILATON_INCUMENT_3;
-
-      if (userAccountStatusCount <= 2) return "OK";
-      if (userAccountStatusCount <= 4) return "Warning";
-      return "Restricted";
-    };
 
     let isAccountLocked = false;
-
-    const userAccountStatus = getUserAccountStatus(userDataSaved, userIP, loginProvider);
-
-    if (userAccountStatus == "Restricted") {
-
-      let link = "https://reelcareer.co/support";
-      isAccountLocked = true;
-
-      showToast(" Your Account have been Restricted, Please Contact Support ASAP", 'warning', 0,
-        link, true, 'Support');
-
-    }
 
     let userData = {
       // Basic User Information
@@ -330,10 +179,7 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
       userAccountStatusCount: userAccountStatusCount,            // Account status count (could be attempts, etc.)
       lastUpdateTime: userDataSaved.lastUpdateTime || new Date(), // Last update timestamp
 
-      // Video Post Restrictions
-      videoPostStatus: videoPostStatus,                          // Status of video post feature (active/inactive)
-      videoPostRestriction: videoPostRestriction,                // Restriction status for video posting (true/false)
-
+  
       // Security and Reporting
       reportedCount: userDataSaved.reportedCount || 0,          // Count of times the user has been reported
       securityQuestions: userDataSaved.securityQuestions || [],  // Security questions associated with the account
@@ -374,40 +220,7 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
       basicTrialEndDate: userDataSaved.basicTrialEndDate || '',          // End date for basic trial
       proTrialEndDate: userDataSaved.proTrialEndDate || '',             // Emd date for pro trial
 
-      // Obituary Features
-      obituaryPageCredits: userDataSaved.obituaryPageCredits || 0,          // Credits for obituary pages
-      obituaryExtraSectionsLimit: userDataSaved.obituaryExtraSectionsLimit || 0, // Limit for extra sections in obituary pages
 
-      // Resume and Job Related Information
-      resumeCount: userDataSaved.resumeCount || 0,                         // Number of resumes uploaded
-      savedForLater: userDataSaved.savedForLater || 0,                      // Number of jobs saved for later
-      videoDurationLimit: userDataSaved.videoDurationLimit || 0,            // Video duration limit for uploads
-      customEndCardBool: userDataSaved.customEndCardBool || false,          // Whether custom end card is enabled for videos
-      relatedProductsBool: userDataSaved.relatedProductsBool || false,      // Whether related products are enabled
-      videoWatchHistory: userDataSaved.videoWatchHistory || [],            // History of videos watched used by the user
-      videoWatchTime: userDataSaved.videoWatchTime || 0,            // Video duration limit for uploads
-      videoWatchCount: userDataSaved.videoWatchCount || 0,            // Video videoWatchCount
-      videoInterest: userDataSaved.videoInterest || [],            // History of videos watched used by the user
-
-      // Analytics and Reporting Features
-      storeAdvanceAnalyticsBool: userDataSaved.storeAdvanceAnalyticsBool || false,  // Advanced analytics for store
-      videoAdvanceAnalyticsBool: userDataSaved.videoAdvanceAnalyticsBool || false,  // Advanced analytics for video posts
-      jobPostAdvanceAnalyticsBool: userDataSaved.jobPostAdvanceAnalyticsBool || false, // Advanced analytics for job posts
-      obituaryAdvanceAnalyticsBool: userDataSaved.obituaryAdvanceAnalyticsBool || false, // Advanced analytics for obituary pages
-      applicationAdvanceAnalyticsBool: userDataSaved.applicationAdvanceAnalyticsBool || false, // Advanced analytics for applications
-
-      // Boost History and Subscription Details
-      boostUsageHistory: userDataSaved.boostUsageHistory || [],            // History of boosts used by the user
-      subscriptionID: userDataSaved.subscriptionID || '',                  // Subscription ID for the user
-      recruiterID: userDataSaved.recruiterID || '',                        // Recruiter ID (if applicable)
-
-      // Obituary Report Count and Other User Stats
-      obituaryReportCount: userDataSaved.obituaryReportCount || 0,         // Count of reports on obituary pages
-
-      contactsCount: connectionCount || 0,                                 // Number of contacts the user has
-      videoResumeCount: videoResumeData.length || 0,                        // Number of video resumes uploaded
-      totalReelViews: userDataSaved.totalReelViews || 0,                   // Total views on the user's reels
-      totalGiftAmountReceived: totalGiftAmountReceived || 0,               // Total amount of gifts received
 
       // User Preferences and Settings
       notificationPreferences: userDataSaved.notificationPreferences || [], // User's notification preferences
@@ -421,10 +234,8 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
       tags: tagArray || "",                                              // Tags associated with the user
       jobInterest: jobArray || "",                                        // Job interests of the user
       publicProfile: userDataSaved.publicProfile || true,                 // Whether the profile is public
-      resumeCount: userDataSaved.resumes?.length || 0,                    // Number of resumes uploaded
-      savedForLater: userDataSaved.savedJobs?.length || 0,                // Number of jobs saved for later
-      userAppsCount: userDataSaved.userApps?.length || 0,                 // Number of job applications made
-      jobPostsCount: userDataSaved.jobPosts?.length || 0,                 // Number of job posts created
+
+      // Number of job posts created
       tagsCount: tagArray.length || 0,                                    // Number of tags the user has
       jobInterestCount: jobArray.length || 0,                             // Number of job interests
     };
@@ -434,7 +245,7 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
 
     const updatedUserData = {
       ...userData,
-      videoResumeData: sortedAndLimitedData
+     // videoResumeData: sortedAndLimitedData
     };
 
 
