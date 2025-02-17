@@ -29,10 +29,12 @@
             <p id="tripLink"></p>
         </div>
     
+    <div id="tripArea" style="display:none;">
         <h2>Your Trips</h2>
         <div id="tripList"></div>
         <button id="toggleCreateTripBtn">+ Create Trip</button>
-    
+    </div>
+
         <div id="inviteArea" style="display:none;">
             <h3>Invite Users</h3>
             <div id="inviteUsersContainer">
@@ -95,6 +97,9 @@
     
             if (tripsQuery.empty) {
                 document.getElementById("inviteArea").style.display = "block";
+                document.getElementById("tripArea").style.display = "none";
+            }else{
+                document.getElementById("tripArea").style.display = "block";
             }
     
             tripsQuery.forEach((tripDoc) => {
