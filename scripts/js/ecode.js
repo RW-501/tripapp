@@ -132,7 +132,7 @@ const encodeUserData = (userData, secretKey = '') => {
       console.log("Decoded User Data:", userData);
       return userData;
     } catch (error) {
-      console.error("Error decoding user data:", error);
+    //  console.error("Error decoding user data:", error);
       saveUserLoginState();
       return null;
     }

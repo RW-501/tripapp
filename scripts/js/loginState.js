@@ -52,7 +52,8 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
       console.log("User is null. Checking login state...");
       onAuthStateChanged(auth, (loggedInUser) => {
         if (loggedInUser) {
-         user = loggedInUser;;
+         user = loggedInUser;
+
         } else {
           console.log("No user logged in.");
         }
@@ -67,9 +68,12 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
 
 
 
-    //console.log(" User info: ", user);
+    console.log("User info: ", user);
+    let providerData; 
     // Fetch user provider data
-    const providerData = user.providerData.length > 0 ? user.providerData[0].providerId : 'unknown';
+  if(user.providerData){
+    providerData = user.providerData.length > 0 ? user.providerData[0].providerId : 'unknown';
+  }
 
     // Optional: Map providerId to a more human-readable format
     const providerMap = {
