@@ -115,7 +115,9 @@ body {
 #mainContainer {
     margin-bottom: 4rem;
 }
-
+#profileDropdown {
+    display: none;
+}
 
 /* ✅ Inputs */
 input, textarea {

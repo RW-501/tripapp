@@ -159,11 +159,11 @@ facebookProvider
   
       // Add the dropdown menu dynamically
       authSection.innerHTML = `
-        <div class="dropdown" id="profileDropdownArea" >
-          <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div class="dropdown" >
+          <button class="btn btn-outline-primary dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             ${userPhoto} 
           </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+          <div id="profileDropdown" class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
             <small id="nav-welcome-name">Welcome <name id="nav-user-name">${userName}</name></small>
             <hr>
             ${generateDropdownItems(dropdownMenuItems)}
@@ -174,7 +174,7 @@ facebookProvider
           </div>
         </div>`;
   
-      // Logout button logic
+      // Logout button logic 
       document.getElementById("logoutButton").addEventListener("click", () => {
         logoutUser();
       });
