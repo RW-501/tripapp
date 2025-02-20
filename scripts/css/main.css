@@ -110,6 +110,13 @@ body {
     height: 50px;
     scale: 1;
 }
+
+
+#mainContainer {
+    margin-bottom: 4rem;
+}
+
+
 /* ✅ Inputs */
 input, textarea {
     width: 100%;
