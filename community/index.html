@@ -6,68 +6,50 @@
     <title>TravelBank Community</title>
     <script type="module" src="/tripapp/scripts/js/main.js"></script>
     <link rel="stylesheet" type="text/css" href="/tripapp/scripts/css/main.css">
-
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
-        .post-input { margin-bottom: 20px; }
-        .post { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
-        .filters { margin-bottom: 10px; }
-
-        .community-container {
-    width: 50%;
-    margin: auto;
-    padding: 20px;
-}
-
-.post-input textarea {
-    width: 100%;
-    height: 60px;
-    padding: 10px;
-}
-
-.post-input button {
-    display: block;
-    margin-top: 10px;
-}
-
-.filters {
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0;
-}
-
-.posts {
-    margin-top: 20px;
-}
-
-.post {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-
+        .community-container { max-width: 600px; margin: auto; padding: 20px; }
+        .post-input { display: flex; flex-direction: column; gap: 10px; }
+        .post-input textarea { width: 100%; height: 80px; padding: 10px; }
+        .hidden-file-input { display: none; }
+        .upload-preview { cursor: pointer; text-align: center; padding: 10px; border: 1px dashed #ddd; }
+        .filters { display: flex; justify-content: space-between; margin-top: 15px; }
+        .post { border: 1px solid #ddd; padding: 10px; margin-top: 10px; border-radius: 5px; }
+        .post img, .post video { width: 100%; border-radius: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
     <h2>TravelBank Community</h2>
     
-    <div class="post-input">
-        <textarea id="newPost" placeholder="What's on your mind?"></textarea>
-        <input type="file" id="mediaFile">
-        <button id="handlePost">Post</button>
-    </div>
+    <div class="community-container">
+        <div class="post-input">
+            <select id="postTopic">
+                <option value="General">Select Topic</option>
+                <option value="Tips">Travel Tips</option>
+                <option value="Destinations">Destinations</option>
+                <option value="Guides">Guides</option>
+            </select>
+            <textarea id="newPost" placeholder="What's on your mind?"></textarea>
+            <div class="upload-preview" onclick="document.getElementById('mediaFile').click()">Upload Image/Video</div>
+            <input type="file" id="mediaFile" class="hidden-file-input" accept="image/*,video/*">
+            <button id="handlePost">Post</button>
+        </div>
 
-    <div class="filters">
-        <input type="text" id="searchQuery" placeholder="Search posts..." oninput="filterPosts()">
-        <select id="filter" id="filterPosts">
-            <option value="all">All Posts</option>
-            <option value="text">Text Posts</option>
-            <option value="media">Media Posts</option>
-        </select>
-    </div>
+        <div class="filters">
+            <input type="text" id="searchQuery" placeholder="Search posts...">
+            <select id="filterPosts">
+                <option value="all">All Posts</option>
+                <option value="text">Text Posts</option>
+                <option value="media">Media Posts</option>
+                <option value="video">Video Posts</option>
+                <option value="link">Link Posts</option>
+                <option value="poll">Polls</option>
+                <option value="system">System Posts</option>
+            </select>
+        </div>
 
-    <div id="posts"></div>
+        <div id="posts"></div>
+    </div>
     
     <script type="module">
         import {
@@ -85,46 +67,36 @@ googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
 facebookProvider, destinationAutoSuggest
         } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
     
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+        const postsContainer = document.getElementById("posts");
+        const newPostInput = document.getElementById("newPost");
+        const postTopic = document.getElementById("postTopic");
+        const mediaFileInput = document.getElementById("mediaFile");
+        const searchQuery = document.getElementById("searchQuery");
+        const filterPosts = document.getElementById("filterPosts");
+        
+        document.getElementById("handlePost").addEventListener("click", async () => {
+            if (!auth.currentUser) {
+                openPopupLogin();
 
+                return 
 
-const CommunityPage = () => {
-    const [posts, setPosts] = useState([]);
-    const [newPost, setNewPost] = useState("");
-    const [mediaFile, setMediaFile] = useState(null);
-    const [filter, setFilter] = useState("all");
-    const [searchQuery, setSearchQuery] = useState("");
-
-    useEffect(() => {
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            setPosts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
-
-        return () => unsubscribe();
-    }, []);
-
-    const handlePost = async () => {
-        if (!newPost.trim() && !mediaFile) return;
-
-        if(!userDataSaved.userID ){
-            return;
-        }
-
-        let mediaUrl = "";
-        if (mediaFile) {
-            const storageRef = ref(storage, `postMedia/${mediaFile.name}`);
-            const uploadTask = await uploadBytes(storageRef, mediaFile);
-            mediaUrl = await getDownloadURL(uploadTask.ref);
-        }
-        const userDataSaved = getUserData() || [];
-
-        await addDoc(collection(db, "posts"), {
-            userID:  userDataSaved.userID ,
-            tripID: '',
-            userName:  userDataSaved.displayName,
-            postAvatarImage:  userDataSaved.profilePicture || "",
+            }
+            const content = newPostInput.value.trim();
+            const topic = postTopic.value;
+            if (!content) return;
+            
+            let mediaUrl = "";
+            if (mediaFileInput.files.length > 0) {
+                const file = mediaFileInput.files[0];
+                const storageRef = ref(storage, `postMedia/${file.name}`);
+                await uploadBytes(storageRef, file);
+                mediaUrl = await getDownloadURL(storageRef);
+            }
+            
+            await addDoc(collection(db, "Posts"), {
+                userID: auth.currentUser.uid,
+                userName: auth.currentUser.displayName || "Anonymous",
+                postAvatarImage:  userDataSaved.profilePicture || "",
             postTitle: '',
             content: newPost,
             mediaUrl,
@@ -134,87 +106,30 @@ const CommunityPage = () => {
             commentsCount: 0,
             timeStamp: serverTimestamp(),
             status: 'active',
-            engament: 0,
+            engagment: 0,
             isTripPost: true,
             isPublic: true,
-            topic: "Travel Tips" // Categorization
-        });
-
-        setNewPost("");
-        setMediaFile(null);
-    };
-
-
-    document.getElementById("handlePost").addEventListener("click", async function () {
-
-    if (!auth) {
-        openPopupLogin();
-        return;
-    }
-    handlePost(auth);
-
-});
-document.getElementById("filterPosts").addEventListener("onChange", async function () {
-
-filterPosts();
-
-});
-
-window.handlePost = handlePost;
-
-    const filteredPosts = posts.filter(post =>
-        (filter === "all" || post.postType === filter) &&
-        (post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (post.topic && post.topic.toLowerCase().includes(searchQuery.toLowerCase())))
-    );
-
-    return (
-        <div className="community-container">
-            <h2>Community Forum</h2>
+            topic: topic // Categorization
+            });
             
-            <div className="post-input">
-                <textarea 
-                    placeholder="What's on your mind?" 
-                    value={newPost} 
-                    onChange={(e) => setNewPost(e.target.value)}
-                />
-                <input type="file" onChange={(e) => setMediaFile(e.target.files[0])} />
-                <button onClick={handlePost}>Post</button>
-            </div>
-
-            <div className="filters">
-                <input 
-                    type="text" 
-                    placeholder="Search posts..." 
-                    value={searchQuery} 
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <select onChange={(e) => setFilter(e.target.value)}>
-                    <option value="all">All Posts</option>
-                    <option value="text">Text Posts</option>
-                    <option value="media">Media Posts</option>
-                    <option value="video">Video Posts</option>
-                    <option value="link">Link Posts</option>
-                    <option value="poll">Polls</option>
-                    <option value="system">System Posts</option>
-                </select>
-            </div>
-
-            <div className="posts">
-                {filteredPosts.map(post => (
-                    <div key={post.id} className="post">
-                        <h4>{post.userName}</h4>
-                        <p>{post.content}</p>
-                        {post.mediaUrl && <img src={post.mediaUrl} alt="Post Media" />}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-export default CommunityPage;
-
+            newPostInput.value = "";
+            mediaFileInput.value = "";
+        });
+        
+        onSnapshot(query(collection(db, "Posts"), orderBy("timeStamp", "desc")), (snapshot) => {
+            postsContainer.innerHTML = "";
+            snapshot.docs.forEach(doc => {
+                const post = doc.data();
+                const postElement = document.createElement("div");
+                postElement.classList.add("post");
+                postElement.innerHTML = `
+                    <h4>${post.userName} - ${post.postTitle}</h4>
+                    <p>${post.content}</p>
+                    ${post.mediaUrl ? (post.postType === "media" ? `<img src="${post.mediaUrl}" />` : `<video controls src="${post.mediaUrl}"></video>`) : ""}
+                `;
+                postsContainer.appendChild(postElement);
+            });
+        });
     </script>
 </body>
 </html>
