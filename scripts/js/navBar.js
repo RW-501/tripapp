@@ -109,7 +109,7 @@ facebookProvider
   function handleAuthStateChanged(user) {
     const authSection = document.getElementById("authSection");
     let lastUpdateDate;
-    
+
     if (user) {
       const userDataSaved = getUserData() || {};
       console.log("userDataSaved:", userDataSaved);
@@ -159,7 +159,7 @@ facebookProvider
   
       // Add the dropdown menu dynamically
       authSection.innerHTML = `
-        <div class="dropdown">
+        <div class="dropdown" id="profileDropdownArea" >
           <button class="btn btn-outline-primary dropdown-toggle" type="button" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             ${userPhoto} 
           </button>
@@ -218,6 +218,29 @@ facebookProvider
   document.addEventListener('click', handleOutsideClick);
   document.addEventListener('touchstart', handleOutsideClick);
   
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const profileDropdown = document.getElementById("profileDropdown");
+    const profileDropdownArea = document.getElementById("profileDropdownArea");
+
+    profileDropdown.addEventListener("click", function (event) {
+        // Toggle visibility
+        profileDropdownArea.style.display = 
+            (profileDropdownArea.style.display === "none" || profileDropdownArea.style.display === "") 
+            ? "block" 
+            : "none";
+
+        // Prevent click event from propagating to document
+        event.stopPropagation();
+    });
+
+    // Click outside to close dropdown
+    document.addEventListener("click", function (event) {
+        if (!profileDropdownArea.contains(event.target) && !profileDropdown.contains(event.target)) {
+            profileDropdownArea.style.display = "none";
+        }
+    });
+});
   function handleOutsideClick(event) {
     const navBar = document.getElementById('Main-Nav_bar');
     const navCollapse = document.getElementById('navbarNav');
