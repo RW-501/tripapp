@@ -50,19 +50,19 @@ facebookProvider
     // JSON Data for Nav Items with aria-label
     const navItems = [
       {
-        href: "/community",
+        href: "/tripapp/community",
         icon: "fa fa-users",
         text: "Community",
         ariaLabel: "Go to community page",
       },
       {
-        href: "/mytrips",
+        href: "/tripapp/mytrips",
         icon: "fa fa-map-marker-alt",
         text: "My Trips",
         ariaLabel: "Go to My Trips page",
       },
       {
-        href: "/trip",
+        href: "/tripapp/trip",
         icon: "fa fa-briefcase",
         text: "Trip",
         ariaLabel: "Go to Trip page",
