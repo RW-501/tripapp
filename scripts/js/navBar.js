@@ -195,7 +195,7 @@ facebookProvider
   
   // Dropdown toggle and close logic encapsulated into a function
   function setupDropdownToggle() {
-    const dropdownToggleButton = document.getElementById("profileDropdown");
+    const dropdownToggleButton = document.getElementById("profileDropdownArea");
     const dropdownMenu = document.querySelector(".dropdown-menu");
   
     if (dropdownMenu) {
