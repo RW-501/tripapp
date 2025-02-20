@@ -116,7 +116,9 @@ body {
     margin-bottom: 4rem;
 }
 
-
+.trip_inputs {
+    display: grid;
+}
 .show {
     display: block !important;
 }
