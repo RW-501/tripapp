@@ -277,7 +277,7 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
       jobInterestCount: jobArray.length || 0,                             // Number of job interests
     };
 
-    //console.log(" User userData: ", userData);
+    console.log(" User userData: ", userData);
 
 
     const updatedUserData = {
@@ -290,7 +290,7 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
     console.log("user.uid: ",user.uid);
     console.log("userData.userID: ",userData.userID);
 
-    const userDocRef = doc(db, "Users", userDataSaved.userID);
+    const userDocRef = doc(db, "Users", userData.userID);
     await setDoc(userDocRef, userData, {
       merge: true
     });
@@ -319,14 +319,8 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
     const lastPage = document.referrer; // Get the URL of the last visited page
 
     if (isNewUser) {
+      window.location.href = "/u/";
 
-      if (lastPage && lastPage.includes("obituaries")) {
-        // Redirect to the obituaries page
-        window.location.href = "/obituaries";
-      } else {
-        // Redirect to the profile page
-        window.location.href = "/u/";
-      }
     }
 
 
