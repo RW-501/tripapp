@@ -288,11 +288,6 @@ console.log(trips); // This will contain all trips the user is part of
     // Event Listener: Generate Invite Code
     generateInviteCodeBtn.addEventListener("click", generateInviteCode);
 
-    // Function to show toast messages
-    function showToast(message) {
-        alert(message); // Replace with a better toast system if needed
-    }
-
     // Expose the invite function globally
     window.invite = invite;
 });
@@ -360,11 +355,7 @@ document.addEventListener("click", function (event) {
     }
 });
 
-    
-        function showToast(message) {
-            alert(message); // Replace this with a proper toast notification
-        }
-    
+
        
        if(userId){
         loadTrips(userId);
