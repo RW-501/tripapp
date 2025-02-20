@@ -118,7 +118,7 @@ body {
 
 
 .show {
-    display:block;
+    display: block !important;
 }
 
 /* ✅ Inputs */
