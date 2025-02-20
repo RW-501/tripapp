@@ -330,10 +330,10 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
     console.error("Failed to set user document:", error);
 
     try {
-      console.log("user.uid: ",user.uid);
+      console.log(" userData.userID: ", userData.userID);
 
       // Attempt to retrieve the latest user data from the database
-      const userDocRef = doc(db, "Users", user.uid);
+      const userDocRef = doc(db, "Users", userData.userID);
       const userSnapshot = await getDoc(userDocRef);
 
       if (userSnapshot.exists()) {
