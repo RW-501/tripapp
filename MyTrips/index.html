@@ -8,7 +8,10 @@
     <link rel="stylesheet" type="text/css" href="/tripapp/scripts/css/main.css">
 
     <style>
-
+    
+    #mainContainer { padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -16,25 +19,25 @@
     <header id="dynamicHeader"></header>
     <main id="mainContainer">
 
-    <div class="container">
-        <div id="createTripArea" style="display:block;">
-            <h2>Create a Trip</h2>
-            <input type="text" id="tripName" placeholder="Trip Name">
-            <input type="text" id="destination" placeholder="Destination">
-            <input type="date" id="startDate">
-            <input type="date" id="endDate">
-            <div class="trip_inputs" >
-                <label>Dates Not Available </label>
-                <input type="checkbox" id="noDates"> 
+        <div class="container">
+            <div id="createTripArea" style="display:block;">
+                <h2>Create a Trip</h2>
+                <input type="text" id="tripName" placeholder="Trip Name">
+                <input type="text" id="destination" placeholder="Destination">
+                <input type="date" id="startDate">
+                <input type="date" id="endDate">
+                <div class="trip_inputs" >
+                    <label>Dates Not Available </label>
+                    <input type="checkbox" id="noDates"> 
+                </div>
+                <div class="trip_inputs" >
+                <label>Description</label>
+                <textarea type="text" id="description"></textarea>
+                </div>
+                
+                <button id="createTripBtn">Create Trip</button>
+                <p id="tripLink"></p>
             </div>
-            <div class="trip_inputs" >
-            <label>Description</label>
-            <textarea type="text" id="description"></textarea>
-            </div>
-            
-            <button id="createTripBtn">Create Trip</button>
-            <p id="tripLink"></p>
-        </div>
     
     <div id="tripArea" style="display:none;">
         <h2>Your Trips</h2>
