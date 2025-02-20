@@ -292,9 +292,16 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
     console.log("userData.userID: ",userData.userID);
 
     const userDocRef = doc(db, "Users", userData.userID);
-    await setDoc(userDocRef, userData, {
-      merge: true
-    });
+    const userSnapshot = await getDoc(userDocRef);
+    
+    if (userSnapshot.exists()) {
+      // Document exists, update it
+      await setDoc(userDocRef, userData, { merge: true });
+    } else {
+      // Document does not exist, create it
+      await setDoc(userDocRef, userData);
+    }
+    
     const userDataEcode = setUserData(updatedUserData);
     localStorage.setItem('userData', userDataEcode);
 
