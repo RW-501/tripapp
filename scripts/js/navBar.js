@@ -108,12 +108,16 @@ facebookProvider
   // Helper function to handle authentication state changes
   function handleAuthStateChanged(user) {
     const authSection = document.getElementById("authSection");
+    let lastUpdateDate;
+    
     if (user) {
       const userDataSaved = getUserData() || {};
       console.log("userDataSaved:", userDataSaved);
 
       const lastUpdateTimestamp = userDataSaved.lastUpdateTime;
-      if (lastUpdateTimestamp) const lastUpdateDate = new Date((lastUpdateTimestamp.seconds * 1000) + (lastUpdateTimestamp.nanoseconds / 1000000));
+      if (lastUpdateTimestamp){
+        lastUpdateDate = new Date((lastUpdateTimestamp.seconds * 1000) + (lastUpdateTimestamp.nanoseconds / 1000000));
+      } 
       
 
       if (!lastUpdateDate || (new Date() - lastUpdateDate) > 30 * 60 * 1000) {
