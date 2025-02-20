@@ -69,9 +69,10 @@ const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) =>
 
 
     console.log("User info: ", user);
-    let providerData; 
+    let providerData = []; 
+
     // Fetch user provider data
-  if(user.providerData){
+  if(user.providerData.length > 0){
     providerData = user.providerData.length > 0 ? user.providerData[0].providerId : 'unknown';
   }
 
