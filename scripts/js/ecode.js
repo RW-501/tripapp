@@ -91,7 +91,7 @@ const encodeUserData = (userData, secretKey = '') => {
         const updatedData = { ...currentData, ...userData };
         
    
-     //   console.log("updatedData Data:", updatedData);
+        console.log("updatedData Data:", updatedData);
   
   
     // Encode user data
@@ -112,7 +112,7 @@ const encodeUserData = (userData, secretKey = '') => {
     try {
       const encodedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (!encodedData) {
-        //console.error("No data found in localStorage");
+        console.error("No data found in localStorage");
         return null;
       }
   
@@ -129,10 +129,11 @@ const encodeUserData = (userData, secretKey = '') => {
   
       // Parse the JSON string
       const userData = JSON.parse(jsonString);
-     // console.log("Decoded User Data:", userData);
+      console.log("Decoded User Data:", userData);
       return userData;
     } catch (error) {
       console.error("Error decoding user data:", error);
+      saveUserLoginState();
       return null;
     }
   }

@@ -48,7 +48,17 @@ facebookProvider
 const saveUserLoginState = async (user, isNewUser = false, joinedDate = null) => {
   try {
 
-
+    if (!user) {
+      console.log("User is null. Checking login state...");
+      onAuthStateChanged(auth, (loggedInUser) => {
+        if (loggedInUser) {
+         user = loggedInUser;;
+        } else {
+          console.log("No user logged in.");
+        }
+      });
+    }
+    
     const popupLoginContainer = document.getElementById("popup-login-container");
 
     if (popupLoginContainer) {
