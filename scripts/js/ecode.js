@@ -108,7 +108,7 @@ const encodeUserData = (userData, secretKey = '') => {
   
   window.setUserData = setUserData;
   
-  function getUserData() {
+  function getUserData(userData) {
     try {
       const encodedData = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (!encodedData) {
@@ -133,7 +133,7 @@ const encodeUserData = (userData, secretKey = '') => {
       return userData;
     } catch (error) {
     //  console.error("Error decoding user data:", error);
-      saveUserLoginState();
+      saveUserLoginState(userData);
       return null;
     }
   }
