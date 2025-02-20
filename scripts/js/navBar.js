@@ -160,7 +160,7 @@ facebookProvider
       // Add the dropdown menu dynamically
       authSection.innerHTML = `
         <div class="dropdown" >
-          <button class="btn btn-outline-primary dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button  id="profileDropdownArea" class="btn btn-outline-primary dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             ${userPhoto} 
           </button>
           <div id="profileDropdown" class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
