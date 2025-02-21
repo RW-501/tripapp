@@ -115,6 +115,7 @@ facebookProvider, destinationAutoSuggest
             }
             const content = newPostInput.value.trim();
             const topic = postTopic.value;
+            const title = postTitleInput.value.trim();
             if (!content) return;
             
             let mediaUrl = "";
@@ -123,7 +124,7 @@ facebookProvider, destinationAutoSuggest
                 userID: auth.currentUser.uid,
                 userName: auth.currentUser.displayName || "Anonymous",
                 postAvatarImage:  userDataSaved.profilePicture || "",
-                postTitle: '',
+                postTitle: title,
             content: newPost,
             mediaUrl,
             postType: mediaFile ? "media" : "text",
