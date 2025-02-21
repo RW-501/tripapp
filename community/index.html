@@ -80,10 +80,24 @@ facebookProvider, destinationAutoSuggest
         const mediaFileInput = document.getElementById("mediaFile");
         const searchQuery = document.getElementById("searchQuery");
         const filterPosts = document.getElementById("filterPosts");
+        const postTitleInput = document.getElementById("postTitle");
+        const postType = document.getElementById("postType");
+        const previewContainer = document.getElementById("previewContainer");
 
         document.getElementById("upload-preview").addEventListener("click", async () => {
             document.getElementById('mediaFile').click()
         });
+
+        mediaFileInput.addEventListener("change", () => {
+            previewContainer.innerHTML = "";
+            if (mediaFileInput.files.length > 0) {
+                const file = mediaFileInput.files[0];
+                const fileURL = URL.createObjectURL(file);
+                const preview = file.type.startsWith("image") ? `<img src="${fileURL}" />` : `<video controls src="${fileURL}"></video>`;
+                previewContainer.innerHTML = preview;
+            }
+        });
+
 
         document.getElementById("handlePost").addEventListener("click", async () => {
             if (!auth.currentUser) {
@@ -95,12 +109,6 @@ facebookProvider, destinationAutoSuggest
             if (!content) return;
             
             let mediaUrl = "";
-            if (mediaFileInput.files.length > 0) {
-                const file = mediaFileInput.files[0];
-                const storageRef = ref(storage, `postMedia/${file.name}`);
-                await uploadBytes(storageRef, file);
-                mediaUrl = await getDownloadURL(storageRef);
-            }
             
             await addDoc(collection(db, "Posts"), {
                 userID: auth.currentUser.uid,
@@ -122,7 +130,9 @@ facebookProvider, destinationAutoSuggest
             });
             
             newPostInput.value = "";
+            postTitleInput.value = "";
             mediaFileInput.value = "";
+            previewContainer.innerHTML = "";
         });
         
         onSnapshot(query(collection(db, "Posts"), orderBy("timeStamp", "desc")), (snapshot) => {
