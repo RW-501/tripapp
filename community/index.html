@@ -23,6 +23,13 @@
     
     <div class="community-container">
         <div class="post-input">
+            <input type="text" id="postTitle" placeholder="Post Title">
+            <select id="postType">
+                <option value="text">Text Post</option>
+                <option value="media">Image/Video Post</option>
+                <option value="poll">Poll Post</option>
+            </select>
+    
             <select id="postTopic">
                 <option value="General">Select Topic</option>
                 <option value="Tips">Travel Tips</option>
@@ -30,7 +37,7 @@
                 <option value="Guides">Guides</option>
             </select>
             <textarea id="newPost" placeholder="What's on your mind?"></textarea>
-            <div class="upload-preview" onclick="document.getElementById('mediaFile').click()">Upload Image/Video</div>
+            <div class="upload-preview" id="upload-preview">Upload Image/Video</div>
             <input type="file" id="mediaFile" class="hidden-file-input" accept="image/*,video/*">
             <button id="handlePost">Post</button>
         </div>
@@ -73,13 +80,15 @@ facebookProvider, destinationAutoSuggest
         const mediaFileInput = document.getElementById("mediaFile");
         const searchQuery = document.getElementById("searchQuery");
         const filterPosts = document.getElementById("filterPosts");
-        
+
+        document.getElementById("upload-preview").addEventListener("click", async () => {
+            document.getElementById('mediaFile').click()
+        });
+
         document.getElementById("handlePost").addEventListener("click", async () => {
             if (!auth.currentUser) {
                 openPopupLogin();
-
                 return 
-
             }
             const content = newPostInput.value.trim();
             const topic = postTopic.value;
@@ -97,7 +106,7 @@ facebookProvider, destinationAutoSuggest
                 userID: auth.currentUser.uid,
                 userName: auth.currentUser.displayName || "Anonymous",
                 postAvatarImage:  userDataSaved.profilePicture || "",
-            postTitle: '',
+                postTitle: '',
             content: newPost,
             mediaUrl,
             postType: mediaFile ? "media" : "text",
