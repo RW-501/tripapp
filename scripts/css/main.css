@@ -116,7 +116,10 @@ body {
     margin-bottom: 4rem;
 }
 
-.trip_inputs {
+.d_flex {
+    display: flex;
+}
+.d_grid {
     display: grid;
 }
 .show {
