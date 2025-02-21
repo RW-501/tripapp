@@ -223,7 +223,7 @@ facebookProvider
     const profileDropdown = document.getElementById("profileDropdown");
     const profileDropdownArea = document.getElementById("profileDropdownArea");
 
-    profileDropdown.addEventListener("click", function (event) {
+    profileDropdown?.addEventListener("click", function (event) {
         // Toggle visibility
         profileDropdownArea.style.display = 
             (profileDropdownArea.style.display === "none" || profileDropdownArea.style.display === "") 
