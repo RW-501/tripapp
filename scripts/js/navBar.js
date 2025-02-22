@@ -235,11 +235,16 @@ facebookProvider
     });
 
     // Click outside to close dropdown
-    document.addEventListener("click", function (event) {
-        if (!profileDropdownArea.contains(event.target) && !profileDropdown.contains(event.target)) {
-            profileDropdownArea.style.display = "none";
-        }
-    });
+    if (profileDropdownArea && profileDropdown) {
+      document.addEventListener("click", function (event) {
+          if (!profileDropdownArea.contains(event.target) && !profileDropdown.contains(event.target)) {
+              profileDropdownArea.style.display = "none";
+          }
+      });
+  }
+
+
+
 });
   function handleOutsideClick(event) {
     const navBar = document.getElementById('Main-Nav_bar');
