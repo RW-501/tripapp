@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Trip - TravelBank</title>
+    <script type="module" src="/tripapp/scripts/js/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="/tripapp/scripts/css/main.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
+        .trip-container { max-width: 700px; margin: auto; padding: 20px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .hidden-file-input { display: none; }
+        .upload-preview { cursor: pointer; text-align: center; padding: 10px; border: 1px dashed #ddd; }
+        .media-preview img, .media-preview video { width: 100%; margin-top: 10px; border-radius: 5px; }
+        .save-btn { background-color: #007bff; color: white; padding: 10px; border: none; cursor: pointer; }
+        .save-btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+
+
+    <header id="dynamicHeader"></header>
+    <main id="mainContainer">
+
+
+    <h2>Edit Your Trip</h2>
+    <div class="trip-container">
+        <div class="input-group">
+            <label for="tripTitle">Trip Title</label>
+            <input type="text" id="tripTitle" placeholder="Enter trip title">
+        </div>
+        
+        <div class="input-group">
+            <label for="tripDescription">Trip Description</label>
+            <textarea id="tripDescription" placeholder="Describe your trip..."></textarea>
+        </div>
+        
+        <div class="input-group">
+            <label>Upload Media</label>
+            <div class="upload-preview" onclick="document.getElementById('tripMedia').click()">Click to Upload Image/Video</div>
+            <input type="file" id="tripMedia" class="hidden-file-input" accept="image/*,video/*">
+            <div class="media-preview" id="mediaPreview"></div>
+        </div>
+        
+        <button class="save-btn" id="saveTrip">Save Changes</button>
+    </div>
+
+</main>
+
+<footer id="dynamicFooter"></footer>
+
+    <script type="module">
+        import {
+            db, doc, getDoc, updateDoc,
+    auth, deleteDoc,  userId, getStorage, ref, uploadBytes, 
+    getDownloadURL, limit, arrayUnion, RecaptchaVerifier, increment,
+     arrayRemove, signInWithPhoneNumber, query, setDoc, 
+     addDoc, signInAnonymously, orderBy, onAuthStateChanged, 
+     uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
+     GoogleAuthProvider, startAfter, OAuthProvider, signOut,
+      getFirestore, serverTimestamp,  userInfo,
+createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
+where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
+googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
+facebookProvider, destinationAutoSuggest
+        } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
+    
+        const tripId = "sampleTripId"; // This should be dynamically set
+        const tripTitle = document.getElementById("tripTitle");
+        const tripDescription = document.getElementById("tripDescription");
+        const tripMedia = document.getElementById("tripMedia");
+        const mediaPreview = document.getElementById("mediaPreview");
+        const saveTrip = document.getElementById("saveTrip");
+        
+        tripMedia.addEventListener("change", () => {
+            const file = tripMedia.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    mediaPreview.innerHTML = file.type.startsWith("video") ? 
+                        `<video controls src="${reader.result}"></video>` : 
+                        `<img src="${reader.result}" />`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        saveTrip.addEventListener("click", async () => {
+            if (!auth.currentUser) {
+                alert("Please log in to save changes");
+                return;
+            }
+            
+            let mediaUrl = "";
+            if (tripMedia.files.length > 0) {
+                const file = tripMedia.files[0];
+                const storageRef = ref(storage, `tripMedia/${file.name}`);
+                await uploadBytes(storageRef, file);
+                mediaUrl = await getDownloadURL(storageRef);
+            }
+            
+            await updateDoc(doc(db, "Trips", tripId), {
+                title: tripTitle.value,
+                description: tripDescription.value,
+                mediaUrl,
+                updatedAt: serverTimestamp()
+            });
+            
+            alert("Trip updated successfully!");
+        });
+    </script>
+</body>
+</html>
