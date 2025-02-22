@@ -242,10 +242,10 @@ facebookProvider
           }
       });
   }
-
-
-
 });
+
+
+
   function handleOutsideClick(event) {
     const navBar = document.getElementById('Main-Nav_bar');
     const navCollapse = document.getElementById('navbarNav');
