@@ -114,6 +114,12 @@ async function loadTripData() {
             if (tripData.coverPhoto) {
                 mediaPreview.innerHTML = `<img src="${tripData.coverPhoto}" />`;
             }
+
+            // Generate and display the join trip link
+            const userId = auth.currentUser?.uid || "guest";
+            const joinTripLink = `https://rw-501.github.io/tripapp/join/?id=${tripId}&u=${userId}`;
+            joinTripLinkText.value = joinTripLink;
+            joinTripLinkContainer.style.display = "block";
         } else {
             showToast("Trip not found.");
         }
