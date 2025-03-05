@@ -78,42 +78,80 @@ facebookProvider, destinationAutoSuggest
         const mediaPreview = document.getElementById("mediaPreview");
         const saveTrip = document.getElementById("saveTrip");
         
-        tripMedia.addEventListener("change", () => {
-            const file = tripMedia.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    mediaPreview.innerHTML = file.type.startsWith("video") ? 
-                        `<video controls src="${reader.result}"></video>` : 
-                        `<img src="${reader.result}" />`;
-                };
-                reader.readAsDataURL(file);
+// Fetch trip data and populate fields
+async function loadTripData() {
+    if (!tripId) {
+        showToast("Invalid trip ID.");
+        return;
+    }
+
+    try {
+        const tripRef = doc(db, "Trips", tripId);
+        const tripSnap = await getDoc(tripRef);
+
+        if (tripSnap.exists()) {
+            const tripData = tripSnap.data();
+            tripTitle.value = tripData.tripName || "";
+            tripDescription.value = tripData.description || "";
+
+            // Show existing media preview if available
+            if (tripData.coverPhoto) {
+                mediaPreview.innerHTML = `<img src="${tripData.coverPhoto}" />`;
             }
+        } else {
+            showToast("Trip not found.");
+        }
+    } catch (error) {
+        console.error("Error fetching trip data:", error);
+    }
+}
+
+// Handle media file preview
+tripMedia.addEventListener("change", () => {
+    const file = tripMedia.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            mediaPreview.innerHTML = file.type.startsWith("video") ?
+                `<video controls src="${reader.result}"></video>` :
+                `<img src="${reader.result}" />`;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Save changes to Firestore
+saveTrip.addEventListener("click", async () => {
+    if (!auth.currentUser) {
+        showToast("Please log in to save changes.");
+        return;
+    }
+
+    let mediaUrl = "";
+    if (tripMedia.files.length > 0) {
+        const file = tripMedia.files[0];
+        const storageRef = ref(storage, `tripMedia/${tripId}/${file.name}`);
+        await uploadBytes(storageRef, file);
+        mediaUrl = await getDownloadURL(storageRef);
+    }
+
+    try {
+        await updateDoc(doc(db, "Trips", tripId), {
+            tripName: tripTitle.value,
+            description: tripDescription.value,
+            coverPhoto: mediaUrl || null, // Keep previous image if no new upload
+            updatedAt: serverTimestamp()
         });
-        
-        saveTrip.addEventListener("click", async () => {
-            if (!auth.currentUser) {
-                alert("Please log in to save changes");
-                return;
-            }
-            
-            let mediaUrl = "";
-            if (tripMedia.files.length > 0) {
-                const file = tripMedia.files[0];
-                const storageRef = ref(storage, `tripMedia/${file.name}`);
-                await uploadBytes(storageRef, file);
-                mediaUrl = await getDownloadURL(storageRef);
-            }
-            
-            await updateDoc(doc(db, "Trips", tripId), {
-                title: tripTitle.value,
-                description: tripDescription.value,
-                mediaUrl,
-                updatedAt: serverTimestamp()
-            });
-            
-            alert("Trip updated successfully!");
-        });
+
+        showToast("Trip updated successfully!");
+    } catch (error) {
+        console.error("Error updating trip:", error);
+        showToast("Failed to update trip.");
+    }
+});
+
+// Load trip data on page load
+loadTripData();
     </script>
 </body>
 </html>
