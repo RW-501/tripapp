@@ -301,8 +301,12 @@ async function loadTripData() {
         const tripRef = doc(db, "Trips", tripId);
         const tripSnap = await getDoc(tripRef);
 
+        console.log("trip info: ",tripData);
+
         if (tripSnap.exists()) {
             const tripData = tripSnap.data();
+            console.log("trip info: ",tripData);
+
             tripTitle.value = tripData.tripName || "";
             tripDescription.value = tripData.description || "";
             tripStartDate.value = tripData.startDate || "";
