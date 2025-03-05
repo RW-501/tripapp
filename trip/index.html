@@ -418,6 +418,10 @@ async function loadTripData() {
     }
 
     try {
+        console.log("trip ??????????: ");
+        const createdTripsQuery = query(collection(db, "Trips"), where("createdBy", "==", userId));
+        const createdTripsSnapshot = await getDocs(createdTripsQuery);
+
         const tripRef = doc(db, "Trips", tripId);
         console.log("tripRef:", tripRef);
 
@@ -628,12 +632,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     showSection("view_trip"); // Show default section on load
-});
-
 
 
 // Load trip data on page load
 loadTripData();
+
+});
+
+
+
     </script>
 </body>
 </html>
