@@ -21,29 +21,142 @@
     <header id="dynamicHeader"></header>
     <main id="mainContainer">
 
-    <section>
-    <h2>Edit Your Trip</h2>
-    <div class="trip-container">
-        <div class="input-group">
-            <label for="tripTitle">Trip Title</label>
-            <input type="text" id="tripTitle" placeholder="Enter trip title">
-        </div>
+        <section>
+            <h2>Edit Your Trip</h2>
+            <div class="trip-container">
         
-        <div class="input-group">
-            <label for="tripDescription">Trip Description</label>
-            <textarea id="tripDescription" placeholder="Describe your trip..."></textarea>
-        </div>
+                <!-- Trip Title -->
+                <div class="input-group">
+                    <label for="tripTitle">Trip Title</label>
+                    <input type="text" id="tripTitle" placeholder="Enter trip title">
+                </div>
         
-        <div class="input-group">
-            <label>Upload Media</label>
-            <div class="upload-preview" onclick="document.getElementById('tripMedia').click()">Click to Upload Image/Video</div>
-            <input type="file" id="tripMedia" class="hidden-file-input" accept="image/*,video/*">
-            <div class="media-preview" id="mediaPreview"></div>
-        </div>
+                <!-- Trip Description -->
+                <div class="input-group">
+                    <label for="tripDescription">Trip Description</label>
+                    <textarea id="tripDescription" placeholder="Describe your trip..."></textarea>
+                </div>
         
-        <button class="save-btn" id="saveTrip">Save Changes</button>
-    </div>
-    </section>
+                <!-- Start & End Date -->
+                <div class="input-group">
+                    <label for="tripStartDate">Start Date</label>
+                    <input type="date" id="tripStartDate">
+                </div>
+        
+                <div class="input-group">
+                    <label for="tripEndDate">End Date</label>
+                    <input type="date" id="tripEndDate">
+                </div>
+        
+                <!-- Location -->
+                <div class="input-group">
+                    <label for="tripLocation">Location</label>
+                    <input type="text" id="tripLocation" placeholder="Destination (e.g., Paris, France)">
+                </div>
+                <div class="input-group">
+                    <label for="tripMapLink">Google Maps Link</label>
+                    <input type="url" id="tripMapLink" placeholder="Enter Google Maps link">
+                </div>
+        
+                <!-- Flight Info -->
+                <h3>Flight Information</h3>
+                <div class="input-group">
+                    <label for="flightAirline">Airline</label>
+                    <input type="text" id="flightAirline" placeholder="Airline name">
+                </div>
+                <div class="input-group">
+                    <label for="flightNumber">Flight Number</label>
+                    <input type="text" id="flightNumber" placeholder="Flight number">
+                </div>
+                <div class="input-group">
+                    <label for="flightDeparture">Departure</label>
+                    <input type="datetime-local" id="flightDeparture">
+                </div>
+                <div class="input-group">
+                    <label for="flightArrival">Arrival</label>
+                    <input type="datetime-local" id="flightArrival">
+                </div>
+
+                <div id="flightsContainer">
+                    <button id="addFlight">+ Add Flight</button>
+                </div>
+        
+
+
+                <!-- Hotel/Stay Info -->
+                <h3>Hotel / Stay Information</h3>
+                <div class="input-group">
+                    <label for="hotelName">Hotel Name</label>
+                    <input type="text" id="hotelName" placeholder="Hotel or Airbnb name">
+                </div>
+                <div class="input-group">
+                    <label for="hotelCheckIn">Check-in</label>
+                    <input type="date" id="hotelCheckIn">
+                </div>
+                <div class="input-group">
+                    <label for="hotelCheckOut">Check-out</label>
+                    <input type="date" id="hotelCheckOut">
+                </div>
+                <div class="input-group">
+                    <label for="hotelBookingDetails">Booking Details</label>
+                    <textarea id="hotelBookingDetails" placeholder="Confirmation number, reservation details..."></textarea>
+                </div>
+
+                <div id="hotelsContainer">
+                    <button id="addHotel">+ Add Hotel</button>
+                </div>
+        
+                <!-- Events & Itinerary -->
+                <h3>Events & Itinerary</h3>
+                <div id="eventList">
+                    <button id="addEvent">+ Add Event</button>
+                </div>
+        
+                <!-- Notes -->
+                <h3>Notes</h3>
+                <div class="input-group">
+                    <textarea id="tripNotes" placeholder="Add any notes about the trip..."></textarea>
+                </div>
+        
+                <!-- Media Upload -->
+                <h3>Upload Media</h3>
+                <div class="input-group">
+                    <label>Upload Photos/Videos</label>
+                    <div class="upload-preview" onclick="document.getElementById('tripMedia').click()">Click to Upload</div>
+                    <input type="file" id="tripMedia" class="hidden-file-input" accept="image/*,video/*">
+                    <div class="media-preview" id="mediaPreview"></div>
+                </div>
+        
+                <!-- Invite & Sharing -->
+                <h3>Invite & Sharing</h3>
+                <div class="input-group">
+                    <label for="joinTripLinkText">Share This Trip:</label>
+                    <div class="input-group">
+                        <input type="text" id="joinTripLinkText" readonly>
+                        <button id="copyJoinLinkBtn">Copy Link</button>
+                    </div>
+                </div>
+        
+                <!-- Voting Settings -->
+                <h3>Voting Settings</h3>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="enableVoting">
+                        Allow others to vote on trip plans
+                    </label>
+                </div>
+        
+                <!-- Contributors -->
+                <h3>Contributors</h3>
+                <div id="contributorsList">
+                    <button id="addContributor">+ Add Contributor</button>
+                </div>
+        
+                <button class="save-btn" id="saveTrip">Save Changes</button>
+        
+            </div>
+        </section>
+        
 
     <section>
     <div id="joinTripLinkContainer" style="display: none; margin-top: 20px;">
@@ -82,17 +195,203 @@ facebookProvider, destinationAutoSuggest
         return urlParams.get('id');
         }
 
+
+
+        const flightsContainer = document.getElementById("flightsContainer");
+const hotelsContainer = document.getElementById("hotelsContainer");
+const addFlightBtn = document.getElementById("addFlight");
+const addHotelBtn = document.getElementById("addHotel");
+
+// Function to create a new flight input set
+function addFlight(flightData = {}) {
+    const flightDiv = document.createElement("div");
+    flightDiv.classList.add("flight-entry");
+    flightDiv.innerHTML = `
+        <div class="input-group">
+            <label>Airline</label>
+            <input type="text" class="flightAirline" placeholder="Airline name" value="${flightData.airline || ''}">
+        </div>
+        <div class="input-group">
+            <label>Flight Number</label>
+            <input type="text" class="flightNumber" placeholder="Flight number" value="${flightData.flightNumber || ''}">
+        </div>
+        <div class="input-group">
+            <label>Departure</label>
+            <input type="datetime-local" class="flightDeparture" value="${flightData.departure || ''}">
+        </div>
+        <div class="input-group">
+            <label>Arrival</label>
+            <input type="datetime-local" class="flightArrival" value="${flightData.arrival || ''}">
+        </div>
+        <button class="remove-flight">Remove Flight</button>
+    `;
+
+    flightDiv.querySelector(".remove-flight").addEventListener("click", () => {
+        flightDiv.remove();
+    });
+
+    flightsContainer.insertBefore(flightDiv, addFlightBtn);
+}
+
+// Function to create a new hotel input set
+function addHotel(hotelData = {}) {
+    const hotelDiv = document.createElement("div");
+    hotelDiv.classList.add("hotel-entry");
+    hotelDiv.innerHTML = `
+        <div class="input-group">
+            <label>Hotel Name</label>
+            <input type="text" class="hotelName" placeholder="Hotel or Airbnb name" value="${hotelData.name || ''}">
+        </div>
+        <div class="input-group">
+            <label>Check-in</label>
+            <input type="date" class="hotelCheckIn" value="${hotelData.checkIn || ''}">
+        </div>
+        <div class="input-group">
+            <label>Check-out</label>
+            <input type="date" class="hotelCheckOut" value="${hotelData.checkOut || ''}">
+        </div>
+        <div class="input-group">
+            <label>Booking Details</label>
+            <textarea class="hotelBookingDetails" placeholder="Confirmation number, reservation details...">${hotelData.details || ''}</textarea>
+        </div>
+        <button class="remove-hotel">Remove Hotel</button>
+    `;
+
+    hotelDiv.querySelector(".remove-hotel").addEventListener("click", () => {
+        hotelDiv.remove();
+    });
+
+    hotelsContainer.insertBefore(hotelDiv, addHotelBtn);
+}
+
+// Add event listeners for buttons
+addFlightBtn.addEventListener("click", () => addFlight());
+addHotelBtn.addEventListener("click", () => addHotel());
+
+// Modify the loadTripData function to handle multiple flights and hotels
+async function loadTripData() {
+    if (!tripId) {
+        showToast("Invalid trip ID.");
+        return;
+    }
+
+    try {
+        const tripRef = doc(db, "Trips", tripId);
+        const tripSnap = await getDoc(tripRef);
+
+        if (tripSnap.exists()) {
+            const tripData = tripSnap.data();
+            tripTitle.value = tripData.tripName || "";
+            tripDescription.value = tripData.description || "";
+            tripStartDate.value = tripData.startDate || "";
+            tripEndDate.value = tripData.endDate || "";
+            tripLocation.value = tripData.location || "";
+            tripMapLink.value = tripData.mapLink || "";
+            tripNotes.value = tripData.notes || "";
+            enableVoting.checked = tripData.votingEnabled || false;
+
+            // Load multiple flights
+            flightsContainer.querySelectorAll(".flight-entry").forEach(el => el.remove());
+            (tripData.flights || []).forEach(flight => addFlight(flight));
+
+            // Load multiple hotels
+            hotelsContainer.querySelectorAll(".hotel-entry").forEach(el => el.remove());
+            (tripData.hotels || []).forEach(hotel => addHotel(hotel));
+        } else {
+            showToast("Trip not found.");
+        }
+    } catch (error) {
+        console.error("Error fetching trip data:", error);
+    }
+}
+
+loadTripData();
+
         const tripId = getTripIdFromURL();
-
         const tripTitle = document.getElementById("tripTitle");
-        const tripDescription = document.getElementById("tripDescription");
-        const tripMedia = document.getElementById("tripMedia");
-        const mediaPreview = document.getElementById("mediaPreview");
-        const saveTrip = document.getElementById("saveTrip");
-        const joinTripLinkContainer = document.getElementById("joinTripLinkContainer");
-const joinTripLinkText = document.getElementById("joinTripLinkText");
-const copyJoinLinkBtn = document.getElementById("copyJoinLinkBtn");
+const tripDescription = document.getElementById("tripDescription");
+const tripStartDate = document.getElementById("tripStartDate");
+const tripEndDate = document.getElementById("tripEndDate");
+const tripLocation = document.getElementById("tripLocation");
+const tripMapLink = document.getElementById("tripMapLink");
+const flightAirline = document.getElementById("flightAirline");
+const flightNumber = document.getElementById("flightNumber");
+const flightDeparture = document.getElementById("flightDeparture");
+const flightArrival = document.getElementById("flightArrival");
+const hotelName = document.getElementById("hotelName");
+const hotelCheckIn = document.getElementById("hotelCheckIn");
+const hotelCheckOut = document.getElementById("hotelCheckOut");
+const hotelBookingDetails = document.getElementById("hotelBookingDetails");
+const tripNotes = document.getElementById("tripNotes");
+const enableVoting = document.getElementById("enableVoting");
 
+
+
+// Function to create a new flight input set
+function addFlight(flightData = {}) {
+    const flightDiv = document.createElement("div");
+    flightDiv.classList.add("flight-entry");
+    flightDiv.innerHTML = `
+        <div class="input-group">
+            <label>Airline</label>
+            <input type="text" class="flightAirline" placeholder="Airline name" value="${flightData.airline || ''}">
+        </div>
+        <div class="input-group">
+            <label>Flight Number</label>
+            <input type="text" class="flightNumber" placeholder="Flight number" value="${flightData.flightNumber || ''}">
+        </div>
+        <div class="input-group">
+            <label>Departure</label>
+            <input type="datetime-local" class="flightDeparture" value="${flightData.departure || ''}">
+        </div>
+        <div class="input-group">
+            <label>Arrival</label>
+            <input type="datetime-local" class="flightArrival" value="${flightData.arrival || ''}">
+        </div>
+        <button class="remove-flight">Remove Flight</button>
+    `;
+
+    flightDiv.querySelector(".remove-flight").addEventListener("click", () => {
+        flightDiv.remove();
+    });
+
+    flightsContainer.insertBefore(flightDiv, addFlightBtn);
+}
+
+// Function to create a new hotel input set
+function addHotel(hotelData = {}) {
+    const hotelDiv = document.createElement("div");
+    hotelDiv.classList.add("hotel-entry");
+    hotelDiv.innerHTML = `
+        <div class="input-group">
+            <label>Hotel Name</label>
+            <input type="text" class="hotelName" placeholder="Hotel or Airbnb name" value="${hotelData.name || ''}">
+        </div>
+        <div class="input-group">
+            <label>Check-in</label>
+            <input type="date" class="hotelCheckIn" value="${hotelData.checkIn || ''}">
+        </div>
+        <div class="input-group">
+            <label>Check-out</label>
+            <input type="date" class="hotelCheckOut" value="${hotelData.checkOut || ''}">
+        </div>
+        <div class="input-group">
+            <label>Booking Details</label>
+            <textarea class="hotelBookingDetails" placeholder="Confirmation number, reservation details...">${hotelData.details || ''}</textarea>
+        </div>
+        <button class="remove-hotel">Remove Hotel</button>
+    `;
+
+    hotelDiv.querySelector(".remove-hotel").addEventListener("click", () => {
+        hotelDiv.remove();
+    });
+
+    hotelsContainer.insertBefore(hotelDiv, addHotelBtn);
+}
+
+// Add event listeners for buttons
+addFlightBtn.addEventListener("click", () => addFlight());
+addHotelBtn.addEventListener("click", () => addHotel());
 
 // Fetch trip data and populate fields
 async function loadTripData() {
@@ -109,6 +408,29 @@ async function loadTripData() {
             const tripData = tripSnap.data();
             tripTitle.value = tripData.tripName || "";
             tripDescription.value = tripData.description || "";
+            tripStartDate.value = tripData.startDate || "";
+            tripEndDate.value = tripData.endDate || "";
+            tripLocation.value = tripData.location || "";
+            tripMapLink.value = tripData.mapLink || "";
+            flightAirline.value = tripData.flightAirline || "";
+            flightNumber.value = tripData.flightNumber || "";
+            flightDeparture.value = tripData.flightDeparture || "";
+            flightArrival.value = tripData.flightArrival || "";
+            hotelName.value = tripData.hotelName || "";
+            hotelCheckIn.value = tripData.hotelCheckIn || "";
+            hotelCheckOut.value = tripData.hotelCheckOut || "";
+            hotelBookingDetails.value = tripData.hotelBookingDetails || "";
+            tripNotes.value = tripData.notes || "";
+            enableVoting.checked = tripData.votingEnabled || false;
+
+            // Load multiple flights
+            flightsContainer.querySelectorAll(".flight-entry").forEach(el => el.remove());
+            (tripData.flights || []).forEach(flight => addFlight(flight));
+
+            // Load multiple hotels
+            hotelsContainer.querySelectorAll(".hotel-entry").forEach(el => el.remove());
+            (tripData.hotels || []).forEach(hotel => addHotel(hotel));
+
 
             // Show existing media preview if available
             if (tripData.coverPhoto) {
@@ -127,6 +449,7 @@ async function loadTripData() {
         console.error("Error fetching trip data:", error);
     }
 }
+
 
 // Handle media file preview
 tripMedia.addEventListener("change", () => {
