@@ -334,7 +334,6 @@ const viewHotelCheckOut = document.getElementById("viewHotelCheckOut");
 const viewHotelBookingDetails = document.getElementById("viewHotelBookingDetails");
 
 const viewTripNotes = document.getElementById("viewTripNotes");
-const viewEnableVoting = document.getElementById("viewEnableVoting");
 
 const viewFlightsContainer = document.getElementById("viewFlightsContainer");
 const viewHotelsContainer = document.getElementById("viewHotelsContainer");
@@ -484,7 +483,6 @@ async function loadTripData() {
     viewHotelBookingDetails.textContent = tripData.hotelBookingDetails || "";
 
     viewTripNotes.textContent = tripData.notes || "";
-    viewEnableVoting.checked = tripData.votingEnabled || false;
 
     // Load multiple flights
     viewFlightsContainer.innerHTML = "";
