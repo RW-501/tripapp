@@ -21,7 +21,78 @@
     <header id="dynamicHeader"></header>
     <main id="mainContainer">
 
-        <section>
+
+        <section id="view_trip"> 
+            <h2>Your Trip Details</h2>
+            <div class="trip-container">
+        
+                <!-- Trip Title -->
+                <h3 id="viewTripTitle">Trip to Paris</h3>
+                <p id="viewTripDescription">An exciting getaway to Paris, exploring famous landmarks and local cuisine.</p>
+        
+                <!-- Start & End Date -->
+                <p><strong>Dates:</strong> <span id="viewTripStartDate">April 8, 2025</span> - <span id="viewTripEndDate">April 14, 2025</span></p>
+        
+                <!-- Location -->
+                <p><strong>Destination:</strong> <span id="viewTripLocation">Paris, France</span></p>
+                <p><strong>Google Maps:</strong> <a id="viewTripMapLink" href="#" target="_blank">View on Map</a></p>
+        
+                <!-- Flight Info -->
+                <h3>Flight Information</h3>
+                <p><strong>Airline:</strong> <span id="viewFlightAirline">American Airlines</span></p>
+                <p><strong>Flight Number:</strong> <span id="viewFlightNumber">NEQBFF</span></p>
+                <p><strong>Departure:</strong> <span id="viewFlightDeparture">April 8, 2025, 10:30 AM</span></p>
+                <p><strong>Arrival:</strong> <span id="viewFlightArrival">April 8, 2025, 4:30 PM</span></p>
+        
+                <!-- Hotel/Stay Info -->
+                <h3>Hotel / Stay Information</h3>
+                <p><strong>Hotel:</strong> <span id="viewHotelName">Merveil - Luxury Suite</span></p>
+                <p><strong>Check-in:</strong> <span id="viewHotelCheckIn">April 8, 2025</span></p>
+                <p><strong>Check-out:</strong> <span id="viewHotelCheckOut">April 14, 2025</span></p>
+                <p><strong>Booking Details:</strong> <span id="viewHotelBookingDetails">Confirmed - Booking #123456</span></p>
+        
+                <!-- Events & Itinerary -->
+                <h3>Events & Itinerary</h3>
+                <ul id="viewEventList">
+                    <li>Eiffel Tower Visit - April 9</li>
+                    <li>Seine River Cruise - April 10</li>
+                    <li>Food Tour - April 11</li>
+                </ul>
+        
+                <!-- Notes -->
+                <h3>Notes</h3>
+                <p id="viewTripNotes">Don’t forget to try the croissants at Le Grenier à Pain!</p>
+        
+                <!-- Media Upload -->
+                <h3>Uploaded Media</h3>
+                <div class="media-preview" id="viewMediaPreview">
+                    <img src="example-photo.jpg" alt="Trip Photo">
+                </div>
+        
+                <!-- Invite & Sharing -->
+                <h3>Invite & Sharing</h3>
+                <p><strong>Share This Trip:</strong> <input type="text" id="viewJoinTripLink" value="https://triplink.com/paris-trip" readonly>
+                    <button id="copyJoinLinkBtn">Copy</button>
+                </p>
+        
+                <!-- Voting Settings -->
+                <h3>Voting</h3>
+                <p id="viewVotingStatus">Voting is <strong>enabled</strong></p>
+        
+                <!-- Contributors -->
+                <h3>Contributors</h3>
+                <ul id="viewContributorsList">
+                    <li>Elaine Wilson</li>
+                    <li>Raquita Wilson</li>
+                </ul>
+        
+            </div>
+        </section>
+        
+
+
+
+        <section id="edit_trip">
             <h2>Edit Your Trip</h2>
             <div class="trip-container">
         
@@ -230,6 +301,32 @@ const joinTripLinkContainer = document.getElementById("joinTripLinkContainer");
 const joinTripLinkText = document.getElementById("joinTripLinkText");
 const copyJoinLinkBtn = document.getElementById("copyJoinLinkBtn");
 
+
+const viewTripTitle = document.getElementById("viewTripTitle");
+const viewTripDescription = document.getElementById("viewTripDescription");
+const viewTripStartDate = document.getElementById("viewTripStartDate");
+const viewTripEndDate = document.getElementById("viewTripEndDate");
+const viewTripLocation = document.getElementById("viewTripLocation");
+const viewTripMapLink = document.getElementById("viewTripMapLink");
+
+const viewFlightAirline = document.getElementById("viewFlightAirline");
+const viewFlightNumber = document.getElementById("viewFlightNumber");
+const viewFlightDeparture = document.getElementById("viewFlightDeparture");
+const viewFlightArrival = document.getElementById("viewFlightArrival");
+
+const viewHotelName = document.getElementById("viewHotelName");
+const viewHotelCheckIn = document.getElementById("viewHotelCheckIn");
+const viewHotelCheckOut = document.getElementById("viewHotelCheckOut");
+const viewHotelBookingDetails = document.getElementById("viewHotelBookingDetails");
+
+const viewTripNotes = document.getElementById("viewTripNotes");
+const viewEnableVoting = document.getElementById("viewEnableVoting");
+
+const viewFlightsContainer = document.getElementById("viewFlightsContainer");
+const viewHotelsContainer = document.getElementById("viewHotelsContainer");
+
+const viewMediaPreview = document.getElementById("viewMediaPreview");
+
 // Function to create a new flight input set
 function addFlight(flightData = {}) {
     const flightDiv = document.createElement("div");
@@ -343,6 +440,47 @@ async function loadTripData() {
             if (tripData.coverPhoto) {
                 mediaPreview.innerHTML = `<img src="${tripData.coverPhoto}" />`;
             }
+
+            
+            viewTripTitle.textContent = tripData.tripName || "";
+    viewTripDescription.textContent = tripData.description || "";
+    viewTripStartDate.textContent = tripData.startDate || "";
+    viewTripEndDate.textContent = tripData.endDate || "";
+    viewTripLocation.textContent = tripData.location || "";
+    viewTripMapLink.href = tripData.mapLink || "#";
+    viewTripMapLink.textContent = tripData.mapLink || "No Map Link";
+
+    viewFlightAirline.textContent = tripData.flightAirline || "";
+    viewFlightNumber.textContent = tripData.flightNumber || "";
+    viewFlightDeparture.textContent = tripData.flightDeparture || "";
+    viewFlightArrival.textContent = tripData.flightArrival || "";
+
+    viewHotelName.textContent = tripData.hotelName || "";
+    viewHotelCheckIn.textContent = tripData.hotelCheckIn || "";
+    viewHotelCheckOut.textContent = tripData.hotelCheckOut || "";
+    viewHotelBookingDetails.textContent = tripData.hotelBookingDetails || "";
+
+    viewTripNotes.textContent = tripData.notes || "";
+    viewEnableVoting.checked = tripData.votingEnabled || false;
+
+    // Load multiple flights
+    viewFlightsContainer.innerHTML = "";
+    (tripData.flights || []).forEach(flight => addFlight(flight, viewFlightsContainer));
+
+    // Load multiple hotels
+    viewHotelsContainer.innerHTML = "";
+    (tripData.hotels || []).forEach(hotel => addHotel(hotel, viewHotelsContainer));
+
+    // Show existing media preview if available
+    if (tripData.coverPhoto) {
+        viewMediaPreview.innerHTML = `<img src="${tripData.coverPhoto}" alt="Trip Cover Photo" />`;
+    }
+
+
+
+
+
+
 
             // Generate and display the join trip link
             const userId = auth.currentUser?.uid || "guest";
