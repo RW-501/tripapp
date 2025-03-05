@@ -473,8 +473,11 @@ copyJoinLinkBtn.addEventListener("click", () => {
     showToast("Join link copied!");
 });
 
-// Save changes to Firestore
-saveTrip.addEventListener("click", async () => {
+
+
+
+document.getElementById("saveTrip").addEventListener("click", async () => {
+
     if (!auth.currentUser) {
         showToast("Please log in to save changes.");
         return;
@@ -488,20 +491,45 @@ saveTrip.addEventListener("click", async () => {
         mediaUrl = await getDownloadURL(storageRef);
     }
 
-    try {
-        await updateDoc(doc(db, "Trips", tripId), {
-            tripName: tripTitle.value,
-            description: tripDescription.value,
-            coverPhoto: mediaUrl || null, // Keep previous image if no new upload
-            updatedAt: serverTimestamp()
-        });
+    const flights = Array.from(document.querySelectorAll(".flight-entry")).map(flightDiv => ({
+        airline: flightDiv.querySelector(".flightAirline").value,
+        flightNumber: flightDiv.querySelector(".flightNumber").value,
+        departure: flightDiv.querySelector(".flightDeparture").value,
+        arrival: flightDiv.querySelector(".flightArrival").value
+    }));
 
-        showToast("Trip updated successfully!");
+    const hotels = Array.from(document.querySelectorAll(".hotel-entry")).map(hotelDiv => ({
+        name: hotelDiv.querySelector(".hotelName").value,
+        checkIn: hotelDiv.querySelector(".hotelCheckIn").value,
+        checkOut: hotelDiv.querySelector(".hotelCheckOut").value,
+        details: hotelDiv.querySelector(".hotelBookingDetails").value
+    }));
+
+    const tripData = {
+        tripName: tripTitle.value,
+        description: tripDescription.value,
+        coverPhoto: mediaUrl || null, // Keep previous image if no new upload
+        updatedAt: serverTimestamp(),
+        startDate: tripStartDate.value,
+        endDate: tripEndDate.value,
+        location: tripLocation.value,
+        mapLink: tripMapLink.value,
+        flights: flights,
+        hotels: hotels,
+        notes: tripNotes.value,
+        votingEnabled: enableVoting.checked
+    };
+
+    try {
+        const tripRef = doc(db, "Trips", tripId);
+        await setDoc(tripRef, tripData, { merge: true });
+        showToast("Trip details updated successfully!");
     } catch (error) {
-        console.error("Error updating trip:", error);
-        showToast("Failed to update trip.");
+        console.error("Error saving trip data:", error);
     }
 });
+
+
 
 // Load trip data on page load
 loadTripData();
