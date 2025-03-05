@@ -419,9 +419,11 @@ async function loadTripData() {
 
     try {
         const tripRef = doc(db, "Trips", tripId);
+        console.log("tripRef:", tripRef);
+
         const tripSnap = await getDoc(tripRef);
 
-        console.log("trip info: ",tripData);
+        console.log("trip tripSnap: ",tripSnap);
 
         if (tripSnap.exists()) {
             const tripData = tripSnap.data();
