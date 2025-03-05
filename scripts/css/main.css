@@ -111,8 +111,9 @@ body {
     scale: 1;
 }
 
-
 #mainContainer {
+    margin-top: 5rem;
+    padding: 20px;
     margin-bottom: 4rem;
 }
 
