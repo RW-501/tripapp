@@ -22,11 +22,11 @@
     <main id="mainContainer">
 
         <div class="trip-navigation">
-            <button id="btnView" class="trip-tab active" onclick="showSection('view_trip', this)">View</button>
-            <button id="btnEdit" class="trip-tab" onclick="showSection('edit_trip', this)">Edit</button>
-            <button id="btnSettings" class="trip-tab" onclick="showSection('settings_trip', this)">Settings</button>
-            <button id="btnInvites" class="trip-tab" onclick="showSection('invites_trip', this)">Invites</button>
-            <button id="btnContributors" class="trip-tab" onclick="showSection('contributors_trip', this)">Contributors</button>
+            <button id="btnView" class="trip-tab active">View</button>
+            <button id="btnEdit" class="trip-tab">Edit</button>
+            <button id="btnSettings" class="trip-tab">Settings</button>
+            <button id="btnInvites" class="trip-tab">Invites</button>
+            <button id="btnContributors" class="trip-tab">Contributors</button>
         </div>
         
    
@@ -594,28 +594,42 @@ document.getElementById("saveTrip").addEventListener("click", async () => {
 });
 
 
-function showSection(sectionId, button) {
-    // Hide all sections
+window.showSection = function (sectionId) {
     document.querySelectorAll(".trip-section").forEach(section => {
-        section.classList.add("hidden");
+        section.classList.add("hidden"); // Hide all sections
     });
 
-    // Show selected section
-    document.getElementById(sectionId).classList.remove("hidden");
+    document.getElementById(sectionId).classList.remove("hidden"); // Show selected section
 
-    // Remove active class from all buttons
-    document.querySelectorAll(".trip-tab").forEach(btn => {
-        btn.classList.remove("active");
+    document.querySelectorAll(".trip-tab").forEach(button => {
+        button.classList.remove("active"); // Remove active class from all buttons
     });
 
-    // Add active class to the clicked button
-    button.classList.add("active");
-}
+    const activeButton = document.querySelector(`[id="btn${sectionId.split('_')[0].charAt(0).toUpperCase() + sectionId.split('_')[0].slice(1)}"]`);
+    if (activeButton) {
+        activeButton.classList.add("active"); // Add active class to selected button
+    }
+};
 
-// Show the View section by default
-document.addEventListener("DOMContentLoaded", () => {
-    showSection("view_trip", document.getElementById("btnView"));
+// Add event listeners to buttons
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = {
+        btnView: "view_trip",
+        btnEdit: "edit_trip",
+        btnSettings: "settings_trip",
+        btnInvites: "invites_trip",
+        btnContributors: "contributors_trip"
+    };
+
+    Object.entries(buttons).forEach(([btnId, sectionId]) => {
+        document.getElementById(btnId).addEventListener("click", function () {
+            showSection(sectionId);
+        });
+    });
+
+    showSection("view_trip"); // Show default section on load
 });
+
 
 
 // Load trip data on page load
