@@ -21,8 +21,20 @@
     <header id="dynamicHeader"></header>
     <main id="mainContainer">
 
-
-        <section id="view_trip"> 
+        <div class="trip-navigation">
+            <button id="btnView" class="trip-tab active" onclick="showSection('view_trip', this)">View</button>
+            <button id="btnEdit" class="trip-tab" onclick="showSection('edit_trip', this)">Edit</button>
+            <button id="btnSettings" class="trip-tab" onclick="showSection('settings_trip', this)">Settings</button>
+            <button id="btnInvites" class="trip-tab" onclick="showSection('invites_trip', this)">Invites</button>
+            <button id="btnContributors" class="trip-tab" onclick="showSection('contributors_trip', this)">Contributors</button>
+        </div>
+        
+   
+<section id="settings_trip" class="trip-section hidden">Settings Content Here</section>
+<section id="invites_trip" class="trip-section hidden">Invites Content Here</section>
+<section id="contributors_trip" class="trip-section hidden">Contributors Content Here</section>
+        
+<section id="view_trip" class="trip-section">
             <h2>Your Trip Details</h2>
             <div class="trip-container">
         
@@ -92,8 +104,8 @@
 
 
 
-        <section id="edit_trip">
-            <h2>Edit Your Trip</h2>
+        <section id="edit_trip" class="trip-section hidden">
+        <h2>Edit Your Trip</h2>
             <div class="trip-container">
         
                 <!-- Trip Title -->
@@ -579,6 +591,29 @@ document.getElementById("saveTrip").addEventListener("click", async () => {
     }
 });
 
+
+function showSection(sectionId, button) {
+    // Hide all sections
+    document.querySelectorAll(".trip-section").forEach(section => {
+        section.classList.add("hidden");
+    });
+
+    // Show selected section
+    document.getElementById(sectionId).classList.remove("hidden");
+
+    // Remove active class from all buttons
+    document.querySelectorAll(".trip-tab").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    // Add active class to the clicked button
+    button.classList.add("active");
+}
+
+// Show the View section by default
+document.addEventListener("DOMContentLoaded", () => {
+    showSection("view_trip", document.getElementById("btnView"));
+});
 
 
 // Load trip data on page load
