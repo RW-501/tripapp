@@ -197,115 +197,7 @@ facebookProvider, destinationAutoSuggest
 
 
 
-        const flightsContainer = document.getElementById("flightsContainer");
-const hotelsContainer = document.getElementById("hotelsContainer");
-const addFlightBtn = document.getElementById("addFlight");
-const addHotelBtn = document.getElementById("addHotel");
 
-// Function to create a new flight input set
-function addFlight(flightData = {}) {
-    const flightDiv = document.createElement("div");
-    flightDiv.classList.add("flight-entry");
-    flightDiv.innerHTML = `
-        <div class="input-group">
-            <label>Airline</label>
-            <input type="text" class="flightAirline" placeholder="Airline name" value="${flightData.airline || ''}">
-        </div>
-        <div class="input-group">
-            <label>Flight Number</label>
-            <input type="text" class="flightNumber" placeholder="Flight number" value="${flightData.flightNumber || ''}">
-        </div>
-        <div class="input-group">
-            <label>Departure</label>
-            <input type="datetime-local" class="flightDeparture" value="${flightData.departure || ''}">
-        </div>
-        <div class="input-group">
-            <label>Arrival</label>
-            <input type="datetime-local" class="flightArrival" value="${flightData.arrival || ''}">
-        </div>
-        <button class="remove-flight">Remove Flight</button>
-    `;
-
-    flightDiv.querySelector(".remove-flight").addEventListener("click", () => {
-        flightDiv.remove();
-    });
-
-    flightsContainer.insertBefore(flightDiv, addFlightBtn);
-}
-
-// Function to create a new hotel input set
-function addHotel(hotelData = {}) {
-    const hotelDiv = document.createElement("div");
-    hotelDiv.classList.add("hotel-entry");
-    hotelDiv.innerHTML = `
-        <div class="input-group">
-            <label>Hotel Name</label>
-            <input type="text" class="hotelName" placeholder="Hotel or Airbnb name" value="${hotelData.name || ''}">
-        </div>
-        <div class="input-group">
-            <label>Check-in</label>
-            <input type="date" class="hotelCheckIn" value="${hotelData.checkIn || ''}">
-        </div>
-        <div class="input-group">
-            <label>Check-out</label>
-            <input type="date" class="hotelCheckOut" value="${hotelData.checkOut || ''}">
-        </div>
-        <div class="input-group">
-            <label>Booking Details</label>
-            <textarea class="hotelBookingDetails" placeholder="Confirmation number, reservation details...">${hotelData.details || ''}</textarea>
-        </div>
-        <button class="remove-hotel">Remove Hotel</button>
-    `;
-
-    hotelDiv.querySelector(".remove-hotel").addEventListener("click", () => {
-        hotelDiv.remove();
-    });
-
-    hotelsContainer.insertBefore(hotelDiv, addHotelBtn);
-}
-
-// Add event listeners for buttons
-addFlightBtn.addEventListener("click", () => addFlight());
-addHotelBtn.addEventListener("click", () => addHotel());
-
-// Modify the loadTripData function to handle multiple flights and hotels
-async function loadTripData() {
-    if (!tripId) {
-        showToast("Invalid trip ID.");
-        return;
-    }
-
-    try {
-        const tripRef = doc(db, "Trips", tripId);
-        const tripSnap = await getDoc(tripRef);
-
-        if (tripSnap.exists()) {
-            const tripData = tripSnap.data();
-            tripTitle.value = tripData.tripName || "";
-            tripDescription.value = tripData.description || "";
-            tripStartDate.value = tripData.startDate || "";
-            tripEndDate.value = tripData.endDate || "";
-            tripLocation.value = tripData.location || "";
-            tripMapLink.value = tripData.mapLink || "";
-            tripNotes.value = tripData.notes || "";
-            enableVoting.checked = tripData.votingEnabled || false;
-
-            // Load multiple flights
-            flightsContainer.querySelectorAll(".flight-entry").forEach(el => el.remove());
-            (tripData.flights || []).forEach(flight => addFlight(flight));
-
-            // Load multiple hotels
-            hotelsContainer.querySelectorAll(".hotel-entry").forEach(el => el.remove());
-            (tripData.hotels || []).forEach(hotel => addHotel(hotel));
-        } else {
-            showToast("Trip not found.");
-        }
-    } catch (error) {
-        console.error("Error fetching trip data:", error);
-    }
-}
-
-loadTripData();
 
         const tripId = getTripIdFromURL();
         const tripTitle = document.getElementById("tripTitle");
@@ -324,6 +216,11 @@ const hotelCheckOut = document.getElementById("hotelCheckOut");
 const hotelBookingDetails = document.getElementById("hotelBookingDetails");
 const tripNotes = document.getElementById("tripNotes");
 const enableVoting = document.getElementById("enableVoting");
+
+const flightsContainer = document.getElementById("flightsContainer");
+const hotelsContainer = document.getElementById("hotelsContainer");
+const addFlightBtn = document.getElementById("addFlight");
+const addHotelBtn = document.getElementById("addHotel");
 
 
 
