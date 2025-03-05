@@ -271,6 +271,8 @@ facebookProvider, destinationAutoSuggest
 
 
         const tripId = getTripIdFromURL();
+        console.log("trip tripId: ",tripId);
+
         const tripTitle = document.getElementById("tripTitle");
 const tripDescription = document.getElementById("tripDescription");
 const tripStartDate = document.getElementById("tripStartDate");
@@ -395,6 +397,9 @@ addHotelBtn.addEventListener("click", () => addHotel());
 
 // Fetch trip data and populate fields
 async function loadTripData() {
+
+    console.log("trip tripId: ",tripId);
+
     if (!tripId) {
         showToast("Invalid trip ID.");
         return;
