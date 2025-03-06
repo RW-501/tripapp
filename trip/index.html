@@ -160,6 +160,10 @@
                     <input type="text" id="flightAirline" placeholder="Airline name">
                 </div>
                 <div class="input-group">
+                    <label for="flightAirport">Airport</label>
+                    <input type="text" id="flightAirport" placeholder="Flight airport">
+                </div>
+                <div class="input-group">
                     <label for="flightNumber">Flight Number</label>
                     <input type="text" id="flightNumber" placeholder="Flight number">
                 </div>
@@ -314,6 +318,7 @@ const tripEndDate = document.getElementById("tripEndDate");
 const tripLocation = document.getElementById("tripLocation");
 const tripMapLink = document.getElementById("tripMapLink");
 const flightAirline = document.getElementById("flightAirline");
+const flightAirport = document.getElementById("flightAirport");
 const flightNumber = document.getElementById("flightNumber");
 const flightDeparture = document.getElementById("flightDeparture");
 const flightArrival = document.getElementById("flightArrival");
@@ -357,6 +362,7 @@ const viewTripMapLink = document.getElementById("viewTripMapLink");
 
 const viewFlightAirline = document.getElementById("viewFlightAirline");
 const viewFlightNumber = document.getElementById("viewFlightNumber");
+const viewFlightAirport = document.getElementById("viewFlightAirport");
 const viewFlightDeparture = document.getElementById("viewFlightDeparture");
 const viewFlightArrival = document.getElementById("viewFlightArrival");
 
@@ -384,6 +390,10 @@ function addFlight(flightData = {}) {
         <div class="input-group">
             <label>Flight Number</label>
             <input type="text" class="flightNumber" placeholder="Flight number" value="${flightData.flightNumber || ''}">
+        </div>
+        <div class="input-group">
+           <label for="flightAirport">Airport</label>
+           <input type="text" id="flightAirport" placeholder="Flight airport">
         </div>
         <div class="input-group">
             <label>Departure</label>
@@ -535,6 +545,7 @@ async function loadTripData() {
             tripLocation.value = tripData.location || "";
             tripMapLink.value = tripData.mapLink || "";
             flightAirline.value = tripData.flightAirline || "";
+            flightAirport.value = tripData.flightAirport || "";
             flightNumber.value = tripData.flightNumber || "";
             flightDeparture.value = tripData.flightDeparture || "";
             flightArrival.value = tripData.flightArrival || "";
@@ -592,6 +603,7 @@ async function loadTripData() {
     viewFlightNumber.textContent = tripData.flightNumber || "";
     viewFlightDeparture.textContent = tripData.flightDeparture || "";
     viewFlightArrival.textContent = tripData.flightArrival || "";
+    viewFlightAirport.textContent = tripData.flightAirport || "";
 
     viewHotelName.textContent = tripData.hotelName || "";
     viewHotelCheckIn.textContent = tripData.hotelCheckIn || "";
