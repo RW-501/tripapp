@@ -571,3 +571,103 @@ function positionSuggestionBox(input, suggestionBox) {
     suggestionBox.style.top = `${inputRect.bottom + window.scrollY + offset}px`;
     suggestionBox.style.width = `${inputRect.width}px`; // Match input width
 }
+
+
+
+
+
+const hotels = [
+    { name: "Hilton Hotel" },
+    { name: "Marriott Hotel" },
+    { name: "Hyatt Regency" },
+    { name: "Four Seasons" },
+    { name: "The Ritz-Carlton" },
+    { name: "InterContinental" },
+    { name: "Sheraton Hotel" },
+    { name: "Westin Hotel" },
+    { name: "Waldorf Astoria" },
+    { name: "Fairmont Hotel" }
+];
+
+function hotelAutoSuggest(hotelInputSelector) {
+    addSuggestionBox();
+
+    const inputs = document.querySelectorAll(hotelInputSelector);
+    if (!inputs.length) {
+        console.error("No input elements found with the provided selector.");
+        return;
+    }
+
+    inputs.forEach(input => {
+        const suggestionBox = document.createElement("div");
+        suggestionBox.className = "suggestion-box";
+        suggestionBox.setAttribute('role', 'listbox');
+        document.body.appendChild(suggestionBox);
+
+        let debounceTimeout;
+        input.addEventListener("input", function () {
+            const query = this.value.toLowerCase().trim();
+            suggestionBox.innerHTML = "";
+
+            if (!query) return;
+
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                const filteredHotels = hotels.filter(hotel =>
+                    hotel.name.toLowerCase().includes(query)
+                );
+
+                filteredHotels.forEach(hotel => {
+                    const suggestion = document.createElement("div");
+                    suggestionBox.style.display = "block";
+                    suggestion.className = "suggestion";
+                    suggestion.setAttribute('role', 'option');
+                    suggestion.textContent = hotel.name;
+
+                    suggestion.addEventListener("click", function () {
+                        input.value = hotel.name;
+                        suggestionBox.innerHTML = "";
+                        suggestionBox.style.display = "none";
+                    });
+
+                    suggestionBox.appendChild(suggestion);
+                });
+
+                if (filteredHotels.length === 0) {
+                    suggestionBox.innerHTML = "<div class='suggestion no-results'>No results found</div>";
+                }
+
+                positionSuggestionBox(input, suggestionBox);
+            }, 300);
+        });
+
+        document.addEventListener("click", function (e) {
+            if (!input.contains(e.target) && !suggestionBox.contains(e.target)) {
+                suggestionBox.innerHTML = "";
+                suggestionBox.style.display = "none";
+            }
+        });
+
+        let currentIndex = -1;
+        input.addEventListener("keydown", function (e) {
+            const suggestions = suggestionBox.querySelectorAll(".suggestion");
+            if (suggestions.length === 0) return;
+
+            if (e.key === "ArrowDown" && currentIndex < suggestions.length - 1) {
+                currentIndex++;
+            } else if (e.key === "ArrowUp" && currentIndex > 0) {
+                currentIndex--;
+            } else if (e.key === "Enter" && currentIndex >= 0) {
+                suggestions[currentIndex].click();
+                return;
+            }
+
+            suggestions.forEach((suggestion, index) => {
+                suggestion.classList.toggle("highlight", index === currentIndex);
+            });
+        });
+    });
+}
+
+window.hotelAutoSuggest = hotelAutoSuggest;
+export { hotelAutoSuggest };

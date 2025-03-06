@@ -157,7 +157,7 @@
                 <h3>Flight Information</h3>
                 <div class="input-group">
                     <label for="flightAirline">Airline</label>
-                    <input type="text" id="flightAirline" class="airline" placeholder="Airline name">
+                    <input type="text" id="flightAirline" class="flightAirline" placeholder="Airline name">
                 </div>
                 <div class="input-group">
                     <label for="flightAirport">Airport</label>
@@ -385,7 +385,7 @@ function addFlight(flightData = {}) {
     flightDiv.innerHTML = `
         <div class="input-group">
             <label>Airline</label>
-            <input type="text" class="airline" placeholder="Airline name" value="${flightData.airline || ''}">
+            <input type="text" class="flightAirline" placeholder="Airline name" value="${flightData.airline || ''}">
         </div>
         <div class="input-group">
            <label for="flightAirport">Airport</label>
@@ -769,7 +769,8 @@ loadTripData();
        
 // Call the function for a specific text field
 destinationAutoSuggest("flightAirport"); 
-airlineAutoSuggest("airline");
+airlineAutoSuggest(".flightAirline");
+hotelAutoSuggest(".hotelName");
 
 });
 
