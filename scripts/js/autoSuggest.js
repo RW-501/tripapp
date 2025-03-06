@@ -392,3 +392,182 @@ function positionSuggestionBox(input, suggestionBox) {
     suggestionBox.style.top = `${inputRect.bottom + window.scrollY + offset}px`;
     suggestionBox.style.width = `${inputRect.width}px`;  // Match the width of the input
 }
+
+
+
+
+
+// Full Airline Data
+const airlines = [
+    { iata: "AA", name: "American Airlines" },
+    { iata: "DL", name: "Delta Air Lines" },
+    { iata: "UA", name: "United Airlines" },
+    { iata: "AF", name: "Air France" },
+    { iata: "BA", name: "British Airways" },
+    { iata: "LH", name: "Lufthansa" },
+    { iata: "EK", name: "Emirates" },
+    { iata: "QR", name: "Qatar Airways" },
+    { iata: "SQ", name: "Singapore Airlines" },
+    { iata: "CX", name: "Cathay Pacific" },
+    { iata: "QF", name: "Qantas" },
+    { iata: "KL", name: "KLM Royal Dutch Airlines" },
+    { iata: "NH", name: "All Nippon Airways" },
+    { iata: "JL", name: "Japan Airlines" },
+    { iata: "AC", name: "Air Canada" },
+    { iata: "ET", name: "Ethiopian Airlines" },
+    { iata: "TK", name: "Turkish Airlines" },
+    { iata: "IB", name: "Iberia" },
+    { iata: "EY", name: "Etihad Airways" },
+    { iata: "AI", name: "Air India" },
+    { iata: "AZ", name: "ITA Airways" },
+    { iata: "SK", name: "SAS - Scandinavian Airlines" },
+    { iata: "OS", name: "Austrian Airlines" },
+    { iata: "FI", name: "Icelandair" },
+    { iata: "VS", name: "Virgin Atlantic" },
+    { iata: "WN", name: "Southwest Airlines" },
+    { iata: "B6", name: "JetBlue Airways" },
+    { iata: "AS", name: "Alaska Airlines" },
+    { iata: "F9", name: "Frontier Airlines" },
+    { iata: "NK", name: "Spirit Airlines" },
+    { iata: "G3", name: "GOL Linhas Aéreas" },
+    { iata: "CM", name: "Copa Airlines" },
+    { iata: "AM", name: "Aeroméxico" },
+    { iata: "AV", name: "Avianca" },
+    { iata: "H2", name: "Sky Airline" }
+];
+
+
+
+function airlineAutoSuggest(airline) {
+    addSuggestionBox();
+
+    const inputs = document.querySelectorAll(airline); // Select all inputs with class 'airline'
+    if (!inputs.length) {
+        console.error("No input elements found with class 'airline'");
+        return;
+    }
+
+    inputs.forEach(input => {
+        const suggestionBox = document.createElement("div");
+        suggestionBox.className = "suggestion-box";
+        suggestionBox.setAttribute('role', 'listbox');
+        document.body.appendChild(suggestionBox); // Append to body to prevent clipping
+
+        let debounceTimeout;
+        input.addEventListener("input", function () {
+            const query = this.value.toLowerCase().trim();
+            suggestionBox.innerHTML = "";
+
+            if (!query) return;
+
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                const filteredAirlines = airlines.filter(airline =>
+                    airline.iata.toLowerCase().includes(query) ||
+                    airline.name.toLowerCase().includes(query)
+                );
+
+                filteredAirlines.forEach(airline => {
+                    const suggestion = document.createElement("div");
+                    suggestionBox.style.display = "block";
+                    suggestion.className = "suggestion";
+                    suggestion.setAttribute('role', 'option');
+                    suggestion.textContent = `${airline.iata} - ${airline.name}`;
+
+                    suggestion.addEventListener("click", function () {
+                        input.value = `${airline.iata} - ${airline.name}`;
+                        suggestionBox.innerHTML = "";
+                        suggestionBox.style.display = "none";
+                    });
+
+                    suggestionBox.appendChild(suggestion);
+                });
+
+                if (filteredAirlines.length === 0) {
+                    suggestionBox.innerHTML = "<div class='suggestion no-results'>No results found</div>";
+                }
+
+                positionSuggestionBox(input, suggestionBox);
+            }, 300);  // Debounce delay
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener("click", function (e) {
+            if (!input.contains(e.target) && !suggestionBox.contains(e.target)) {
+                suggestionBox.innerHTML = "";
+                suggestionBox.style.display = "none";
+            }
+        });
+
+        // Enable keyboard navigation
+        let currentIndex = -1;
+        input.addEventListener("keydown", function (e) {
+            const suggestions = suggestionBox.querySelectorAll(".suggestion");
+            if (suggestions.length === 0) return;
+
+            if (e.key === "ArrowDown" && currentIndex < suggestions.length - 1) {
+                currentIndex++;
+            } else if (e.key === "ArrowUp" && currentIndex > 0) {
+                currentIndex--;
+            } else if (e.key === "Enter" && currentIndex >= 0) {
+                suggestions[currentIndex].click();
+                return;
+            }
+
+            suggestions.forEach((suggestion, index) => {
+                suggestion.classList.toggle("highlight", index === currentIndex);
+            });
+        });
+    });
+}
+
+window.airlineAutoSuggest = airlineAutoSuggest;
+export { airlineAutoSuggest };
+
+
+
+function addSuggestionBox() {
+    if (!document.querySelector("#suggestionStyles")) {
+        const style = document.createElement('style');
+        style.id = "suggestionStyles";
+        style.innerHTML = `
+            .suggestion-box { 
+                display: none;
+                position: absolute;
+                background: white;
+                border: 1px solid #ccc;
+                max-height: 200px;
+                overflow-y: auto;
+                width: 100%;
+                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+            }
+
+            .suggestion {
+                padding: 8px;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
+
+            .suggestion:hover, .suggestion.highlight {
+                background: #f0f0f0;
+            }
+
+            .no-results {
+                color: grey;
+                text-align: center;
+                padding: 8px;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+function positionSuggestionBox(input, suggestionBox) {
+    const inputRect = input.getBoundingClientRect();
+    const offset = 5; // Distance between input and suggestion box
+
+    suggestionBox.style.left = `${inputRect.left + window.scrollX}px`;
+    suggestionBox.style.top = `${inputRect.bottom + window.scrollY + offset}px`;
+    suggestionBox.style.width = `${inputRect.width}px`; // Match input width
+}
