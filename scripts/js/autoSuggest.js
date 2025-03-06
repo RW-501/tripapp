@@ -1,3 +1,58 @@
+
+function addSuggestionBox() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .suggestion-box { 
+        display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .suggestion {
+            padding: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .suggestion:hover, .suggestion.highlight {
+            background: #f0f0f0;
+        }
+
+        .suggestion-box div {
+            padding: 10px;
+            cursor: pointer;
+        }
+        
+        .suggestion-box div.no-results {
+            color: grey;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function positionSuggestionBox(input, suggestionBox) {
+    const inputRect = input.getBoundingClientRect();
+    const offset = 5; // Distance between input and suggestion box
+
+    suggestionBox.style.left = `${inputRect.left + window.scrollX}px`;
+    suggestionBox.style.top = `${inputRect.bottom + window.scrollY + offset}px`;
+    suggestionBox.style.width = `${inputRect.width}px`;  // Match the width of the input
+}
+
+
+
+
+
+
+
+
+
 // Airports data
 const airports = [
  // USA
@@ -347,55 +402,6 @@ function destinationAutoSuggest(inputId) {
 window.destinationAutoSuggest = destinationAutoSuggest;
 export { destinationAutoSuggest };
 
-function addSuggestionBox() {
-    const style = document.createElement('style');
-    style.innerHTML = `
-        .suggestion-box { 
-        display: none;
-            position: absolute;
-            background: white;
-            border: 1px solid #ccc;
-            max-height: 200px;
-            overflow-y: auto;
-            width: 100%;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-
-        .suggestion {
-            padding: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .suggestion:hover, .suggestion.highlight {
-            background: #f0f0f0;
-        }
-
-        .suggestion-box div {
-            padding: 10px;
-            cursor: pointer;
-        }
-        
-        .suggestion-box div.no-results {
-            color: grey;
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-function positionSuggestionBox(input, suggestionBox) {
-    const inputRect = input.getBoundingClientRect();
-    const offset = 5; // Distance between input and suggestion box
-
-    suggestionBox.style.left = `${inputRect.left + window.scrollX}px`;
-    suggestionBox.style.top = `${inputRect.bottom + window.scrollY + offset}px`;
-    suggestionBox.style.width = `${inputRect.width}px`;  // Match the width of the input
-}
-
-
-
-
 
 // Full Airline Data
 const airlines = [
@@ -526,51 +532,6 @@ export { airlineAutoSuggest };
 
 
 
-function addSuggestionBox() {
-    if (!document.querySelector("#suggestionStyles")) {
-        const style = document.createElement('style');
-        style.id = "suggestionStyles";
-        style.innerHTML = `
-            .suggestion-box { 
-                display: none;
-                position: absolute;
-                background: white;
-                border: 1px solid #ccc;
-                max-height: 200px;
-                overflow-y: auto;
-                width: 100%;
-                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                z-index: 1000;
-            }
-
-            .suggestion {
-                padding: 8px;
-                cursor: pointer;
-                transition: background 0.3s;
-            }
-
-            .suggestion:hover, .suggestion.highlight {
-                background: #f0f0f0;
-            }
-
-            .no-results {
-                color: grey;
-                text-align: center;
-                padding: 8px;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
-
-function positionSuggestionBox(input, suggestionBox) {
-    const inputRect = input.getBoundingClientRect();
-    const offset = 5; // Distance between input and suggestion box
-
-    suggestionBox.style.left = `${inputRect.left + window.scrollX}px`;
-    suggestionBox.style.top = `${inputRect.bottom + window.scrollY + offset}px`;
-    suggestionBox.style.width = `${inputRect.width}px`; // Match input width
-}
 
 
 
@@ -586,8 +547,113 @@ const hotels = [
     { name: "Sheraton Hotel" },
     { name: "Westin Hotel" },
     { name: "Waldorf Astoria" },
-    { name: "Fairmont Hotel" }
+    { name: "Fairmont Hotel" },
+    { name: "St. Regis" },
+    { name: "JW Marriott" },
+    { name: "Sofitel Hotel" },
+    { name: "Mandarin Oriental" },
+    { name: "Park Hyatt" },
+    { name: "Shangri-La Hotel" },
+    { name: "Raffles Hotel" },
+    { name: "Rosewood Hotel" },
+    { name: "The Peninsula Hotel" },
+    { name: "The Langham Hotel" },
+    { name: "Radisson Blu" },
+    { name: "Conrad Hotel" },
+    { name: "Le Méridien" },
+    { name: "Kimpton Hotel" },
+    { name: "Loews Hotels" },
+    { name: "Omni Hotels & Resorts" },
+    { name: "Hard Rock Hotel" },
+    { name: "Andaz Hotel" },
+    { name: "Edition Hotels" },
+    { name: "Meliá Hotels International" },
+    { name: "NH Collection Hotels" },
+    { name: "CitizenM Hotels" },
+    { name: "Thompson Hotels" },
+    { name: "Bulgari Hotels & Resorts" },
+    { name: "Anantara Hotels" },
+    { name: "Jumeirah Hotels & Resorts" },
+    { name: "Lotte Hotel" },
+    { name: "Atlantis The Palm" },
+    { name: "SLS Hotels" },
+    { name: "Viceroy Hotels & Resorts" },
+    { name: "Banyan Tree Hotels" },
+    { name: "Capella Hotels" },
+    { name: "Six Senses Hotels" },
+    { name: "Aman Resorts" },
+    { name: "One&Only Resorts" },
+    { name: "The Standard Hotels" },
+    { name: "W Hotels" },
+    { name: "ME by Meliá" },
+    { name: "Sandals Resorts" },
+    { name: "Club Med Resorts" },
+    { name: "Belmond Hotels" },
+    { name: "MGM Resorts" },
+    { name: "Caesars Palace" },
+    { name: "The Venetian Resort" },
+    { name: "Bellagio Hotel" },
+    { name: "The Cosmopolitan" },
+    { name: "The Mirage Hotel" },
+    { name: "Encore at Wynn Las Vegas" },
+    { name: "Resorts World Las Vegas" },
+    { name: "Trump International Hotel" },
+    { name: "The Plaza Hotel New York" },
+    { name: "The Beverly Hills Hotel" },
+    { name: "Fontainebleau Miami Beach" },
+    { name: "Baccarat Hotel New York" },
+    { name: "The Breakers Palm Beach" },
+    { name: "The Broadmoor" },
+    { name: "The Greenbrier" },
+    { name: "The Drake Hotel" },
+    { name: "The Savoy London" },
+    { name: "Claridge's London" },
+    { name: "The Dorchester London" },
+    { name: "Hotel de Crillon Paris" },
+    { name: "Le Meurice Paris" },
+    { name: "Plaza Athénée Paris" },
+    { name: "The Peninsula Paris" },
+    { name: "Ritz Paris" },
+    { name: "Bristol Paris" },
+    { name: "Hotel Negresco Nice" },
+    { name: "Gstaad Palace Switzerland" },
+    { name: "Badrutt's Palace Hotel St. Moritz" },
+    { name: "Hotel Sacher Vienna" },
+    { name: "Adlon Kempinski Berlin" },
+    { name: "Grand Hotel Tremezzo Lake Como" },
+    { name: "Villa d’Este Lake Como" },
+    { name: "Hotel Danieli Venice" },
+    { name: "The Gritti Palace Venice" },
+    { name: "Hotel Hassler Roma" },
+    { name: "Cipriani Venice" },
+    { name: "The Chedi Muscat" },
+    { name: "Burj Al Arab Dubai" },
+    { name: "Armani Hotel Dubai" },
+    { name: "Taj Mahal Palace Mumbai" },
+    { name: "Umaid Bhawan Palace Jodhpur" },
+    { name: "The Oberoi Udaivilas" },
+    { name: "Rambagh Palace Jaipur" },
+    { name: "Ritz-Carlton Tokyo" },
+    { name: "Aman Tokyo" },
+    { name: "The Peninsula Tokyo" },
+    { name: "Mandarin Oriental Tokyo" },
+    { name: "Four Seasons Hotel Kyoto" },
+    { name: "Park Hyatt Sydney" },
+    { name: "Qualia Resort Australia" },
+    { name: "Lizard Island Resort" },
+    { name: "Saffire Freycinet Australia" },
+    { name: "Singita Safari Lodges" },
+    { name: "Royal Malewane South Africa" },
+    { name: "Ulusaba Private Game Reserve" },
+    { name: "Serengeti Safari Camp" },
+    { name: "The Brando Tahiti" },
+    { name: "Amangiri Utah" },
+    { name: "Post Ranch Inn Big Sur" },
+    { name: "Twin Farms Vermont" },
+    { name: "Blackberry Farm Tennessee" },
+    { name: "Calistoga Ranch Napa Valley" }
 ];
+
 
 function hotelAutoSuggest(hotelInputSelector) {
     addSuggestionBox();
