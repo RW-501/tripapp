@@ -69,13 +69,16 @@
                     <!-- View Stay -->
                 </div>
 
-                <!-- Events & Itinerary -->
-                <h3>Events & Itinerary</h3>
-                <ul id="viewEventList">
-                    <li>Eiffel Tower Visit - April 9</li>
-                    <li>Seine River Cruise - April 10</li>
-                    <li>Food Tour - April 11</li>
-                </ul>
+<!-- Events & Itinerary -->
+<h3>Events & Itinerary</h3>
+<ul id="viewEventList">
+    <li>Eiffel Tower Visit - April 9</li>
+    <li>Seine River Cruise - April 10</li>
+    <li>Food Tour - April 11</li>
+</ul>
+
+
+
         
                 <!-- Notes -->
                 <h3>Notes</h3>
@@ -198,12 +201,15 @@
                     <button id="addHotel">+ Add Hotel</button>
                 </div>
         
-                <!-- Events & Itinerary -->
-                <h3>Events & Itinerary</h3>
-                <div id="eventList">
-                    <button id="addEvent">+ Add Event</button>
-                </div>
-        
+         
+<!-- Add Event Section -->
+<div id="addEventSection">
+    <h4>Add Event</h4>
+    <input type="text" id="eventName" placeholder="Event Name" />
+    <input type="text" id="eventInfo" placeholder="Event Info" />
+    <input type="date" id="eventDate" />
+    <button id="addEventBtn">Add Event</button>
+</div>
                 <!-- Notes -->
                 <h3>Notes</h3>
                 <div class="input-group">
@@ -260,6 +266,13 @@
     </div>
     </section>
     
+           <!-- View Itinerary -->
+        </section id="view_itinerary">
+           <h3>View Itinerary</h3>
+           <div id="formatated_itinerary">
+           </div>
+        </section>
+
 </main>
 
 <footer id="dynamicFooter"></footer>
@@ -315,6 +328,13 @@ const flightsContainer = document.getElementById("flightsContainer");
 const hotelsContainer = document.getElementById("hotelsContainer");
 const addFlightBtn = document.getElementById("addFlight");
 const addHotelBtn = document.getElementById("addHotel");
+
+const eventList = document.getElementById("viewEventList");
+    const eventNameInput = document.getElementById("eventName");
+    const eventInfoInput = document.getElementById("eventInfo");
+    const eventDateInput = document.getElementById("eventDate");
+    const addEventBtn = document.getElementById("addEventBtn");
+
 
 const tripMedia = document.getElementById("tripMedia");
 const mediaPreview = document.getElementById("mediaPreview");
@@ -415,6 +435,70 @@ function addHotel(hotelData = {}) {
 addFlightBtn.addEventListener("click", () => addFlight());
 addHotelBtn.addEventListener("click", () => addHotel());
 
+
+    // Function to add event to list dynamically
+    function addEventToList(name, date, info) {
+        const eventItem = document.createElement("li");
+        eventItem.innerHTML = `<strong>${name}</strong> - ${date} (${info || "No additional info"}) 
+                               <button class="deleteEventBtn">❌</button>`;
+
+        eventList.appendChild(eventItem);
+
+        // Delete event from Firebase and UI
+        eventItem.querySelector(".deleteEventBtn").addEventListener("click", async function () {
+            eventItem.remove();
+            await deleteEvent(name, date);
+        });
+    }
+
+    // Add new event and save to Firebase
+    addEventBtn.addEventListener("click", async function () {
+        const eventName = eventNameInput.value.trim();
+        const eventInfo = eventInfoInput.value.trim();
+        const eventDate = eventDateInput.value;
+
+        if (!eventName || !eventDate) {
+            alert("Please enter at least an event name and date.");
+            return;
+        }
+
+        const newEvent = { name: eventName, date: eventDate, info: eventInfo };
+        addEventToList(eventName, eventDate, eventInfo); // Add to UI
+
+        try {
+            const tripSnap = await getDoc(tripRef);
+            const tripData = tripSnap.exists() ? tripSnap.data() : {};
+            const updatedEvents = [...(tripData.events || []), newEvent];
+
+            await updateDoc(tripRef, { events: updatedEvents });
+
+            // Clear input fields
+            eventNameInput.value = "";
+            eventInfoInput.value = "";
+            eventDateInput.value = "";
+        } catch (error) {
+            console.error("Error saving event:", error);
+        }
+    });
+
+    // Function to delete event from Firebase
+    async function deleteEvent(eventName, eventDate) {
+        try {
+            const tripSnap = await getDoc(tripRef);
+            if (tripSnap.exists()) {
+                const tripData = tripSnap.data();
+                const updatedEvents = (tripData.events || []).filter(event => !(event.name === eventName && event.date === eventDate));
+
+                await updateDoc(tripRef, { events: updatedEvents });
+            }
+        } catch (error) {
+            console.error("Error deleting event:", error);
+        }
+    }
+
+
+
+
 // Fetch trip data and populate fields
 async function loadTripData() {
 
@@ -457,6 +541,26 @@ async function loadTripData() {
             hotelBookingDetails.value = tripData.hotelBookingDetails || "";
             tripNotes.value = tripData.notes || "";
             enableVoting.checked = tripData.votingEnabled || false;
+
+
+
+
+            eventNameInput.value = tripData.eventName  || "";
+            eventInfoInput.value = tripData.eventInfo || "";
+            eventDateInput.value = tripData.eventDate || "";
+
+
+            const events = tripData.events || [];
+                eventList.innerHTML = ""; // Clear existing list
+
+                events.forEach(event => addEventToList(event.name, event.date, event.info));
+    
+
+            const eventItem = document.createElement("li");
+        eventItem.textContent = `${tripData.eventName} - ${tripData.eventDate} (${tripData.eventInfo || "No additional info"})`;
+
+        eventList.appendChild(eventItem);
+
 
             // Load multiple flights
             flightsContainer.querySelectorAll(".flight-entry").forEach(el => el.remove());
