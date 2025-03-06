@@ -212,8 +212,8 @@ button:hover {
 <section id="view_trip" class="trip-section">
     <div id="trip-info">
         <h2>Your Trip Details</h2>
-        <h3 id="tripTitle">Trip to Paris</h3>
-        <h3 id="tripDate">Trip to Paris</h3>
+        <h3 id="tripTitle">Trip Name</h3>
+        <h3 id="tripDate">Trip Date</h3>
     </div>
     <div id="post-container">
         <!-- Post Input Section -->
@@ -252,8 +252,8 @@ button:hover {
         
                 <!-- Trip Title -->
                 <div class="input-group">
-                    <label for="tripTitle">Trip Title</label>
-                    <input type="text" id="tripTitle" placeholder="Enter trip title">
+                    <label for="tripEditTitle">Trip Title</label>
+                    <input type="text" id="tripEditTitle" placeholder="Enter trip title">
                 </div>
         
                 <!-- Trip Description -->
@@ -441,8 +441,11 @@ facebookProvider, destinationAutoSuggest
         const tripId = getTripIdFromURL();
         console.log("trip tripId: ",tripId);
 
+        const tripEditTitle = document.getElementById("tripEditTitle");
         const tripTitle = document.getElementById("tripTitle");
-const tripDescription = document.getElementById("tripDescription");
+        const tripDate = document.getElementById("tripDate");
+
+        const tripDescription = document.getElementById("tripDescription");
 const tripStartDate = document.getElementById("tripStartDate");
 const tripEndDate = document.getElementById("tripEndDate");
 const tripLocation = document.getElementById("tripLocation");
@@ -692,17 +695,17 @@ async function loadTripData() {
     try {
  
         const tripRef = doc(db, "Trips", tripId);
-        console.log("tripRef:", tripRef);
+       // console.log("tripRef:", tripRef);
 
         const tripSnap = await getDoc(tripRef);
 
-        console.log("trip tripSnap: ",tripSnap);
+       // console.log("trip tripSnap: ",tripSnap);
 
         if (tripSnap.exists()) {
             const tripData = tripSnap.data();
-            console.log("trip info: ",tripData);
+          //  console.log("trip info: ",tripData);
 
-            tripTitle.value = tripData.tripName || "";
+            tripEditTitle.value = tripData.tripName || "";
             tripDescription.value = tripData.description || "";
             tripStartDate.value = tripData.startDate || "";
             tripEndDate.value = tripData.endDate || "";
@@ -720,8 +723,10 @@ async function loadTripData() {
             tripNotes.value = tripData.notes || "";
             enableVoting.checked = tripData.votingEnabled || false;
 
+            tripTitle.value = tripData.tripName || "";
+            tripDate.value = tripData.startDate || "";
 
-
+            
 
             eventNameInput.value = tripData.eventName  || "";
             eventInfoInput.value = tripData.eventInfo || "";
