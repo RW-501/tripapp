@@ -823,7 +823,7 @@ async function loadTripData() {
     try {
  
         const tripRef = doc(db, "Trips", tripId);
-       // console.log("tripRef:", tripRef);
+ 
 
         const tripSnap = await getDoc(tripRef);
 
@@ -1134,6 +1134,7 @@ async function uploadMedia(files) {
 
 // Load posts
 function loadPosts() {
+          console.log("tripId:", tripId);
     const postList = document.getElementById("post-list");
     db.collection("Trips").doc(tripId).collection("Posts")
         .orderBy("pinned", "desc") // Pinned posts first
