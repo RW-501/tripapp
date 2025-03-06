@@ -614,17 +614,7 @@ addPollOptionBtn.addEventListener("click", () => {
     pollOptionsDiv.appendChild(newPollOption);
 });
 
-// Add Post functionality (basic for demonstration)
-const addPostBtn = document.getElementById("addPost");
 
-addPostBtn.addEventListener("click", () => {
-    const postContent = document.getElementById("post-content").value;
-    const postList = document.getElementById("post-list");
-    const postItem = document.createElement("div");
-    postItem.classList.add("post-item");
-    postItem.innerHTML = `<p>${postContent}</p>`;
-    postList.appendChild(postItem);
-});
 
 
 
