@@ -413,6 +413,8 @@ function addFlight(flightData = {}) {
     });
 
     flightsContainer.insertBefore(flightDiv, addFlightBtn);
+    airlineAutoSuggest(".flightAirline");
+
 }
 
 // Function to create a new hotel input set
@@ -444,6 +446,7 @@ function addHotel(hotelData = {}) {
     });
 
     hotelsContainer.insertBefore(hotelDiv, addHotelBtn);
+hotelAutoSuggest(".hotelName");
 }
 
 // Add event listeners for buttons
@@ -517,18 +520,13 @@ addHotelBtn.addEventListener("click", () => addHotel());
 // Fetch trip data and populate fields
 async function loadTripData() {
 
-    console.log("trip tripId: ",tripId);
-
     if (!tripId) {
         showToast("Invalid trip ID.");
         return;
     }
 
     try {
-        console.log("trip ??????????: ");
-//        const createdTripsQuery = query(collection(db, "Trips"), where("createdBy", "==", userId));
-  //      const createdTripsSnapshot = await getDocs(createdTripsQuery);
-
+ 
         const tripRef = doc(db, "Trips", tripId);
         console.log("tripRef:", tripRef);
 
