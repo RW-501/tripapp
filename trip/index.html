@@ -226,9 +226,9 @@
                 </div>
         
                 <!-- Invite & Sharing -->
-                <h3>Invite & Sharing</h3>
+                <h3>Invite</h3>
                 <div class="input-group">
-                    <label for="joinTripLinkText">Share This Trip:</label>
+                    <label for="joinTripLinkText">Trip Invite Link:</label>
                     <div class="input-group">
                         <input type="text" id="joinTripLinkText" readonly>
                         <button id="copyJoinLinkBtn">Copy Link</button>
@@ -257,11 +257,11 @@
         
 
     <section>
-    <div id="joinTripLinkContainer" style="display: none; margin-top: 20px;">
-        <label for="joinTripLinkText">Share This Trip:</label>
+    <div id="shareTripLinkContainer" style="display: none; margin-top: 20px;">
+        <label for="shareTripLinkText">Share This Trip:</label>
         <div class="input-group">
-            <input type="text" id="joinTripLinkText" readonly>
-            <button id="copyJoinLinkBtn">Copy Link</button>
+            <input type="text" id="shareTripLinkText" readonly>
+            <button id="copyShareLinkBtn">Copy Link</button>
         </div>
     </div>
     </section>
@@ -344,6 +344,9 @@ const joinTripLinkContainer = document.getElementById("joinTripLinkContainer");
 const joinTripLinkText = document.getElementById("joinTripLinkText");
 const copyJoinLinkBtn = document.getElementById("copyJoinLinkBtn");
 
+const shareTripLinkContainer = document.getElementById("shareTripLinkContainer");
+const shareTripLinkText = document.getElementById("shareTripLinkText");
+const copyShareLinkBtn = document.getElementById("copyShareLinkBtn");
 
 const viewTripTitle = document.getElementById("viewTripTitle");
 const viewTripDescription = document.getElementById("viewTripDescription");
@@ -613,7 +616,10 @@ async function loadTripData() {
 
 
 
-
+            // Generate and display the join trip link
+            const shareTripLink = `https://rw-501.github.io/tripapp/join/?id=${tripId}`;
+            shareTripLinkText.value = shareTripLink;
+            shareTripLinkContainer.style.display = "block";
 
 
             // Generate and display the join trip link
