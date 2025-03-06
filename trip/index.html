@@ -1288,8 +1288,6 @@ async function addComment(event, postId) {
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("addPost").addEventListener("click", addPost);
     document.getElementById("addPollOption").addEventListener("click", addPollOption);
-    loadPosts();
-});
 
 
 
@@ -1300,9 +1298,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // Load trip data on page load
 loadTripData();
 
-       
-// Load posts on page load
 loadPosts();
+
+});
 
 // Call the function for a specific text field
 destinationAutoSuggest("flightAirport"); 
