@@ -1284,6 +1284,13 @@ async function addComment(event, postId) {
     commentInput.value = "";
 }
 
+destinationAutoSuggest("flightAirport"); 
+airlineAutoSuggest(".flightAirline");
+hotelAutoSuggest(".hotelName");
+
+});
+
+
 // Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("addPost").addEventListener("click", addPost);
@@ -1299,13 +1306,6 @@ document.addEventListener("DOMContentLoaded", () => {
 loadTripData();
 
 loadPosts();
-
-});
-
-// Call the function for a specific text field
-destinationAutoSuggest("flightAirport"); 
-airlineAutoSuggest(".flightAirline");
-hotelAutoSuggest(".hotelName");
 
 });
 
