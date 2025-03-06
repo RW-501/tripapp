@@ -161,7 +161,7 @@
                 </div>
                 <div class="input-group">
                     <label for="flightAirport">Airport</label>
-                    <input type="text" id="flightAirport" placeholder="Flight airport">
+                    <input type="text" class="destination" id="flightAirport" placeholder="Flight airport">
                 </div>
                 <div class="input-group">
                     <label for="flightNumber">Flight Number</label>
@@ -388,12 +388,12 @@ function addFlight(flightData = {}) {
             <input type="text" class="flightAirline" placeholder="Airline name" value="${flightData.airline || ''}">
         </div>
         <div class="input-group">
-            <label>Flight Number</label>
-            <input type="text" class="flightNumber" placeholder="Flight number" value="${flightData.flightNumber || ''}">
+           <label for="flightAirport">Airport</label>
+           <input type="text" class="destination" id="flightAirport" placeholder="Flight airport">
         </div>
         <div class="input-group">
-           <label for="flightAirport">Airport</label>
-           <input type="text" id="flightAirport" placeholder="Flight airport">
+            <label>Flight Number</label>
+            <input type="text" class="flightNumber" placeholder="Flight number" value="${flightData.flightNumber || ''}">
         </div>
         <div class="input-group">
             <label>Departure</label>
@@ -765,6 +765,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Load trip data on page load
 loadTripData();
+
+       
+// Call the function for a specific text field
+destinationAutoSuggest("flightAirport"); 
+
 
 });
 

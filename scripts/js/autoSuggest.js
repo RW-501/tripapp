@@ -258,7 +258,18 @@ function destinationAutoSuggest(inputId) {
     addSuggestionBox();
    // console.log("destinationAutoSuggest:", inputId);
 
-    const input = document.getElementById(inputId);
+   const parentElement = document.getElementById(inputId);
+   if (!parentElement) {
+       console.error("Input element not found:", parentElement);
+       return;
+   }
+
+   // Traverse up to find the parent with class "destination"
+   let input = parentElement.closest(".destination");
+   
+
+   
+   // const input = document.getElementById(inputId);
     const suggestionBox = document.createElement("div");
     suggestionBox.className = "suggestion-box";
     suggestionBox.setAttribute('role', 'listbox');
