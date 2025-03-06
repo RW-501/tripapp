@@ -937,8 +937,6 @@ async function loadTripData() {
             joinTripLinkText.value = joinTripLink;
             joinTripLinkContainer.style.display = "block";
 
-// Load posts on page load
-loadPosts();
 
 
 // Call function to load invites
@@ -1296,6 +1294,9 @@ document.addEventListener("DOMContentLoaded", () => {
 loadTripData();
 
        
+// Load posts on page load
+loadPosts();
+
 // Call the function for a specific text field
 destinationAutoSuggest("flightAirport"); 
 airlineAutoSuggest(".flightAirline");
