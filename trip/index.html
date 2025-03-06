@@ -1135,17 +1135,23 @@ async function uploadMedia(files) {
 // Load posts
 function loadPosts() {
           console.log("tripId:", tripId);
-    const postList = document.getElementById("post-list");
-    db.collection("Trips").doc(tripId).collection("Posts")
-        .orderBy("pinned", "desc") // Pinned posts first
-        .orderBy("timestamp", "desc") // Then sort by time
-        .onSnapshot(snapshot => {
-            postList.innerHTML = "";
-            snapshot.forEach(doc => {
-                const post = doc.data();
-                postList.innerHTML += generatePostHTML(post);
-            });
-        });
+          const postList = document.getElementById("post-list");
+
+// Create a query to fetch the posts collection and sort it
+const postsQuery = query(
+    collection(doc(db, "Trips", tripId), "Posts"), // Access Posts sub-collection
+    orderBy("pinned", "desc"), // Sort by pinned first
+    orderBy("timestamp", "desc") // Then by timestamp
+);
+
+// Fetch the snapshot using the query
+onSnapshot(postsQuery, (snapshot) => {
+    postList.innerHTML = ""; // Clear existing posts
+    snapshot.forEach((doc) => {
+        const post = doc.data();
+        postList.innerHTML += generatePostHTML(post); // Generate and append post HTML
+    });
+});
 }
 
 
