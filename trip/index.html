@@ -15,6 +15,90 @@
         .media-preview img, .media-preview video { width: 100%; margin-top: 10px; border-radius: 5px; }
         .save-btn { background-color: #007bff; color: white; padding: 10px; border: none; cursor: pointer; }
         .save-btn:hover { background-color: #0056b3; }
+
+        #post-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#post-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+#post-content {
+    width: 100%;
+    height: 80px;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    resize: none;
+    font-size: 14px;
+}
+
+#post-media {
+    font-size: 12px;
+}
+
+button {
+    padding: 10px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.post {
+    background: #fff;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post p {
+    font-size: 14px;
+}
+
+.post .post-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.vote-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.vote-btn.upvoted {
+    color: green;
+}
+
+.vote-btn.downvoted {
+    color: red;
+}
+
+.pinned {
+    border-left: 5px solid gold;
+    background-color: #fffbe6;
+}
+
     </style>
 </head>
 <body>
@@ -23,6 +107,7 @@
 
         <div class="trip-navigation">
             <button id="btnView" class="trip-tab active">View</button>
+            <button id="btnItinerary" class="trip-tab active">Itinerary</button>
             <button id="btnEdit" class="trip-tab">Edit</button>
             <button id="btnSettings" class="trip-tab">Settings</button>
             <button id="btnInvites" class="trip-tab">Invites</button>
@@ -31,15 +116,44 @@
         </div>
         
    
-<section id="settings_trip" class="trip-section hidden">Settings Content Here</section>
-<section id="invites_trip" class="trip-section hidden">Invites Content Here</section>
-<section id="contributors_trip" class="trip-section hidden">Contributors Content Here</section>
+<section id="settings_trip" class="trip-section hidden">Settings Content Here
+                              <!-- Voting Settings -->
+                              <h3>Voting</h3>
+                              <p id="viewVotingStatus">Voting is <strong>enabled</strong></p>
+               
+</section>
+<section id="contributors_trip" class="trip-section hidden">Contributors Content Here
+
+           
+                <!-- Contributors -->
+                <h3>Contributors</h3>
+                <ul id="viewContributorsList">
+                    <li>Elaine Wilson</li>
+                    <li>Raquita Wilson</li>
+                </ul>
+</section>
 <section id="media_trip" class="trip-section hidden">Media Content Here</section>
         
-<section id="view_trip" class="trip-section">
-            <h2>Your Trip Details</h2>
+
+
+           <!-- View Itinerary -->
+           <section id="view_itinerary" class="trip-section">
+            <h3>View Itinerary</h3>
             <div class="trip-container">
         
+                <!-- Media Upload -->
+                <h3>Uploaded Media</h3>
+                <div class="media-preview" id="viewMediaPreview">
+                    <img src="example-photo.jpg" alt="Trip Photo">
+                </div>
+
+
+                <!-- Invite & Sharing -->
+                <h3>Invite & Sharing</h3>
+                <p><strong>Share This Trip:</strong> <input type="text" id="viewJoinTripLink" value="https://triplink.com/paris-trip" readonly>
+                    <button id="copyJoinLinkBtn">Copy</button>
+                </p>
+
                 <!-- Trip Title -->
                 <h3 id="viewTripTitle">Trip to Paris</h3>
                 <p id="viewTripDescription">An exciting getaway to Paris, exploring famous landmarks and local cuisine.</p>
@@ -86,33 +200,47 @@
                 <h3>Notes</h3>
                 <p id="viewTripNotes">Don’t forget to try the croissants at Le Grenier à Pain!</p>
         
-                <!-- Media Upload -->
-                <h3>Uploaded Media</h3>
-                <div class="media-preview" id="viewMediaPreview">
-                    <img src="example-photo.jpg" alt="Trip Photo">
-                </div>
-                <div id="viewMediaPreview">
-                    <!-- View Media -->
-                </div>
 
-                <!-- Invite & Sharing -->
-                <h3>Invite & Sharing</h3>
-                <p><strong>Share This Trip:</strong> <input type="text" id="viewJoinTripLink" value="https://triplink.com/paris-trip" readonly>
-                    <button id="copyJoinLinkBtn">Copy</button>
-                </p>
-        
-                <!-- Voting Settings -->
-                <h3>Voting</h3>
-                <p id="viewVotingStatus">Voting is <strong>enabled</strong></p>
-        
-                <!-- Contributors -->
-                <h3>Contributors</h3>
-                <ul id="viewContributorsList">
-                    <li>Elaine Wilson</li>
-                    <li>Raquita Wilson</li>
-                </ul>
         
             </div>
+
+            
+
+        
+     </section>
+
+<section id="view_trip" class="trip-section">
+    <div id="trip-info">
+        <h2>Your Trip Details</h2>
+        <h3 id="tripTitle">Trip to Paris</h3>
+        <h3 id="tripDate">Trip to Paris</h3>
+    </div>
+    <div id="post-container">
+        <!-- Post Input Section -->
+        <div id="post-box">
+            <textarea id="post-content" placeholder="Share something about this trip..."></textarea>
+            <input type="file" id="post-media" multiple>
+    
+            <!-- Poll Option -->
+            <div id="poll-section">
+                <input type="text" id="poll-question" placeholder="Add a poll question (optional)">
+                <div id="poll-options">
+                    <input type="text" class="poll-option" placeholder="Option 1">
+                    <input type="text" class="poll-option" placeholder="Option 2">
+                </div>
+                <button id="addPollOption">+ Add Option</button>
+            </div>
+    
+            <button id="addPost">Post</button>
+        </div>
+    
+        <!-- Post List -->
+        <div id="post-list"></div>
+    </div>
+    
+    
+
+        
         </section>
         
 
@@ -231,15 +359,7 @@
                     <div class="media-preview" id="mediaPreview"></div>
                 </div>
         
-                <!-- Invite & Sharing -->
-                <h3>Invite</h3>
-                <div class="input-group">
-                    <label for="joinTripLinkText">Trip Invite Link:</label>
-                    <div class="input-group">
-                        <input type="text" id="joinTripLinkText" readonly>
-                        <button id="copyJoinLinkBtn">Copy Link</button>
-                    </div>
-                </div>
+
         
                 <!-- Voting Settings -->
                 <h3>Voting Settings</h3>
@@ -272,12 +392,20 @@
     </div>
     </section>
     
-           <!-- View Itinerary -->
-        </section id="view_itinerary">
-           <h3>View Itinerary</h3>
-           <div id="formatated_itinerary">
-           </div>
-        </section>
+    <section id="invites_trip" class="trip-section hidden">Invites Content Here
+        <!-- Invite & Sharing -->
+        <h3>Invite</h3>
+        <div class="input-group">
+            <label for="joinTripLinkText">Trip Invite Link:</label>
+            <div class="input-group">
+                <input type="text" id="joinTripLinkText" readonly>
+                <button id="copyJoinLinkBtn">Copy Link</button>
+            </div>
+        </div>
+        <div id="invite-list">
+</div>
+
+</section>
 
 </main>
 
@@ -476,7 +604,7 @@ addHotelBtn.addEventListener("click", () => addHotel());
         const eventDate = eventDateInput.value;
 
         if (!eventName || !eventDate) {
-            alert("Please enter at least an event name and date.");
+            showToast("Please enter at least an event name and date.");
             return;
         }
 
@@ -516,6 +644,42 @@ addHotelBtn.addEventListener("click", () => addHotel());
 
 
 
+
+// Reference to the invite-list div
+const inviteListDiv = document.getElementById("invite-list");
+
+// Function to fetch and display trip invites
+function fetchTripInvites() {
+    db.collection("Trips")
+        .doc(tripId) // Get the specific trip document
+        .collection("Invites") // Assuming invites are stored as a subcollection
+        .get()
+        .then((querySnapshot) => {
+            inviteListDiv.innerHTML = ""; // Clear previous content
+
+            if (querySnapshot.empty) {
+                inviteListDiv.innerHTML = "<p>No invites found.</p>";
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const inviteData = doc.data();
+                
+                // Create an invite element (customize as needed)
+                const inviteItem = document.createElement("div");
+                inviteItem.classList.add("invite-item");
+                inviteItem.innerHTML = `
+                    <p><strong>${inviteData.name}</strong> - ${inviteData.email}</p>
+                `;
+
+                inviteListDiv.appendChild(inviteItem);
+            });
+        })
+        .catch((error) => {
+            console.error("Error fetching invites:", error);
+            inviteListDiv.innerHTML = "<p>Error loading invites.</p>";
+        });
+}
 
 // Fetch trip data and populate fields
 async function loadTripData() {
@@ -639,6 +803,12 @@ async function loadTripData() {
             const joinTripLink = `https://rw-501.github.io/tripapp/join/?id=${tripId}&u=${userId}`;
             joinTripLinkText.value = joinTripLink;
             joinTripLinkContainer.style.display = "block";
+
+
+
+// Call function to load invites
+fetchTripInvites();
+
         } else {
             showToast("Trip not found.");
         }
@@ -760,6 +930,221 @@ document.addEventListener("DOMContentLoaded", function () {
             showSection(sectionId);
         });
     });
+
+    
+
+
+    // Add a post or poll
+async function addPost() {
+    const content = document.getElementById("post-content").value.trim();
+    const mediaInput = document.getElementById("post-media");
+    const pollQuestion = document.getElementById("poll-question").value.trim();
+    const pollOptions = [...document.querySelectorAll(".poll-option")]
+        .map(input => input.value.trim())
+        .filter(option => option);
+
+    if (!content && !pollQuestion) return showToast("Please enter a post or poll!");
+
+    const postRef = db.collection("Trips").doc(tripId).collection("Posts").doc();
+
+    let postData = {
+        postId: postRef.id,
+        content,
+        createdBy: userId,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        votes: {},
+        comments: [],
+        pinned: false
+    };
+
+    // If poll exists, attach poll data
+    if (pollQuestion) {
+        postData.poll = {
+            question: pollQuestion,
+            options: pollOptions.map(option => ({ text: option, votes: 0 })),
+            userVotes: {}
+        };
+    }
+
+    // Handle media upload (if any)
+    if (mediaInput.files.length > 0) {
+        postData.mediaUrls = await uploadMedia(mediaInput.files);
+    }
+
+    await postRef.set(postData);
+
+    document.getElementById("post-content").value = "";
+    document.getElementById("poll-question").value = "";
+    document.querySelectorAll(".poll-option").forEach(input => (input.value = ""));
+}
+
+// Upload media files to Firebase Storage
+async function uploadMedia(files) {
+    const urls = [];
+    for (let file of files) {
+        const storageRef = firebase.storage().ref(`posts/${tripId}/${file.name}`);
+        await storageRef.put(file);
+        urls.push(await storageRef.getDownloadURL());
+    }
+    return urls;
+}
+
+// Load posts
+function loadPosts() {
+    const postList = document.getElementById("post-list");
+    db.collection("Trips").doc(tripId).collection("Posts")
+        .orderBy("pinned", "desc") // Pinned posts first
+        .orderBy("timestamp", "desc") // Then sort by time
+        .onSnapshot(snapshot => {
+            postList.innerHTML = "";
+            snapshot.forEach(doc => {
+                const post = doc.data();
+                postList.innerHTML += generatePostHTML(post);
+            });
+        });
+}
+
+
+// Format timestamp
+function formatTimestamp(timestamp) {
+    if (!timestamp) return "Just now";
+    const date = timestamp.toDate();
+    return date.toLocaleString();
+}
+
+// Generate post HTML
+function generatePostHTML(post) {
+    let pollHTML = "";
+    if (post.poll) {
+        pollHTML = `
+            <div class="poll">
+                <p><strong>${post.poll.question}</strong></p>
+                ${post.poll.options.map((option, index) => `
+                    <button class="poll-option" onclick="votePoll('${post.postId}', ${index})">
+                        ${option.text} (${option.votes} votes)
+                    </button>
+                `).join("")}
+            </div>
+        `;
+    }
+
+    return `
+        <div  class="post ${post.pinned ? 'pinned' : ''}" id="post-${post.postId}">
+            <p><strong>${post.content}</strong></p>
+            <p class="timestamp">${formatTimestamp(post.timestamp)}</p>
+            ${post.mediaUrls ? post.mediaUrls.map(url => `<img src="${url}" class="post-media">`).join("") : ""}
+            ${pollHTML}
+            <div class="post-controls">
+                <button class="vote-btn ${post.votes[userId] === 1 ? "upvoted" : ""}" 
+                        onclick="votePost('${post.postId}', 1)">👍</button>
+                <button class="vote-btn ${post.votes[userId] === -1 ? "downvoted" : ""}" 
+                        onclick="votePost('${post.postId}', -1)">👎</button>
+                ${post.createdBy === userId ? `
+                    <button class="edit-btn" onclick="editPost('${post.postId}', '${post.content}')">✏️ Edit</button>
+                    <button class="pin-btn" onclick="togglePinPost('${post.postId}', ${post.pinned})">
+                        📌 ${post.pinned ? "Unpin" : "Pin"}
+                    </button>
+                    <button class="delete-btn" onclick="deletePost('${post.postId}')">🗑️ Delete</button>
+                ` : ""}
+            </div>
+            <div class="comments-section">
+                <input type="text" class="comment-input" placeholder="Write a comment..." onkeypress="addComment(event, '${post.postId}')">
+                <div class="comments-list">
+                    ${post.comments.map(comment => `
+                        <p><strong>${comment.user}</strong>: ${comment.text} (${formatTimestamp(comment.timestamp)})</p>
+                    `).join("")}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+async function togglePinPost(postId, isPinned) {
+    const postRef = db.collection("Trips").doc(tripId).collection("Posts").doc(postId);
+    await postRef.update({ pinned: !isPinned });
+}
+
+// Edit a post
+async function editPost(postId, currentContent) {
+    const newContent = prompt("Edit your post:", currentContent);
+    if (newContent && newContent.trim() !== "") {
+        await db.collection("Trips").doc(tripId).collection("Posts").doc(postId).update({ content: newContent });
+    }
+}
+
+// Delete a post
+async function deletePost(postId) {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+    await db.collection("Trips").doc(tripId).collection("Posts").doc(postId).delete();
+}
+
+// Vote on a post
+async function votePost(postId, value) {
+    const postRef = db.collection("Trips").doc(tripId).collection("Posts").doc(postId);
+    const postSnap = await postRef.get();
+    if (!postSnap.exists) return;
+
+    let votes = postSnap.data().votes || {};
+    if (votes[userId] === value) {
+        delete votes[userId]; // Remove vote if clicking again
+    } else {
+        votes[userId] = value;
+    }
+
+    await postRef.update({ votes });
+}
+
+// Vote on a poll
+async function votePoll(postId, optionIndex) {
+    const postRef = db.collection("Trips").doc(tripId).collection("Posts").doc(postId);
+    const postSnap = await postRef.get();
+    if (!postSnap.exists) return;
+
+    let poll = postSnap.data().poll;
+    if (!poll) return;
+
+    if (poll.userVotes[userId] !== undefined) {
+        showToast("You already voted on this poll!");
+        return;
+    }
+
+    poll.options[optionIndex].votes += 1;
+    poll.userVotes[userId] = optionIndex;
+
+    await postRef.update({ poll });
+}
+
+// Add a comment
+async function addComment(event, postId) {
+    if (event.key !== "Enter") return;
+    const commentInput = event.target;
+    const commentText = commentInput.value.trim();
+
+    if (!commentText) return;
+
+    const postRef = db.collection("Trips").doc(tripId).collection("Posts").doc(postId);
+    const postSnap = await postRef.get();
+    if (!postSnap.exists) return;
+
+    let comments = postSnap.data().comments || [];
+    comments.push({ user: userId, text: commentText, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+
+    await postRef.update({ comments });
+
+    commentInput.value = "";
+}
+
+// Event Listeners
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("addPost").addEventListener("click", addPost);
+    document.getElementById("addPollOption").addEventListener("click", addPollOption);
+    loadPosts();
+});
+
+
+// Load posts on page load
+loadPosts();
+
 
     showSection("view_trip"); // Show default section on load
 

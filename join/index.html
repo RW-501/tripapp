@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Trip</title>
+    <script type="module" src="/tripapp/scripts/js/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="/tripapp/scripts/css/main.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
+        .trip-container { max-width: 700px; margin: auto; padding: 20px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .hidden-file-input { display: none; }
+        .upload-preview { cursor: pointer; text-align: center; padding: 10px; border: 1px dashed #ddd; }
+        .media-preview img, .media-preview video { width: 100%; margin-top: 10px; border-radius: 5px; }
+        .save-btn { background-color: #007bff; color: white; padding: 10px; border: none; cursor: pointer; }
+        .save-btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <header id="dynamicHeader"></header>
+    <main id="mainContainer">
+
+    <div id="invite-message">Loading...</div>
+    <button id="sign-in-btn">Sign In to Join</button>
+
+</main>
+
+<footer id="dynamicFooter"></footer>
+
+    <script type="module">
+        import {
+            db, doc, getDoc, updateDoc,
+    auth, deleteDoc,  userId, getStorage, ref, uploadBytes, 
+    getDownloadURL, limit, arrayUnion, RecaptchaVerifier, increment,
+     arrayRemove, signInWithPhoneNumber, query, setDoc, 
+     addDoc, signInAnonymously, orderBy, onAuthStateChanged, 
+     uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
+     GoogleAuthProvider, startAfter, OAuthProvider, signOut,
+      getFirestore, serverTimestamp,  userInfo,
+createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
+where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
+googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
+facebookProvider, destinationAutoSuggest
+        } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
+    
+        
+
+// 🔹 Get URL parameters (tripId & userId)
+const urlParams = new URLSearchParams(window.location.search);
+const tripId = urlParams.get('id');
+const inviterId = urlParams.get('u');
+
+if (!tripId || !inviterId) {
+    document.getElementById("invite-message").innerText = "Invalid invitation link.";
+    document.getElementById("sign-in-btn").style.display = "none";
+} else {
+    fetchTripDetails(tripId, inviterId);
+}
+
+// 🔹 Fetch Trip & Inviter Info
+function fetchTripDetails(tripId, inviterId) {
+    db.collection("Trips").doc(tripId).get().then(tripDoc => {
+        if (!tripDoc.exists) {
+            document.getElementById("invite-message").innerText = "Trip not found.";
+            return;
+        }
+        const tripData = tripDoc.data();
+
+        // Get inviter details
+        db.collection("Users").doc(inviterId).get().then(userDoc => {
+            if (!userDoc.exists) {
+                document.getElementById("invite-message").innerText = `You have been invited to join the trip: "${tripData.name}".`;
+                return;
+            }
+            const inviterData = userDoc.data();
+            document.getElementById("invite-message").innerText = 
+                `You have been invited by ${inviterData.name} to join the trip "${tripData.name}".`;
+        });
+    }).catch(error => {
+        console.error("Error fetching trip details:", error);
+        document.getElementById("invite-message").innerText = "Error loading trip details.";
+    });
+}
+
+// 🔹 Save Trip ID & Handle Sign-In
+document.getElementById("sign-in-btn").addEventListener("click", () => {
+    localStorage.setItem("tripId", tripId); // Save to local storage
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).then(result => {
+        const user = result.user;
+        addUserToTrip(tripId, user);
+    }).catch(error => console.error("Sign-in error:", error));
+});
+
+// 🔹 Add User to Trip Invites
+function addUserToTrip(tripId, user) {
+    db.collection("Trips").doc(tripId).collection("Invites").doc(user.uid).set({
+        name: user.displayName || "Unknown",
+        email: user.email || "No email",
+        joinedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        showToast("You have successfully joined the trip!");
+        window.location.href = `https://rw-501.github.io/tripapp/trip/?id=${tripId}`; // Redirect after joining
+    }).catch(error => console.error("Error adding user to trip:", error));
+}
+
+    </script>
+</body>
+</html>
