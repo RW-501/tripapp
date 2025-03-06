@@ -99,6 +99,71 @@ button:hover {
     background-color: #fffbe6;
 }
 
+/* Style for buttons */
+.btn-toggle, .btn-add-option, .btn-post {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    border-radius: 8px;
+    margin: 5px;
+}
+
+.btn-toggle:hover, .btn-add-option:hover, .btn-post:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.file-upload-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.poll-section {
+    display: block;
+}
+
+#poll-options {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.poll-option {
+    padding: 8px;
+    width: 100%;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#addPollOption {
+    background-color: #f44336;
+    font-size: 16px;
+    padding: 8px 16px;
+}
+
+#addPollOption:hover {
+    background-color: #e53935;
+}
+
+#poll-section, .file-upload-container {
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* Hide sections initially */
+#poll-section.hidden, .file-upload-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
     </style>
 </head>
 <body>
@@ -209,34 +274,40 @@ button:hover {
         
      </section>
 
-<section id="view_trip" class="trip-section">
-    <div id="trip-info">
-        <h2>Your Trip Details</h2>
-        <h3 id="tripTitle">Trip Name</h3>
-        <h3 id="tripDate">Trip Date</h3>
-    </div>
-    <div id="post-container">
-        <!-- Post Input Section -->
-        <div id="post-box">
-            <textarea id="post-content" placeholder="Share something about this trip..."></textarea>
-            <input type="file" id="post-media" multiple>
-    
-            <!-- Poll Option -->
-            <div id="poll-section">
-                <input type="text" id="poll-question" placeholder="Add a poll question (optional)">
-                <div id="poll-options">
-                    <input type="text" class="poll-option" placeholder="Option 1">
-                    <input type="text" class="poll-option" placeholder="Option 2">
+     <section id="view_trip" class="trip-section">
+        <div id="trip-info">
+            <h2>Your Trip Details</h2>
+            <h3 id="tripTitle">Trip Name</h3>
+            <h3 id="tripDate">Trip Date</h3>
+        </div>
+        <div id="post-container">
+            <!-- Post Input Section -->
+            <div id="post-box">
+                <textarea id="post-content" placeholder="Share something about this trip..."></textarea>
+                <div class="file-upload-container">
+                    <input type="file" id="post-media" multiple>
+                    <button id="hide-media-btn" class="btn-toggle">Hide Media</button>
                 </div>
-                <button id="addPollOption">+ Add Option</button>
+    
+                <!-- Poll Option -->
+                <div id="poll-section" class="poll-section">
+                    <input type="text" id="poll-question" placeholder="Add a poll question (optional)">
+                    <div id="poll-options">
+                        <input type="text" class="poll-option" placeholder="Option 1">
+                        <input type="text" class="poll-option" placeholder="Option 2">
+                    </div>
+                    <button id="addPollOption" class="btn-add-option">+ Add Option</button>
+                    <button id="hide-poll-btn" class="btn-toggle">Hide Poll</button>
+                </div>
+    
+                <button id="addPost" class="btn-post">Post</button>
             </div>
     
-            <button id="addPost">Post</button>
+            <!-- Post List -->
+            <div id="post-list"></div>
         </div>
+    </section>
     
-        <!-- Post List -->
-        <div id="post-list"></div>
-    </div>
     
     
 
@@ -510,6 +581,58 @@ const viewFlightsContainer = document.getElementById("viewFlightsContainer");
 const viewHotelsContainer = document.getElementById("viewHotelsContainer");
 
 const viewMediaPreview = document.getElementById("viewMediaPreview");
+
+
+
+// Show/Hide Media Section
+const mediaBtn = document.getElementById("hide-media-btn");
+const mediaSection = document.querySelector(".file-upload-container");
+
+mediaBtn.addEventListener("click", () => {
+    mediaSection.classList.toggle("hidden");
+    mediaBtn.textContent = mediaSection.classList.contains("hidden") ? "Show Media" : "Hide Media";
+});
+
+// Show/Hide Poll Section
+const pollBtn = document.getElementById("hide-poll-btn");
+const pollSection = document.getElementById("poll-section");
+
+pollBtn.addEventListener("click", () => {
+    pollSection.classList.toggle("hidden");
+    pollBtn.textContent = pollSection.classList.contains("hidden") ? "Show Poll" : "Hide Poll";
+});
+
+// Add Poll Option
+const addPollOptionBtn = document.getElementById("addPollOption");
+
+addPollOptionBtn.addEventListener("click", () => {
+    const pollOptionsDiv = document.getElementById("poll-options");
+    const newPollOption = document.createElement("input");
+    newPollOption.type = "text";
+    newPollOption.className = "poll-option";
+    newPollOption.placeholder = "New Option";
+    pollOptionsDiv.appendChild(newPollOption);
+});
+
+// Add Post functionality (basic for demonstration)
+const addPostBtn = document.getElementById("addPost");
+
+addPostBtn.addEventListener("click", () => {
+    const postContent = document.getElementById("post-content").value;
+    const postList = document.getElementById("post-list");
+    const postItem = document.createElement("div");
+    postItem.classList.add("post-item");
+    postItem.innerHTML = `<p>${postContent}</p>`;
+    postList.appendChild(postItem);
+});
+
+
+
+
+
+
+
+
 
 // Function to create a new flight input set
 function addFlight(flightData = {}) {
