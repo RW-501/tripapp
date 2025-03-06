@@ -26,6 +26,7 @@
             <button id="btnEdit" class="trip-tab">Edit</button>
             <button id="btnSettings" class="trip-tab">Settings</button>
             <button id="btnInvites" class="trip-tab">Invites</button>
+            <button id="btnMedia" class="trip-tab">Media</button>
             <button id="btnContributors" class="trip-tab">Contributors</button>
         </div>
         
@@ -33,6 +34,7 @@
 <section id="settings_trip" class="trip-section hidden">Settings Content Here</section>
 <section id="invites_trip" class="trip-section hidden">Invites Content Here</section>
 <section id="contributors_trip" class="trip-section hidden">Contributors Content Here</section>
+<section id="media_trip" class="trip-section hidden">Media Content Here</section>
         
 <section id="view_trip" class="trip-section">
             <h2>Your Trip Details</h2>
@@ -751,7 +753,8 @@ document.addEventListener("DOMContentLoaded", function () {
         btnEdit: "edit_trip",
         btnSettings: "settings_trip",
         btnInvites: "invites_trip",
-        btnContributors: "contributors_trip"
+        btnContributors: "contributors_trip",
+        btnMedia: "media_trip"
     };
 
     Object.entries(buttons).forEach(([btnId, sectionId]) => {
