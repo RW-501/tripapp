@@ -286,7 +286,6 @@ button:hover {
                 <textarea id="post-content" placeholder="Share something about this trip..."></textarea>
                 <div class="file-upload-container">
                     <input type="file" id="post-media" multiple>
-                    <button id="hide-media-btn" class="btn-toggle">Hide Media</button>
                 </div>
     
                 <!-- Poll Option -->
@@ -297,10 +296,13 @@ button:hover {
                         <input type="text" class="poll-option" placeholder="Option 2">
                     </div>
                     <button id="addPollOption" class="btn-add-option">+ Add Option</button>
-                    <button id="hide-poll-btn" class="btn-toggle">Hide Poll</button>
                 </div>
-    
-                <button id="addPost" class="btn-post">Post</button>
+    <div id="post-options">
+        <button id="hide-media-btn" class="btn-toggle">Hide Media</button>
+        <button id="hide-poll-btn" class="btn-toggle">Hide Poll</button>
+        <button id="addPost" class="btn-post">Post</button>
+
+    </div>
             </div>
     
             <!-- Post List -->
