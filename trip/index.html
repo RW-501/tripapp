@@ -851,8 +851,8 @@ async function loadTripData() {
             tripNotes.value = tripData.notes || "";
             enableVoting.checked = tripData.votingEnabled || false;
 
-            tripTitle.value = tripData.tripName || "";
-            tripDate.value = tripData.startDate || "";
+            tripTitle.innerText = tripData.tripName || "";
+            tripDate.innerText = tripData.startDate || "";
 
             
 
