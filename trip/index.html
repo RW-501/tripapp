@@ -155,18 +155,24 @@ button:hover {
 }
 
 #poll-section, .file-upload-container {
-    transition: opacity 0.5s ease-in-out;
+    display: block;
 }
 
 /* Hide sections initially */
 #poll-section.hidden, .file-upload-container.hidden {
-    opacity: 0;
+    display: none;
     pointer-events: none;
 }
 
 #post-options {
     display: flex;
 }
+
+#post-media {
+    display: none;
+}
+
+
     </style>
 </head>
 <body>
@@ -287,12 +293,13 @@ button:hover {
             <!-- Post Input Section -->
             <div id="post-box">
                 <textarea id="post-content" placeholder="Share something about this trip..."></textarea>
-                <div class="file-upload-container">
+                <div class="file-upload-container hidden">
+                    <button id="media-btn" class="btn">Media</button>
                     <input type="file" id="post-media" multiple>
                 </div>
     
                 <!-- Poll Option -->
-                <div id="poll-section" class="poll-section">
+                <div id="poll-section" class="poll-section hidden">
                     <input type="text" id="poll-question" placeholder="Add a poll question (optional)">
                     <div id="poll-options">
                         <input type="text" class="poll-option" placeholder="Option 1">
@@ -1055,6 +1062,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     
+
+// Function to trigger file input click
+const mediaBtn = document.getElementById("media-btn");
+const postMediaInput = document.getElementById("post-media");
+
+mediaBtn.addEventListener("click", () => {
+    // Trigger the file input click when the media button is clicked
+    postMediaInput.click();
+});
+
 
 
     // Add a post or poll
