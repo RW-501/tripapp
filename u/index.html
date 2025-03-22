@@ -138,7 +138,11 @@ facebookProvider, destinationAutoSuggest
                 console.error("Error updating profile: ", error);
             }
         }
+
+
         
+        document.addEventListener("DOMContentLoaded", () => {
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userID = user.uid;
@@ -147,6 +151,11 @@ facebookProvider, destinationAutoSuggest
         });
         
         document.getElementById("editProfileForm").addEventListener("submit", saveUserData);
-    </script>
+  
+  
+});
+
+  
+        </script>
 </body>
 </html>
