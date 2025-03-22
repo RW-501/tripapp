@@ -336,7 +336,7 @@ button:hover {
                
                
                
-                <div id="media-container" class="file-upload-container" style="display: none;">
+                <div id="media-container" class="file-upload-container" style="display: block;">
                     <div>
                         <input type="file" id="post-media" accept="image/*,video/*" multiple style="display: none;" />
                     </div>
@@ -1122,7 +1122,7 @@ const mediaSection = document.getElementById("media-container");
 
 mediaBtn.addEventListener("click", () => {
     // Trigger the file input click when the media button is clicked
-    mediaSection.style.display = "block";
+   // mediaSection.style.display = "block";
     postMediaInput.click();
 });
 
@@ -1165,6 +1165,8 @@ postMediaInput.addEventListener("change", (event) => {
                 video.controls = true;
                 previewContainer.appendChild(video);
             }
+
+            console.log("trip fileUrl: ",fileUrl);
 
             // Add remove button to each preview
             const removeBtn = document.createElement("button");
