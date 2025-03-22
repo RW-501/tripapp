@@ -333,19 +333,17 @@ button:hover {
             <!-- Post Input Section -->
             <div id="post-box">
                 <textarea id="post-content" placeholder="Share something about this trip..."></textarea>
-                <div class="file-upload-container hidden">
-
-
+               
+               
+               
+                <div id="media-container" class="file-upload-container" style="display: none;">
                     <div>
-                        <button id="media-btn">Select Media</button>
                         <input type="file" id="post-media" accept="image/*,video/*" multiple style="display: none;" />
                     </div>
                     
                     <div id="media-preview" style="display: none;">
                         <!-- Media previews will be displayed here -->
                     </div>
-                    
-                    
                     
                 </div>
     
@@ -1117,13 +1115,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Show/Hide Media Section
 const mediaBtn = document.getElementById("media-btn");
-const mediaSection = document.querySelector(".file-upload-container");
+const mediaSection = document.getElementById("media-container");
 
     const postMediaInput = document.getElementById("post-media");
     let selectedFiles = []; // Array to store the selected files
 
 mediaBtn.addEventListener("click", () => {
     // Trigger the file input click when the media button is clicked
+    mediaSection.style.display = "block";
     postMediaInput.click();
 });
 
@@ -1201,6 +1200,7 @@ function removeMedia(previewContainer, file, index) {
     // If no files remain, hide the media preview area
     if (selectedFiles.length === 0) {
         mediaPreview.style.display = "none";
+       // mediaSection.style.display = "none";
     } else {
         // Re-render the previews if there are remaining files
         mediaPreview.innerHTML = "";
