@@ -941,6 +941,7 @@ async function loadTripData() {
 
 // Call function to load invites
 fetchTripInvites();
+loadPosts();
 
         } else {
             showToast("Trip not found.");
@@ -1076,7 +1077,11 @@ mediaBtn.addEventListener("click", () => {
     postMediaInput.click();
 });
 
+destinationAutoSuggest("flightAirport"); 
+airlineAutoSuggest(".flightAirline");
+hotelAutoSuggest(".hotelName");
 
+});
 
     // Add a post or poll
 async function addPost() {
@@ -1285,11 +1290,7 @@ async function addComment(event, postId) {
     commentInput.value = "";
 }
 
-destinationAutoSuggest("flightAirport"); 
-airlineAutoSuggest(".flightAirline");
-hotelAutoSuggest(".hotelName");
 
-});
 
 
 // Event Listeners
@@ -1306,7 +1307,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // Load trip data on page load
 loadTripData();
 
-loadPosts();
 
 });
 
