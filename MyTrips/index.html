@@ -193,9 +193,8 @@ async function  loadTrips(userId){
             }
         });
 
-        console.log("createdTripsSnapshot   ", createdTripsSnapshot); // This will contain all trips the user created
-        console.log("contributedTripsSnapshot   ", contributedTripsSnapshot); // This will contain all trips the user is a contributor to
-
+   
+        
         // Check if there are trips
         if (tripsSnapshot.length === 0) {  // FIX: Use `length` instead of `.empty`
             document.getElementById("inviteArea").style.display = "block";
@@ -207,16 +206,39 @@ async function  loadTrips(userId){
 
         // Loop through each trip document
         tripsSnapshot.forEach((trip) => { // FIX: `tripDoc` is already an object, no need to call `.data()`
-            const tripItem = document.createElement("div");
-            tripItem.classList.add("trip-item");
-            tripItem.innerHTML = `
-                <strong>${trip.tripName}</strong> - ${trip.destination}
-                <button class="viewTripBtn" data-id="${trip.id}">View</button>
-                <button class="editTripBtn" data-id="${trip.id}">Edit</button>
-                <button class="inviteTripBtn" data-id="${trip.id}">Invite</button>
-            `;
-            tripListDiv.appendChild(tripItem);
-        });
+    const tripItem = document.createElement("div");
+    tripItem.classList.add("trip-item");
+    tripItem.innerHTML = `
+        <strong>${trip.tripName}</strong> - ${trip.destination}
+        <button class="viewTripBtn" data-id="${trip.id}">View</button>
+        <button class="editTripBtn" data-id="${trip.id}">Edit</button>
+        <button class="inviteTripBtn" data-id="${trip.id}">Invite</button>
+    `;
+    tripListDiv.appendChild(tripItem);
+});
+
+// ✅ Add event listeners for navigation
+document.querySelectorAll(".viewTripBtn").forEach(button => {
+    button.addEventListener("click", function () {
+        const tripId = this.getAttribute("data-id");
+        window.location.href = `/tripapp/trip?id=${tripId}`; 
+    });
+});
+
+document.querySelectorAll(".editTripBtn").forEach(button => {
+    button.addEventListener("click", function () {
+        const tripId = this.getAttribute("data-id");
+        window.location.href = `/tripapp/trip?id=${tripId}&#edit`;
+    });
+});
+
+document.querySelectorAll(".inviteTripBtn").forEach(button => {
+    button.addEventListener("click", function () {
+        const tripId = this.getAttribute("data-id");
+        window.location.href = `/tripapp/trip/invite.html?id=${tripId}&#invite`;
+    });
+});
+
 
         // ✅ Ensure event listeners are attached AFTER elements are created
         document.querySelectorAll(".inviteTripBtn").forEach(button => {
