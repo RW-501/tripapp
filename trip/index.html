@@ -172,6 +172,45 @@ button:hover {
     display: none;
 }
 
+#media-preview {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    gap: 10px;
+    border: 1px dashed #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#media-preview img, #media-preview video {
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.preview-container {
+    position: relative;
+    display: inline-block;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(255, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    cursor: pointer;
+}
+
 
     </style>
 </head>
@@ -295,8 +334,19 @@ button:hover {
             <div id="post-box">
                 <textarea id="post-content" placeholder="Share something about this trip..."></textarea>
                 <div class="file-upload-container hidden">
-                    <button id="media-btn" class="btn">Media</button>
-                    <input type="file" id="post-media" multiple>
+
+
+                    <div>
+                        <button id="media-btn">Select Media</button>
+                        <input type="file" id="post-media" accept="image/*,video/*" multiple style="display: none;" />
+                    </div>
+                    
+                    <div id="media-preview" style="display: none;">
+                        <!-- Media previews will be displayed here -->
+                    </div>
+                    
+                    
+                    
                 </div>
     
                 <!-- Poll Option -->
@@ -309,7 +359,7 @@ button:hover {
                     <button id="addPollOption" class="btn-add-option">+ Add Option</button>
                 </div>
     <div id="post-options">
-        <button id="hide-media-btn" class="btn-toggle">Hide Media</button>
+        <button id="media-btn" class="btn-media">Media</button>
         <button id="hide-poll-btn" class="btn-toggle">Hide Poll</button>
         <button id="addPost" class="btn-post">Post</button>
 
@@ -604,10 +654,6 @@ const viewMediaPreview = document.getElementById("viewMediaPreview");
 const mediaBtn = document.getElementById("hide-media-btn");
 const mediaSection = document.querySelector(".file-upload-container");
 
-mediaBtn.addEventListener("click", () => {
-    mediaSection.classList.toggle("hidden");
-    mediaBtn.textContent = mediaSection.classList.contains("hidden") ? "Show Media" : "Hide Media";
-});
 
 // Show/Hide Poll Section
 const pollBtn = document.getElementById("hide-poll-btn");
@@ -1074,20 +1120,123 @@ document.addEventListener("DOMContentLoaded", function () {
 
     
 
-// Function to trigger file input click
-const mediaBtn = document.getElementById("media-btn");
+destinationAutoSuggest("flightAirport"); 
+airlineAutoSuggest(".flightAirline");
+hotelAutoSuggest(".hotelName");
+
+});
+
+
 const postMediaInput = document.getElementById("post-media");
+
+let selectedFiles = []; // Array to store the selected files
 
 mediaBtn.addEventListener("click", () => {
     // Trigger the file input click when the media button is clicked
     postMediaInput.click();
 });
 
-destinationAutoSuggest("flightAirport"); 
-airlineAutoSuggest(".flightAirline");
-hotelAutoSuggest(".hotelName");
+postMediaInput.addEventListener("change", (event) => {
+    const files = event.target.files;
 
+    // Add selected files to the array
+    selectedFiles = [...selectedFiles, ...files];
+
+    // Show the preview area when media is selected
+    mediaPreview.style.display = "flex";
+
+    // Clear the previous previews
+    mediaPreview.innerHTML = "";
+
+    // Loop through selected files and display previews
+    for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            const fileUrl = e.target.result;
+
+            // Create a container for each preview (image/video)
+            const previewContainer = document.createElement("div");
+            previewContainer.classList.add("preview-container");
+
+            if (file.type.startsWith("image/")) {
+                // Display image preview
+                const img = document.createElement("img");
+                img.src = fileUrl;
+                img.alt = "Image preview";
+                previewContainer.appendChild(img);
+            } else if (file.type.startsWith("video/")) {
+                // Display video preview
+                const video = document.createElement("video");
+                video.src = fileUrl;
+                video.controls = true;
+                previewContainer.appendChild(video);
+            }
+
+            // Add remove button to each preview
+            const removeBtn = document.createElement("button");
+            removeBtn.classList.add("remove-btn");
+            removeBtn.innerText = "X";
+            removeBtn.onclick = () => removeMedia(previewContainer, file, i);
+            previewContainer.appendChild(removeBtn);
+
+            // Append the preview container to the preview area
+            mediaPreview.appendChild(previewContainer);
+        };
+
+        reader.readAsDataURL(file);
+    }
 });
+
+// Function to remove media
+function removeMedia(previewContainer, file, index) {
+    // Remove the preview container from the DOM
+    previewContainer.remove();
+
+    // Remove the file from the selectedFiles array
+    selectedFiles.splice(index, 1);
+
+    // If no files remain, hide the media preview area
+    if (selectedFiles.length === 0) {
+        mediaPreview.style.display = "none";
+    } else {
+        // Re-render the previews if there are remaining files
+        mediaPreview.innerHTML = "";
+        selectedFiles.forEach((file, i) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fileUrl = e.target.result;
+
+                const previewContainer = document.createElement("div");
+                previewContainer.classList.add("preview-container");
+
+                if (file.type.startsWith("image/")) {
+                    const img = document.createElement("img");
+                    img.src = fileUrl;
+                    img.alt = "Image preview";
+                    previewContainer.appendChild(img);
+                } else if (file.type.startsWith("video/")) {
+                    const video = document.createElement("video");
+                    video.src = fileUrl;
+                    video.controls = true;
+                    previewContainer.appendChild(video);
+                }
+
+                const removeBtn = document.createElement("button");
+                removeBtn.classList.add("remove-btn");
+                removeBtn.innerText = "X";
+                removeBtn.onclick = () => removeMedia(previewContainer, file, i);
+                previewContainer.appendChild(removeBtn);
+
+                mediaPreview.appendChild(previewContainer);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+}
 
     // Add a post or poll
 async function addPost() {
