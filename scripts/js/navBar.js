@@ -56,7 +56,7 @@ facebookProvider
         ariaLabel: "Go to community page",
       },
       {
-        href: "/tripapp/mytrips",
+        href: "/tripapp/MyTrips",
         icon: "fa fa-map-marker-alt",
         text: "My Trips",
         ariaLabel: "Go to My Trips page",
@@ -128,13 +128,13 @@ facebookProvider
       const dropdownMenuItems = [
         {
           title: "Profile",
-          href: "/u/",
+          href: "/tripapp/u/",
           icon: "fa fa-user",
           ariaLabel: "Go to Profile"
         },
         {
           title: "Settings",
-          href: "/settings",
+          href: "/tripapp/settings",
           icon: "fa fa-cogs",
           ariaLabel: "Go to Settings"
         }

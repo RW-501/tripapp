@@ -62,8 +62,21 @@
     <footer id="dynamicFooter"></footer>
     
     <script type="module">
-        import { db, doc, getDoc, updateDoc, auth, onAuthStateChanged, serverTimestamp } from '/tripapp/scripts/js/main.js';
-        
+      import {
+            db, doc, getDoc, updateDoc,
+    auth, deleteDoc,  userId, getStorage, ref, uploadBytes, 
+    getDownloadURL, limit, arrayUnion, RecaptchaVerifier, increment,
+     arrayRemove, signInWithPhoneNumber, query, setDoc, 
+     addDoc, signInAnonymously, orderBy, onAuthStateChanged, 
+     uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
+     GoogleAuthProvider, startAfter, OAuthProvider, signOut,
+      getFirestore, serverTimestamp,  userInfo,
+createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
+where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
+googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
+facebookProvider, destinationAutoSuggest
+        } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
+            
         let userID = '';
         async function loadUserData(userID) {
             const userRef = doc(db, "Users", userID);
