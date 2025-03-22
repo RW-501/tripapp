@@ -828,6 +828,7 @@ async function loadTripData() {
 
         const tripRef = doc(db, "Trips", tripId);
  
+        console.log("trip tripRef: ",tripRef);
 
         const tripSnap = await getDoc(tripRef);
 
