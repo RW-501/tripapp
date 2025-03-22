@@ -783,6 +783,8 @@ const inviteListDiv = document.getElementById("invite-list");
 // Function to fetch trip invites
 async function fetchTripInvites() {
     try {
+        console.log("fetchTripInvites trip tripId: ",tripId);
+
         const tripRef = doc(db, "Trips", tripId); // Reference to the specific trip document
         const invitesRef = collection(tripRef, "Invites"); // Subcollection reference
         const querySnapshot = await getDocs(invitesRef); // Fetch invites
