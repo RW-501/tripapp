@@ -172,6 +172,7 @@ async function loadTrips(userId) {
     tripListDiv.innerHTML = "";
 
     try {
+        console.log("userId   ", userId); 
         // Fetch trips collection from Firestore
 // Query for trips where the user is the creator
 const createdTripsQuery = query(collection(db, "Trips"), where("createdBy", "==", userId));
