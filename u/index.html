@@ -21,6 +21,9 @@
     padding: 8px;
     border-radius: 5px;
 }
+.removeButton{
+    width: auto;
+}
 
     </style>
 </head>
@@ -143,6 +146,7 @@ function renderList(elementId, items, isVisitor) {
         if (!isVisitor) {
             const removeButton = document.createElement("button");
             removeButton.innerText = "Remove";
+            removeButton.className = "removeButton";
             removeButton.onclick = () => listItem.remove();
             listItem.appendChild(removeButton);
         }
