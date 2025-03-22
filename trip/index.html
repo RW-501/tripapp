@@ -836,7 +836,7 @@ async function loadTripData() {
 
         if (tripSnap.exists()) {
             const tripData = tripSnap.data();
-          //  console.log("trip info: ",tripData);
+         console.log("trip info: ",tripData);
 
             tripEditTitle.value = tripData.tripName || "";
             tripDescription.value = tripData.description || "";
