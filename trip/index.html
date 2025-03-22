@@ -1094,6 +1094,13 @@ window.showSection = function (sectionId) {
         activeButton.classList.add("active"); // Add active class to selected button
     }
 };
+// Show/Hide Media Section
+const mediaBtn = document.getElementById("media-btn");
+const mediaSection = document.getElementById("media-container");
+const mediaPreviewArea = document.getElementById("media-preview");
+
+    const postMediaInput = document.getElementById("post-media");
+    let selectedFiles = []; // Array to store the selected files
 
 // Add event listeners to buttons
 document.addEventListener("DOMContentLoaded", function () {
@@ -1113,13 +1120,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-// Show/Hide Media Section
-const mediaBtn = document.getElementById("media-btn");
-const mediaSection = document.getElementById("media-container");
-const mediaPreviewArea = document.getElementById("media-preview");
-
-    const postMediaInput = document.getElementById("post-media");
-    let selectedFiles = []; // Array to store the selected files
 
 mediaBtn.addEventListener("click", () => {
     // Trigger the file input click when the media button is clicked
@@ -1203,7 +1203,7 @@ function removeMedia(previewContainer, file, index) {
     // If no files remain, hide the media preview area
     if (selectedFiles.length === 0) {
         mediaPreviewArea.style.display = "none";
-       // mediaSection.style.display = "none";
+        mediaSection.style.display = "none";
     } else {
         // Re-render the previews if there are remaining files
         mediaPreviewArea.innerHTML = "";
