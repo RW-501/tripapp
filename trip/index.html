@@ -1137,7 +1137,7 @@ async function addPost() {
 async function uploadMedia(files) {
     const urls = [];
     for (let file of files) {
-        const storageRef = firebase.storage().ref(`posts/${tripId}/${file.name}`);
+        const storageRef = storage().ref(`posts/${tripId}/${file.name}`);
         await storageRef.put(file);
         urls.push(await storageRef.getDownloadURL());
     }
