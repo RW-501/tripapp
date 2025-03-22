@@ -1118,23 +1118,15 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    
 
-destinationAutoSuggest("flightAirport"); 
-airlineAutoSuggest(".flightAirline");
-hotelAutoSuggest(".hotelName");
-
-});
-
-
-const postMediaInput = document.getElementById("post-media");
-
-let selectedFiles = []; // Array to store the selected files
+    const postMediaInput = document.getElementById("post-media");
+    let selectedFiles = []; // Array to store the selected files
 
 mediaBtn.addEventListener("click", () => {
     // Trigger the file input click when the media button is clicked
     postMediaInput.click();
 });
+
 
 postMediaInput.addEventListener("change", (event) => {
     const files = event.target.files;
@@ -1189,6 +1181,14 @@ postMediaInput.addEventListener("change", (event) => {
         reader.readAsDataURL(file);
     }
 });
+
+
+destinationAutoSuggest("flightAirport"); 
+airlineAutoSuggest(".flightAirline");
+hotelAutoSuggest(".hotelName");
+
+});
+
 
 // Function to remove media
 function removeMedia(previewContainer, file, index) {
