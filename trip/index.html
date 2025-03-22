@@ -1308,8 +1308,16 @@ document.addEventListener("DOMContentLoaded", () => {
     showSection("view_trip"); // Show default section on load
 
 
+
+firebase.auth().onAuthStateChanged(user => {
+    if (user) {
 // Load trip data on page load
 loadTripData();
+
+} else {
+        console.error("User is not authenticated");
+    }
+});
 
 
 });
