@@ -101,7 +101,8 @@ facebookProvider, destinationAutoSuggest
     const endDate = noDates ? null : document.getElementById("endDate").value;
     const description = document.getElementById("description").value;
 
-    
+   // let userId = '';
+
     if (!userId) {
         openPopupLogin();
         return;
@@ -235,11 +236,6 @@ console.log(trips); // This will contain all trips the user is part of
     const generateInviteCodeBtn = document.getElementById("generateInviteCodeBtn");
     const inviteCodeDisplay = document.getElementById("inviteCode");
 
-    // Function to show the invite area and set trip ID
-    function invite(tripId) {
-        inviteArea.style.display = "block";
-        inviteArea.setAttribute("data-trip-id", tripId);
-    }
 
     // Event Listener: Add New Invite Field
     addInviteFieldBtn.addEventListener("click", () => {
@@ -248,6 +244,13 @@ console.log(trips); // This will contain all trips the user is part of
         newInviteField.innerHTML = `<input type="text" class="inviteUser" placeholder="Enter Username">`;
         inviteUsersContainer.appendChild(newInviteField);
     });
+    // Event Listener: Generate Invite Code
+    generateInviteCodeBtn.addEventListener("click", generateInviteCode);
+
+    // Expose the invite function globally
+    window.invite = invite;
+});
+
 
     // Function to generate an invite code
     async function generateInviteCode() {
@@ -292,12 +295,16 @@ console.log(trips); // This will contain all trips the user is part of
         }
     }
 
-    // Event Listener: Generate Invite Code
-    generateInviteCodeBtn.addEventListener("click", generateInviteCode);
 
-    // Expose the invite function globally
-    window.invite = invite;
-});
+
+
+    // Function to show the invite area and set trip ID
+    function invite(tripId) {
+        inviteArea.style.display = "block";
+        inviteArea.setAttribute("data-trip-id", tripId);
+    }
+
+
 
         async function editTrip(tripId) {
     const tripRef = doc(db, "Trips", tripId);
@@ -364,9 +371,15 @@ document.addEventListener("click", function (event) {
 
 
        
-       if(userId){
-        loadTrips(userId);
-       }
+       
+       document.addEventListener("DOMContentLoaded", () => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userID = user.uid;
+                    loadTrips(userID); 
+                }
+            });
+        });
 
        
 // Call the function for a specific text field
