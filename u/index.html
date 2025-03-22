@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <script type="module" src="/tripapp/scripts/js/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="/tripapp/scripts/css/main.css">
+    <style>
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        input, textarea, button { width: 100%; padding: 10px; margin-top: 10px; }
+        .profile-header { display: flex; align-items: center; }
+        .profile-header img { border-radius: 50%; width: 120px; height: 120px; margin-right: 20px; }
+        .section-title { font-size: 1.5em; margin-top: 20px; }
+        .bio { min-height: 100px; }
+        .list { list-style-type: none; padding: 0; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+    </style>
+</head>
+<body>
+    <header id="dynamicHeader"></header>
+    <main id="mainContainer">
+        <div class="container">
+            <div class="profile-header">
+                <img id="profilePicture" src="" alt="Profile Picture">
+                <div>
+                    <h2 id="displayName">Loading...</h2>
+                    <p id="location">Location: Loading...</p>
+                    <p id="membership">Membership: Loading...</p>
+                </div>
+            </div>
+
+            <form id="editProfileForm">
+                <label for="username">Username</label>
+                <input type="text" id="username">
+                <label for="headline">Headline</label>
+                <input type="text" id="headline">
+                <label for="bio">Bio</label>
+                <textarea id="bio" class="bio"></textarea>
+                <label for="locationInput">Location</label>
+                <input type="text" id="locationInput">
+                
+                <label>Travel Bucket List</label>
+                <ul id="bucketList" class="list"></ul>
+                <input type="text" id="newBucketItem" placeholder="Add a place">
+                <button type="button" onclick="addToList('bucketList', 'newBucketItem')">Add</button>
+                
+                <label>Places Visited</label>
+                <ul id="visitedList" class="list"></ul>
+                <input type="text" id="newVisitedItem" placeholder="Add a place">
+                <button type="button" onclick="addToList('visitedList', 'newVisitedItem')">Add</button>
+                
+                <label>Job Interests</label>
+                <ul id="jobInterestList" class="list"></ul>
+                <input type="text" id="newJobInterest" placeholder="Add an interest">
+                <button type="button" onclick="addToList('jobInterestList', 'newJobInterest')">Add</button>
+                
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </main>
+    <footer id="dynamicFooter"></footer>
+    
+    <script type="module">
+        import { db, doc, getDoc, updateDoc, auth, onAuthStateChanged, serverTimestamp } from '/tripapp/scripts/js/main.js';
+        
+        let userID = '';
+        async function loadUserData(userID) {
+            const userRef = doc(db, "Users", userID);
+            const userSnapshot = await getDoc(userRef);
+            
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.data();
+                document.getElementById("profilePicture").src = userData.profilePicture || "";
+                document.getElementById("displayName").innerText = userData.displayName || "Unknown User";
+                document.getElementById("location").innerText = "Location: " + (userData.location || "Not Set");
+                document.getElementById("membership").innerText = "Membership: " + (userData.membershipType || "Free");
+                document.getElementById("username").value = userData.displayName || "";
+                document.getElementById("headline").value = userData.headline || "";
+                document.getElementById("bio").value = userData.bio || "";
+                document.getElementById("locationInput").value = userData.location || "";
+                
+                renderList("bucketList", userData.travelBucketList || []);
+                renderList("visitedList", userData.placesVisited || []);
+                renderList("jobInterestList", userData.jobInterest || []);
+            }
+        }
+        
+        function renderList(elementId, items) {
+            const listElement = document.getElementById(elementId);
+            listElement.innerHTML = "";
+            items.forEach((item, index) => {
+                listElement.innerHTML += `<li class='list-item'>${item} <button onclick="removeFromList('${elementId}', ${index})">Remove</button></li>`;
+            });
+        }
+        
+        function addToList(listId, inputId) {
+            const inputElement = document.getElementById(inputId);
+            if (inputElement.value.trim()) {
+                const listElement = document.getElementById(listId);
+                listElement.innerHTML += `<li class='list-item'>${inputElement.value.trim()} <button onclick="this.parentElement.remove()">Remove</button></li>`;
+                inputElement.value = "";
+            }
+        }
+        
+        async function saveUserData(event) {
+            event.preventDefault();
+            
+            const updatedUserData = {
+                displayName: document.getElementById("username").value.trim(),
+                headline: document.getElementById("headline").value.trim(),
+                bio: document.getElementById("bio").value.trim(),
+                location: document.getElementById("locationInput").value.trim(),
+                travelBucketList: Array.from(document.querySelectorAll("#bucketList .list-item")).map(item => item.childNodes[0].textContent),
+                placesVisited: Array.from(document.querySelectorAll("#visitedList .list-item")).map(item => item.childNodes[0].textContent),
+                jobInterest: Array.from(document.querySelectorAll("#jobInterestList .list-item")).map(item => item.childNodes[0].textContent),
+                lastUpdated: serverTimestamp()
+            };
+            
+            try {
+                const userRef = doc(db, "Users", userID);
+                await updateDoc(userRef, updatedUserData);
+                alert("Profile updated successfully!");
+            } catch (error) {
+                console.error("Error updating profile: ", error);
+            }
+        }
+        
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userID = user.uid;
+                loadUserData(userID);
+            }
+        });
+        
+        document.getElementById("editProfileForm").addEventListener("submit", saveUserData);
+    </script>
+</body>
+</html>
