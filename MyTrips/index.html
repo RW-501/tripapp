@@ -166,52 +166,54 @@ await setDoc(userRef, {
 });
 
 
-// Function to load trips from Firestore
-async function loadTrips(userId) {
+// Function to load trips from Firestoreasync
+// 
+async function  loadTrips(userId){
     const tripListDiv = document.getElementById("tripList");
     tripListDiv.innerHTML = "";
 
     try {
         console.log("userId   ", userId); 
+
         // Fetch trips collection from Firestore
-// Query for trips where the user is the creator
-const createdTripsQuery = query(collection(db, "Trips"), where("createdBy", "==", userId));
-const createdTripsSnapshot = await getDocs(createdTripsQuery);
+        // Query for trips where the user is the creator
+        const createdTripsQuery = query(collection(db, "Trips"), where("createdBy", "==", userId));
+        const createdTripsSnapshot = await getDocs(createdTripsQuery);
 
-// Query for trips where the user is a contributor
-const contributedTripsQuery = query(collection(db, "Trips"), where("contributors", "array-contains", { userId: userId }));
-const contributedTripsSnapshot = await getDocs(contributedTripsQuery);
+        // Query for trips where the user is a contributor
+        const contributedTripsQuery = query(collection(db, "Trips"), where("contributors", "array-contains", userId));
+        const contributedTripsSnapshot = await getDocs(contributedTripsQuery);
 
-// Merge results
-const tripsSnapshot = [];
-createdTripsSnapshot.forEach(doc => tripsSnapshot.push({ id: doc.id, ...doc.data() }));
-contributedTripsSnapshot.forEach(doc => {
-    if (!tripsSnapshot.some(trip => trip.id === doc.id)) { // Avoid duplicates
-        tripsSnapshot.push({ id: doc.id, ...doc.data() });
-    }
-});
+        // Merge results into an array
+        const tripsSnapshot = [];
+        createdTripsSnapshot.forEach(doc => tripsSnapshot.push({ id: doc.id, ...doc.data() }));
+        contributedTripsSnapshot.forEach(doc => {
+            if (!tripsSnapshot.some(trip => trip.id === doc.id)) { // Avoid duplicates
+                tripsSnapshot.push({ id: doc.id, ...doc.data() });
+            }
+        });
 
-console.log("createdTripsSnapshot   ", createdTripsSnapshot); // This will contain all trips the user is part of
-console.log("contributedTripsSnapshot   ", contributedTripsSnapshot); // This will contain all trips the user is part of
+        console.log("createdTripsSnapshot   ", createdTripsSnapshot); // This will contain all trips the user created
+        console.log("contributedTripsSnapshot   ", contributedTripsSnapshot); // This will contain all trips the user is a contributor to
 
-        // Check if the collection is empty
-        if (tripsSnapshot.empty) {
+        // Check if there are trips
+        if (tripsSnapshot.length === 0) {  // FIX: Use `length` instead of `.empty`
             document.getElementById("inviteArea").style.display = "block";
             document.getElementById("tripArea").style.display = "none";
+            return;
         } else {
             document.getElementById("tripArea").style.display = "block";
         }
 
         // Loop through each trip document
-        tripsSnapshot.forEach((tripDoc) => {
-            const trip = tripDoc.data();
+        tripsSnapshot.forEach((trip) => { // FIX: `tripDoc` is already an object, no need to call `.data()`
             const tripItem = document.createElement("div");
             tripItem.classList.add("trip-item");
             tripItem.innerHTML = `
                 <strong>${trip.tripName}</strong> - ${trip.destination}
-                <button class="viewTripBtn" data-id="${tripDoc.id}">View</button>
-                <button class="editTripBtn" data-id="${tripDoc.id}">Edit</button>
-                <button class="inviteTripBtn" data-id="${tripDoc.id}">Invite</button>
+                <button class="viewTripBtn" data-id="${trip.id}">View</button>
+                <button class="editTripBtn" data-id="${trip.id}">Edit</button>
+                <button class="inviteTripBtn" data-id="${trip.id}">Invite</button>
             `;
             tripListDiv.appendChild(tripItem);
         });
@@ -228,7 +230,6 @@ console.log("contributedTripsSnapshot   ", contributedTripsSnapshot); // This wi
         showToast("Failed to load trips. Please try again.");
     }
 }
-
 
 
 
