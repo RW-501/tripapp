@@ -90,7 +90,9 @@
         }
 
         let userIdFromUrl = getUserIdFromUrl();
-        let loggedInUserId = '';
+        let userID = '';
+
+
         async function loadUserData(userID) {
     const userRef = doc(db, "Users", userID);
     const userSnapshot = await getDoc(userRef);
@@ -195,8 +197,8 @@ function renderList(elementId, items, isVisitor) {
                 if (userIdFromUrl) {
                     loadUserData(userIdFromUrl, true); // Visitor mode
                 } else if (user) {
-                    loggedInUserId = user.uid;
-                    loadUserData(loggedInUserId, false); // Editing mode
+                    userID = user.uid;
+                    loadUserData(userID, false); // Editing mode
                     document.getElementById("editProfileForm").addEventListener("submit", saveUserData);
                 }
             });
