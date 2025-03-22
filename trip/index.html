@@ -1155,12 +1155,15 @@ const postsQuery = query(
     orderBy("pinned", "desc"), // Sort by pinned first
     orderBy("timestamp", "desc") // Then by timestamp
 );
+console.log("postsQuery:", postsQuery);
 
 // Fetch the snapshot using the query
 onSnapshot(postsQuery, (snapshot) => {
     postList.innerHTML = ""; // Clear existing posts
     snapshot.forEach((doc) => {
         const post = doc.data();
+        console.log("post:", post);
+
         postList.innerHTML += generatePostHTML(post); // Generate and append post HTML
     });
 });
