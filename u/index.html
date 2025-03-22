@@ -15,6 +15,13 @@
         .bio { min-height: 100px; }
         .list { list-style-type: none; padding: 0; }
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
+        .hidden { display: none; }
+        .readonly {
+    background-color: #f4f4f4;
+    padding: 8px;
+    border-radius: 5px;
+}
+
     </style>
 </head>
 <body>
@@ -22,7 +29,7 @@
     <main id="mainContainer">
         <div class="container">
             <div class="profile-header">
-                <img id="profilePicture" src="" alt="Profile Picture">
+                <img id="profilePicture" src="" alt="Profile Picture" loading="lazy">
                 <div>
                     <h2 id="displayName">Loading...</h2>
                     <p id="location">Location: Loading...</p>
@@ -33,12 +40,19 @@
             <form id="editProfileForm">
                 <label for="username">Username</label>
                 <input type="text" id="username">
+                <div id="usernameView" class="hidden"></div>
+
                 <label for="headline">Headline</label>
                 <input type="text" id="headline">
+                <div id="headlineView" class="hidden"></div>
+
                 <label for="bio">Bio</label>
                 <textarea id="bio" class="bio"></textarea>
+                <div id="bioView" class="hidden"></div>
+
                 <label for="locationInput">Location</label>
                 <input type="text" id="locationInput">
+                <div id="locationView" class="hidden"></div>
                 
                 <label>Travel Bucket List</label>
                 <ul id="bucketList" class="list"></ul>
@@ -62,100 +76,128 @@
     <footer id="dynamicFooter"></footer>
     
     <script type="module">
-      import {
+        import {
             db, doc, getDoc, updateDoc,
-    auth, deleteDoc,  userId, getStorage, ref, uploadBytes, 
-    getDownloadURL, limit, arrayUnion, RecaptchaVerifier, increment,
-     arrayRemove, signInWithPhoneNumber, query, setDoc, 
-     addDoc, signInAnonymously, orderBy, onAuthStateChanged, 
-     uploadBytesResumable, signInWithPopup, FacebookAuthProvider, 
-     GoogleAuthProvider, startAfter, OAuthProvider, signOut,
-      getFirestore, serverTimestamp,  userInfo,
-createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteObject,
-where, getDocs, storage, getAuth, collection, analytics,EmailAuthProvider,
-googleProvider,onSnapshot ,writeBatch ,batch, linkWithCredential,
-facebookProvider, destinationAutoSuggest
+            auth, onAuthStateChanged, serverTimestamp
         } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
-            
-        let userID = '';
+        
+        function getUserIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        let userIdFromUrl = getUserIdFromUrl();
+        let loggedInUserId = '';
         async function loadUserData(userID) {
-            const userRef = doc(db, "Users", userID);
-            const userSnapshot = await getDoc(userRef);
-            
-            if (userSnapshot.exists()) {
-                const userData = userSnapshot.data();
-                document.getElementById("profilePicture").src = userData.profilePicture || "";
-                document.getElementById("displayName").innerText = userData.displayName || "Unknown User";
-                document.getElementById("location").innerText = "Location: " + (userData.location || "Not Set");
-                document.getElementById("membership").innerText = "Membership: " + (userData.membershipType || "Free");
-                document.getElementById("username").value = userData.displayName || "";
-                document.getElementById("headline").value = userData.headline || "";
-                document.getElementById("bio").value = userData.bio || "";
-                document.getElementById("locationInput").value = userData.location || "";
-                
-                renderList("bucketList", userData.travelBucketList || []);
-                renderList("visitedList", userData.placesVisited || []);
-                renderList("jobInterestList", userData.jobInterest || []);
-            }
-        }
+    const userRef = doc(db, "Users", userID);
+    const userSnapshot = await getDoc(userRef);
+
+    if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+        const isVisitor = userIdFromUrl && userIdFromUrl !== userID;
         
-        function renderList(elementId, items) {
-            const listElement = document.getElementById(elementId);
-            listElement.innerHTML = "";
-            items.forEach((item, index) => {
-                listElement.innerHTML += `<li class='list-item'>${item} <button onclick="removeFromList('${elementId}', ${index})">Remove</button></li>`;
-            });
+        if (isVisitor && !userData.publicProfile) {
+            document.body.innerHTML = "<h2>This profile is private.</h2>";
+            return;
         }
-        
-        function addToList(listId, inputId) {
+
+        document.getElementById("profilePicture").src = userData.profilePicture || "";
+        document.getElementById("displayName").innerText = userData.displayName || "Unknown User";
+        document.getElementById("location").innerText = "Location: " + (userData.location || "Not Set");
+        document.getElementById("membership").innerText = "Membership: " + (userData.membershipType || "Free");
+
+        updateProfileFields("username", userData.displayName, isVisitor);
+        updateProfileFields("headline", userData.headline, isVisitor);
+        updateProfileFields("bio", userData.bio, isVisitor, true);
+        updateProfileFields("locationInput", userData.location, isVisitor);
+
+        renderList("bucketList", userData.travelBucketList || [], isVisitor);
+        renderList("visitedList", userData.placesVisited || [], isVisitor);
+        renderList("jobInterestList", userData.jobInterest || [], isVisitor);
+
+        if (isVisitor) {
+            document.querySelectorAll("button").forEach(btn => btn.remove());
+        }
+    }
+}
+
+function updateProfileFields(id, value, isVisitor, isTextarea = false) {
+    const element = document.getElementById(id);
+    if (isVisitor) {
+        const div = document.createElement("div");
+        div.innerText = value || "Not Set";
+        div.className = "readonly";
+        element.replaceWith(div);
+    } else {
+        element.value = value || "";
+    }
+}
+
+function renderList(elementId, items, isVisitor) {
+    const listElement = document.getElementById(elementId);
+    listElement.innerHTML = "";
+    items.forEach((item) => {
+        const listItem = document.createElement("li");
+        listItem.className = "list-item";
+        listItem.innerText = item;
+        if (!isVisitor) {
+            const removeButton = document.createElement("button");
+            removeButton.innerText = "Remove";
+            removeButton.onclick = () => listItem.remove();
+            listItem.appendChild(removeButton);
+        }
+        listElement.appendChild(listItem);
+    });
+}
+
+        function replaceWithDiv(inputId, value) {
             const inputElement = document.getElementById(inputId);
-            if (inputElement.value.trim()) {
-                const listElement = document.getElementById(listId);
-                listElement.innerHTML += `<li class='list-item'>${inputElement.value.trim()} <button onclick="this.parentElement.remove()">Remove</button></li>`;
-                inputElement.value = "";
-            }
+            const viewElement = document.getElementById(inputId + "View");
+            viewElement.innerText = value || "Not Set";
+            viewElement.classList.remove("hidden");
+            inputElement.classList.add("hidden");
         }
-        
+
         async function saveUserData(event) {
-            event.preventDefault();
-            
-            const updatedUserData = {
-                displayName: document.getElementById("username").value.trim(),
-                headline: document.getElementById("headline").value.trim(),
-                bio: document.getElementById("bio").value.trim(),
-                location: document.getElementById("locationInput").value.trim(),
-                travelBucketList: Array.from(document.querySelectorAll("#bucketList .list-item")).map(item => item.childNodes[0].textContent),
-                placesVisited: Array.from(document.querySelectorAll("#visitedList .list-item")).map(item => item.childNodes[0].textContent),
-                jobInterest: Array.from(document.querySelectorAll("#jobInterestList .list-item")).map(item => item.childNodes[0].textContent),
-                lastUpdated: serverTimestamp()
-            };
-            
-            try {
-                const userRef = doc(db, "Users", userID);
-                await updateDoc(userRef, updatedUserData);
-                alert("Profile updated successfully!");
-            } catch (error) {
-                console.error("Error updating profile: ", error);
-            }
-        }
+    event.preventDefault();
+    
+    if (userIdFromUrl && userIdFromUrl !== userID) {
+        alert("Unauthorized action!");
+        return;
+    }
 
+    const updatedUserData = {
+        displayName: document.getElementById("username").value.trim(),
+        headline: document.getElementById("headline").value.trim(),
+        bio: document.getElementById("bio").value.trim(),
+        location: document.getElementById("locationInput").value.trim(),
+        travelBucketList: Array.from(document.querySelectorAll("#bucketList .list-item")).map(item => item.childNodes[0].textContent),
+        placesVisited: Array.from(document.querySelectorAll("#visitedList .list-item")).map(item => item.childNodes[0].textContent),
+        jobInterest: Array.from(document.querySelectorAll("#jobInterestList .list-item")).map(item => item.childNodes[0].textContent),
+        lastUpdated: serverTimestamp()
+    };
+    
+    try {
+        const userRef = doc(db, "Users", userID);
+        await updateDoc(userRef, updatedUserData);
+        alert("Profile updated successfully!");
+    } catch (error) {
+        console.error("Error updating profile: ", error);
+    }
+}
 
-        
         document.addEventListener("DOMContentLoaded", () => {
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userID = user.uid;
-                loadUserData(userID);
-            }
+            onAuthStateChanged(auth, (user) => {
+                if (userIdFromUrl) {
+                    loadUserData(userIdFromUrl, true); // Visitor mode
+                } else if (user) {
+                    loggedInUserId = user.uid;
+                    loadUserData(loggedInUserId, false); // Editing mode
+                    document.getElementById("editProfileForm").addEventListener("submit", saveUserData);
+                }
+            });
         });
-        
-        document.getElementById("editProfileForm").addEventListener("submit", saveUserData);
-  
-  
-});
 
-  
-        </script>
+    </script>
 </body>
 </html>
