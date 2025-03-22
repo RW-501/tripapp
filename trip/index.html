@@ -1099,7 +1099,7 @@ async function addPost() {
 
     if (!content && !pollQuestion) return showToast("Please enter a post or poll!");
 
-    const postRef = db.collection("Trips").doc(tripId).collection("Posts").doc();
+    const postRef = doc(collection(db, "Trips", tripId, "Posts")); 
 
     let postData = {
         postId: postRef.id,
@@ -1125,7 +1125,7 @@ async function addPost() {
         postData.mediaUrls = await uploadMedia(mediaInput.files);
     }
 
-    await postRef.set(postData);
+    await setDoc(postRef, postData);
 
     document.getElementById("post-content").value = "";
     document.getElementById("poll-question").value = "";
