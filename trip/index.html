@@ -1105,7 +1105,7 @@ async function addPost() {
         postId: postRef.id,
         content,
         createdBy: userId,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        timestamp: serverTimestamp(),
         votes: {},
         comments: [],
         pinned: false
