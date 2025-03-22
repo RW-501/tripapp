@@ -1309,12 +1309,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-firebase.auth().onAuthStateChanged(user => {
+// Check if user is authenticated
+onAuthStateChanged(auth, (user) => {
     if (user) {
-// Load trip data on page load
-loadTripData();
-
-} else {
+        loadTripData(); // Load data if user is logged in
+    } else {
         console.error("User is not authenticated");
     }
 });
