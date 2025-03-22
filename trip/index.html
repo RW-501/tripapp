@@ -1116,6 +1116,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Show/Hide Media Section
 const mediaBtn = document.getElementById("media-btn");
 const mediaSection = document.getElementById("media-container");
+const mediaPreviewArea = document.getElementById("media-preview");
 
     const postMediaInput = document.getElementById("post-media");
     let selectedFiles = []; // Array to store the selected files
@@ -1134,10 +1135,10 @@ postMediaInput.addEventListener("change", (event) => {
     selectedFiles = [...selectedFiles, ...files];
 
     // Show the preview area when media is selected
-    mediaPreview.style.display = "flex";
+    mediaPreviewArea.style.display = "flex";
 
     // Clear the previous previews
-    mediaPreview.innerHTML = "";
+    mediaPreviewArea.innerHTML = "";
 
     // Loop through selected files and display previews
     for (let i = 0; i < selectedFiles.length; i++) {
@@ -1176,7 +1177,7 @@ postMediaInput.addEventListener("change", (event) => {
             previewContainer.appendChild(removeBtn);
 
             // Append the preview container to the preview area
-            mediaPreview.appendChild(previewContainer);
+            mediaPreviewArea.appendChild(previewContainer);
         };
 
         reader.readAsDataURL(file);
@@ -1201,11 +1202,11 @@ function removeMedia(previewContainer, file, index) {
 
     // If no files remain, hide the media preview area
     if (selectedFiles.length === 0) {
-        mediaPreview.style.display = "none";
+        mediaPreviewArea.style.display = "none";
        // mediaSection.style.display = "none";
     } else {
         // Re-render the previews if there are remaining files
-        mediaPreview.innerHTML = "";
+        mediaPreviewArea.innerHTML = "";
         selectedFiles.forEach((file, i) => {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -1232,7 +1233,7 @@ function removeMedia(previewContainer, file, index) {
                 removeBtn.onclick = () => removeMedia(previewContainer, file, i);
                 previewContainer.appendChild(removeBtn);
 
-                mediaPreview.appendChild(previewContainer);
+                mediaPreviewArea.appendChild(previewContainer);
             };
 
             reader.readAsDataURL(file);
