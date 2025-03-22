@@ -1242,15 +1242,18 @@ function removeMedia(previewContainer, file, index) {
 }
 
     // Add a post or poll
-async function addPost() {
+    async function addPost() {
     const content = document.getElementById("post-content").value.trim();
     const mediaInput = document.getElementById("post-media");
     const pollQuestion = document.getElementById("poll-question").value.trim();
     const pollOptions = [...document.querySelectorAll(".poll-option")]
         .map(input => input.value.trim())
-        .filter(option => option);
+        .filter(option => option); // Filter out empty poll options
 
-    if (!content && !pollQuestion) return showToast("Please enter a post or poll!");
+    // Validate that either content or poll exists and media is selected if needed
+    if (!(content || pollQuestion) && selectedFiles.length < 1) {
+        return showToast("Please enter a post or poll!");
+    }
 
     const postRef = doc(collection(db, "Trips", tripId, "Posts")); 
 
@@ -1258,7 +1261,7 @@ async function addPost() {
         postId: postRef.id,
         content,
         createdBy: userId,
-        timestamp: serverTimestamp(),
+        timestamp: serverTimestamp(), // Firebase server timestamp
         votes: {},
         comments: [],
         pinned: false
@@ -1275,14 +1278,20 @@ async function addPost() {
 
     // Handle media upload (if any)
     if (mediaInput.files.length > 0) {
-        postData.mediaUrls = await uploadMedia(mediaInput.files);
+        postData.mediaUrls = await uploadMedia(mediaInput.files); // Assume uploadMedia is implemented correctly
     }
 
+    // Save the post data to Firestore
     await setDoc(postRef, postData);
 
+    // Clear form fields after successful post
     document.getElementById("post-content").value = "";
     document.getElementById("poll-question").value = "";
     document.querySelectorAll(".poll-option").forEach(input => (input.value = ""));
+    
+    // Optionally, reset the media preview area
+    mediaPreview.style.display = "none"; 
+    selectedFiles = [];  // Reset selected files array
 }
 
 // Upload media files to Firebase Storage
