@@ -211,6 +211,35 @@ button:hover {
     cursor: pointer;
 }
 
+.collage-container {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.collage-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.view-others {
+    text-align: right;
+    margin-top: 5px;
+}
+
+.view-others-btn {
+    background-color: #0078ff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.view-others-btn:hover {
+    background-color: #005bb5;
+}
 
     </style>
 </head>
@@ -1291,7 +1320,7 @@ function removeMedia(previewContainer, file, index) {
     
     // Optionally, reset the media preview area
     mediaPreviewArea.innerHTML = ""; 
-    mediaSection.style.display = "none";
+    //mediaSection.style.display = "none";
 
     selectedFiles = [];  // Reset selected files array
 }
@@ -1319,14 +1348,14 @@ const postsQuery = query(
     orderBy("pinned", "desc"), // Sort by pinned first
     orderBy("timestamp", "desc") // Then by timestamp
 );
-console.log("postsQuery:", postsQuery);
+//console.log("postsQuery:", postsQuery);
 
 // Fetch the snapshot using the query
 onSnapshot(postsQuery, (snapshot) => {
     postList.innerHTML = ""; // Clear existing posts
     snapshot.forEach((doc) => {
         const post = doc.data();
-        console.log("post:", post);
+       // console.log("post:", post);
 
         postList.innerHTML += generatePostHTML(post); // Generate and append post HTML
     });
@@ -1334,14 +1363,76 @@ onSnapshot(postsQuery, (snapshot) => {
 }
 
 
-// Format timestamp
+// Format timestamp into "time ago" format
 function formatTimestamp(timestamp) {
     if (!timestamp) return "Just now";
-    const date = timestamp.toDate();
-    return date.toLocaleString();
+
+    const now = new Date();
+    const postDate = timestamp.toDate();
+    const seconds = Math.floor((now - postDate) / 1000);
+
+    if (seconds < 60) return `${seconds} sec${seconds === 1 ? "" : "s"} ago`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} min${minutes === 1 ? "" : "s"} ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days} day${days === 1 ? "" : "s"} ago`;
+    const weeks = Math.floor(days / 7);
+    if (weeks < 4) return `${weeks} week${weeks === 1 ? "" : "s"} ago`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months} month${months === 1 ? "" : "s"} ago`;
+    const years = Math.floor(days / 365);
+    
+    return `${years} year${years === 1 ? "" : "s"} ago`;
 }
 
+
 // Generate post HTML
+// Function to create a random collage from images in post.mediaUrls
+function createCollage(mediaUrls) {
+    // Shuffle the mediaUrls array to randomize the order
+    const shuffledImages = shuffleArray([...mediaUrls]);
+
+    // Limit the number of images shown to 3
+    const imagesToShow = shuffledImages.slice(0, 3);
+
+    // Create collage HTML for the images
+    const collageHTML = imagesToShow.map(url => `
+        <img src="${url}" class="collage-image" />
+    `).join("");
+
+    // If there are more than 3 images, show the "View Others" button
+    const viewOthersButton = mediaUrls.length > 3 ? `
+        <div class="view-others">
+            <button class="view-others-btn" onclick="viewOtherImages('${mediaUrls.join(',')}')">View Others</button>
+        </div>
+    ` : "";
+
+    return `
+        <div class="collage-container">
+            ${collageHTML}
+            ${viewOthersButton}
+        </div>
+    `;
+}
+
+// Function to shuffle an array (Fisher-Yates shuffle)
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+    }
+    return array;
+}
+
+// Function for handling the "View Others" button click
+function viewOtherImages(mediaUrls) {
+    // You can implement the logic to show all images (for example, open a modal with the full set of images)
+    alert('View all images: ' + mediaUrls);
+}
+
+// Updated generatePostHTML function
 function generatePostHTML(post) {
     let pollHTML = "";
     if (post.poll) {
@@ -1358,10 +1449,13 @@ function generatePostHTML(post) {
     }
 
     return `
-        <div  class="post ${post.pinned ? 'pinned' : ''}" id="post-${post.postId}">
+        <div class="post ${post.pinned ? 'pinned' : ''}" id="post-${post.postId}">
             <p><strong>${post.content}</strong></p>
             <p class="timestamp">${formatTimestamp(post.timestamp)}</p>
-            ${post.mediaUrls ? post.mediaUrls.map(url => `<img src="${url}" class="post-media">`).join("") : ""}
+            
+            <!-- Collage of images if mediaUrls exist -->
+            ${post.mediaUrls ? createCollage(post.mediaUrls) : ""}
+            
             ${pollHTML}
             <div class="post-controls">
                 <button class="vote-btn ${post.votes[userId] === 1 ? "upvoted" : ""}" 
