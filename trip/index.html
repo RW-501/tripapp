@@ -1482,6 +1482,7 @@ function createCollage(mediaUrls) {
     // Shuffle the mediaUrls array to randomize the order
     const shuffledImages = shuffleArray([...mediaUrls]);
 
+    console.log("shuffledImages,  ",shuffledImages);
     // Show up to 3 images
     const imagesToShow = shuffledImages.slice(0, 3);
     
