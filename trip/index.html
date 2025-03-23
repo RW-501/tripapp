@@ -1507,7 +1507,7 @@ function createCollage(mediaUrls) {
 
 function openImageViewer(index, mediaUrls) {  
     // If mediaUrls is a string, split it into an array
-    let images = typeof mediaUrls === "string" ? mediaUrls.split(",") : mediaUrls;
+    images = typeof mediaUrls === "string" ? mediaUrls.split(",") : mediaUrls;
 
     // Ensure index is within valid range
     currentImageIndex = Math.max(0, Math.min(index, images.length - 1));
@@ -1529,17 +1529,11 @@ function openImageViewer(index, mediaUrls) {
     console.log("Current Image:", images[currentImageIndex]); // Debugging
 }
 
-
-// Function to close the image viewer
-function closeImageViewer() {
-    document.getElementById("imageViewer").style.display = "none";
-}
-
 // Function to go to the next image
 function nextImage() {
     if (currentImageIndex < images.length - 1) {
         currentImageIndex++;
-        document.getElementById("viewerImage").src = images[currentImageIndex];
+        document.getElementById("viewerImage").src = images[currentImageIndex].trim();
     }
 }
 
@@ -1547,8 +1541,13 @@ function nextImage() {
 function prevImage() {
     if (currentImageIndex > 0) {
         currentImageIndex--;
-        document.getElementById("viewerImage").src = images[currentImageIndex];
+        document.getElementById("viewerImage").src = images[currentImageIndex].trim();
     }
+}
+
+// Function to close the image viewer
+function closeImageViewer() {
+    document.getElementById("imageViewer").style.display = "none";
 }
 
 // Make functions globally accessible
