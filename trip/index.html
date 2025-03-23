@@ -1482,18 +1482,17 @@ function createCollage(mediaUrls) {
     // Shuffle the mediaUrls array to randomize the order
     const shuffledImages = shuffleArray([...mediaUrls]);
 
-    console.log("shuffledImages,  ",shuffledImages);
     // Show up to 3 images
     const imagesToShow = shuffledImages.slice(0, 3);
     
     const collageHTML = imagesToShow.map((url, index) => `
-        <img src="${url}" class="collage-image" onclick="openImageViewer(${index}, ${JSON.stringify(shuffledImages)})">
+        <img src="${url}" class="collage-image" onclick="openImageViewer(${index}, ${shuffledImages})">
     `).join("");
 
     // If there are more than 3 images, show the "View Others" button
     const viewOthersButton = shuffledImages.length > 3 ? `
         <div class="view-others">
-            <button class="view-others-btn" onclick="openImageViewer(0, ${JSON.stringify(shuffledImages)})">More</button>
+            <button class="view-others-btn" onclick="openImageViewer(0, ${shuffledImages})">More</button>
         </div>
     ` : "";
 
@@ -1509,7 +1508,8 @@ function createCollage(mediaUrls) {
 function openImageViewer(index, mediaUrls) {
     images = mediaUrls;
     currentImageIndex = index;
-    
+    console.log("images,  ",images);
+
     document.getElementById("viewerImage").src = images[currentImageIndex];
     document.getElementById("imageViewer").style.display = "flex";
 }
