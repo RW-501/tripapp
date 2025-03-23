@@ -1483,13 +1483,13 @@ function createCollage(mediaUrls) {
 
     // Create collage HTML for the images
     const collageHTML = imagesToShow.map(url => `
-        <img src="${url}" class="collage-image" />
+        <img src="${url}" class="collage-image" onClick="openImageViewer('${url.join(',')}') />
     `).join("");
 
     // If there are more than 3 images, show the "View Others" button
     const viewOthersButton = mediaUrls.length > 3 ? `
         <div class="view-others">
-            <button class="view-others-btn" onclick="openImageViewer('${mediaUrls.join(',')}')">View Others</button>
+            <button class="view-others-btn" onClick="openImageViewer('${mediaUrls.join(',')}')">More</button>
         </div>
     ` : "";
 
@@ -1519,16 +1519,20 @@ let currentImageIndex = 0;
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
 
+    const openImageViewerBtn = document.getElementById("openImageViewer");
+
     function openImageViewer(index, mediaUrls) {
         images = mediaUrls;
         currentImageIndex = index;
         viewerImage.src = images[currentImageIndex];
         imageViewer.style.display = "flex";
     }
+    window.openImageViewer = openImageViewer;
 
     function closeImageViewer() {
         imageViewer.style.display = "none";
     }
+    window.closeImageViewer = closeImageViewer;
 
     function nextImage() {
         if (images.length > 0) {
@@ -1536,6 +1540,7 @@ let currentImageIndex = 0;
             viewerImage.src = images[currentImageIndex];
         }
     }
+    window.nextImage = nextImage;
 
     function prevImage() {
         if (images.length > 0) {
@@ -1543,8 +1548,10 @@ let currentImageIndex = 0;
             viewerImage.src = images[currentImageIndex];
         }
     }
+    window.prevImage = prevImage;
 
     // Event Listeners
+    openImageViewerBtn.addEventListener("click", openImageViewer);
     closeBtn.addEventListener("click", closeImageViewer);
     prevBtn.addEventListener("click", prevImage);
     nextBtn.addEventListener("click", nextImage);
