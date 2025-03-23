@@ -1519,7 +1519,7 @@ function openImageViewer(index, mediaUrls) {
     viewerImage.style.opacity = 0;
 
     setTimeout(() => {
-        viewerImage.src = images[currentImageIndex]; // Ensure it's a proper string
+        viewerImage.src = String(images[currentImageIndex]); // Ensure it's a proper string
         viewerImage.style.opacity = 1;
     }, 200); // Smooth transition effect
 
