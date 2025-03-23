@@ -690,6 +690,7 @@ facebookProvider, destinationAutoSuggest
         console.log("trip tripId: ",tripId);
 
         const tripTitle = document.getElementById("tripTitle");
+        const tripEditTitle = document.getElementById("tripEditTitle");
         const tripDate = document.getElementById("tripDate");
 
         const tripDescription = document.getElementById("tripDescription");
@@ -992,8 +993,9 @@ async function loadTripData() {
             const tripData = tripSnap.data();
          console.log("trip info: ",tripData);
 
-            tripTitle.value = tripData.tripName || "";
-            tripDescription.value = tripData.description || "";
+         tripTitle.value = tripData.tripName || "";
+         tripEditTitle.value = tripData.tripName || "";
+         tripDescription.value = tripData.description || "";
             tripStartDate.value = tripData.startDate || "";
             tripEndDate.value = tripData.endDate || "";
             tripLocation.value = tripData.location || "";
