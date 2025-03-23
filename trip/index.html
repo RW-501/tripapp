@@ -689,7 +689,6 @@ facebookProvider, destinationAutoSuggest
         const tripId = getTripIdFromURL();
         console.log("trip tripId: ",tripId);
 
-        const tripEditTitle = document.getElementById("tripEditTitle");
         const tripTitle = document.getElementById("tripTitle");
         const tripDate = document.getElementById("tripDate");
 
@@ -993,7 +992,7 @@ async function loadTripData() {
             const tripData = tripSnap.data();
          console.log("trip info: ",tripData);
 
-            tripEditTitle.value = tripData.tripName || "";
+            tripTitle.value = tripData.tripName || "";
             tripDescription.value = tripData.description || "";
             tripStartDate.value = tripData.startDate || "";
             tripEndDate.value = tripData.endDate || "";
@@ -1048,7 +1047,7 @@ async function loadTripData() {
             }
 
             
-            viewTripTitle.textContent = tripData.tripName || "";
+    viewTripTitle.textContent = tripData.tripName || "";
     viewTripDescription.textContent = tripData.description || "";
     viewTripStartDate.textContent = tripData.startDate || "";
     viewTripEndDate.textContent = tripData.endDate || "";
@@ -1166,18 +1165,26 @@ document.getElementById("saveTrip").addEventListener("click", async () => {
         details: hotelDiv.querySelector(".hotelBookingDetails").value
     }));
 
+    const editTripTitle = document.getElementById("tripEditTitle");
+    const editTripDescription = document.getElementById("tripDescription");
+    const editTripStartDate = document.getElementById("tripStartDate");
+    const editTripEndDate = document.getElementById("tripEndDate");
+    const editTripLocation = document.getElementById("tripLocation");
+    const editTripMapLink = document.getElementById("tripMapLink");
+    const editTripNotes = document.getElementById("tripNotes");
+
     const tripData = {
-        tripName: tripTitle.value,
-        description: tripDescription.value,
+        tripName: editTripTitle.value,
+        description: editTripDescription.value,
         coverPhoto: mediaUrl || null, // Keep previous image if no new upload
         updatedAt: serverTimestamp(),
-        startDate: tripStartDate.value,
-        endDate: tripEndDate.value,
-        location: tripLocation.value,
-        mapLink: tripMapLink.value,
+        startDate: editTripStartDate.value,
+        endDate: editTripEndDate.value,
+        location: editTripLocation.value,
+        mapLink: editTripMapLink.value,
         flights: flights,
         hotels: hotels,
-        notes: tripNotes.value,
+        notes: editTripNotes.value,
         votingEnabled: enableVoting.checked
     };
 
