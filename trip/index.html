@@ -563,6 +563,7 @@ facebookProvider, destinationAutoSuggest
         } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
     
         
+        //const storage = getStorage();
 
         function getTripIdFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1294,16 +1295,17 @@ function removeMedia(previewContainer, file, index) {
     selectedFiles = [];  // Reset selected files array
 }
 
-// Upload media files to Firebase Storage
-async function uploadMedia(files) {
+
+async function uploadMedia(files) { 
     const urls = [];
     for (let file of files) {
-        const storageRef = storage().ref(`posts/${tripId}/${file.name}`);
-        await storageRef.put(file);
-        urls.push(await storageRef.getDownloadURL());
+        const storageRef = ref(storage, `posts/${tripId}/${file.name}`);
+        await uploadBytes(storageRef, file); // ✅ Corrected method
+        urls.push(await getDownloadURL(storageRef));
     }
     return urls;
 }
+
 
 // Load posts
 function loadPosts() {
