@@ -1505,9 +1505,9 @@ function createCollage(mediaUrls) {
 }
 
 
-function openImageViewer(index, mediaUrls) { 
-    // Ensure mediaUrls is an array (but don't wrap it again if it already is)
-    images = Array.isArray(mediaUrls) ? mediaUrls : [mediaUrls];
+function openImageViewer(index, mediaUrls) {  
+    // If mediaUrls is a string, split it into an array
+    let images = typeof mediaUrls === "string" ? mediaUrls.split(",") : mediaUrls;
 
     // Ensure index is within valid range
     currentImageIndex = Math.max(0, Math.min(index, images.length - 1));
@@ -1519,7 +1519,7 @@ function openImageViewer(index, mediaUrls) {
     viewerImage.style.opacity = 0;
 
     setTimeout(() => {
-        viewerImage.src = String(images[currentImageIndex]); // Ensure it's a proper string
+        viewerImage.src = images[currentImageIndex].trim(); // Trim to remove any accidental spaces
         viewerImage.style.opacity = 1;
     }, 200); // Smooth transition effect
 
@@ -1528,6 +1528,7 @@ function openImageViewer(index, mediaUrls) {
 
     console.log("Current Image:", images[currentImageIndex]); // Debugging
 }
+
 
 // Function to close the image viewer
 function closeImageViewer() {
