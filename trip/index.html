@@ -1478,20 +1478,19 @@ function createCollage(mediaUrls) {
     // Shuffle the mediaUrls array to randomize the order
     const shuffledImages = shuffleArray([...mediaUrls]);
 
-    // Limit the number of images shown to 3
-    const imagesToShow = shuffledImages.slice(0, 3);
+// Create collage HTML for the images
+const imagesToShow = mediaUrls.slice(0, 3); // Show up to 3 images
+const collageHTML = imagesToShow.map((url, index) => `
+    <img src="${url}" class="collage-image" onclick="openImageViewer(${index}, ${JSON.stringify(mediaUrls)})">
+`).join("");
 
-    // Create collage HTML for the images
-    const collageHTML = imagesToShow.map(url => `
-        <img src="${url}" class="collage-image" onClick="openImageViewer('"1", ${url}') />
-    `).join("");
+// If there are more than 3 images, show the "View Others" button
+const viewOthersButton = mediaUrls.length > 3 ? `
+    <div class="view-others">
+        <button class="view-others-btn" onclick="openImageViewer(0, ${JSON.stringify(mediaUrls)})">More</button>
+    </div>
+` : "";
 
-    // If there are more than 3 images, show the "View Others" button
-    const viewOthersButton = mediaUrls.length > 3 ? `
-        <div class="view-others">
-            <button class="view-others-btn" onClick="openImageViewer('${mediaUrls.join(',')}')">More</button>
-        </div>
-    ` : "";
 
     return `
         <div class="collage-container">
