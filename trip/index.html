@@ -1506,12 +1506,31 @@ function createCollage(mediaUrls) {
 
 // Function to open the image viewer
 function openImageViewer(index, mediaUrls) {
+    if (!Array.isArray(mediaUrls) || mediaUrls.length === 0) {
+        console.error("Invalid media URLs provided.");
+        return;
+    }
+
+    if (index < 0 || index >= mediaUrls.length) {
+        console.error("Index out of bounds.");
+        return;
+    }
+
     images = mediaUrls;
     currentImageIndex = index;
-    console.log("images,  ",images);
 
-    document.getElementById("viewerImage").src = images[currentImageIndex];
-    document.getElementById("imageViewer").style.display = "flex";
+    const viewerImage = document.getElementById("viewerImage");
+    const imageViewer = document.getElementById("imageViewer");
+
+    // Apply fade-out before changing the image
+    viewerImage.style.opacity = 0;
+
+    setTimeout(() => {
+        viewerImage.src = images[currentImageIndex];
+        viewerImage.style.opacity = 1;
+    }, 200); // Smooth transition effect
+
+    imageViewer.style.display = "flex";
 }
 
 // Function to close the image viewer
