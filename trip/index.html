@@ -1540,6 +1540,15 @@ window.closeImageViewer = closeImageViewer;
 window.nextImage = nextImage;
 window.prevImage = prevImage;
 
+const imageViewer = document.getElementById("imageViewer");
+    const viewerImage = document.getElementById("viewerImage");
+    const closeBtn = document.getElementById("closeBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+closeBtn.addEventListener("click", closeImageViewer);
+    prevBtn.addEventListener("click", prevImage);
+    nextBtn.addEventListener("click", nextImage);
 
 // Function to shuffle an array (Fisher-Yates shuffle)
 function shuffleArray(array) {
@@ -1551,13 +1560,7 @@ function shuffleArray(array) {
 }
 
 
-    const imageViewer = document.getElementById("imageViewer");
-    const viewerImage = document.getElementById("viewerImage");
-    const closeBtn = document.getElementById("closeBtn");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
 
- 
     // Keyboard Navigation
     document.addEventListener("keydown", function(event) {
         if (imageViewer.style.display === "flex") {
