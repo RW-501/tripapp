@@ -510,7 +510,7 @@ button:hover {
                 <!-- Location -->
                 <div class="input-group">
                     <label for="tripLocation">Location</label>
-                    <input type="text" id="tripLocation" placeholder="Destination (e.g., Paris, France)">
+                    <input type="text" id="tripLocation"  class="destination" placeholder="Destination (e.g., Paris, France)">
                 </div>
                 <div class="input-group">
                     <label for="tripMapLink">Google Maps Link</label>
@@ -1305,9 +1305,10 @@ postMediaInput.addEventListener("change", (event) => {
 });
 
 
-destinationAutoSuggest("flightAirport"); 
+destinationAutoSuggest(".destination"); 
 airlineAutoSuggest(".flightAirline");
 hotelAutoSuggest(".hotelName");
+airportAutoSuggest(".flightAirport");
 
 });
 

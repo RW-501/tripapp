@@ -308,138 +308,253 @@ const airports = [
 
 
 
-// Auto-suggest function with debounce and improved accessibility
-function destinationAutoSuggest(inputId) {
-    addSuggestionBox();
-   // console.log("destinationAutoSuggest:", inputId);
 
-   const parentElement = document.getElementById(inputId);
-   if (!parentElement) {
-       console.error("Input element not found:", parentElement);
-       return;
-   }
-
-   // Traverse up to find the parent with class "destination"
-   let input = parentElement.closest(".destination");
-   
-
-   
-   // const input = document.getElementById(inputId);
-    const suggestionBox = document.createElement("div");
-    suggestionBox.className = "suggestion-box";
-    suggestionBox.setAttribute('role', 'listbox');
-    document.body.appendChild(suggestionBox);  // Append to body to avoid clipping
-
-    let debounceTimeout;
-    input.addEventListener("input", function () {
-        const query = this.value.toLowerCase();
-        suggestionBox.innerHTML = "";
-
-        if (!query) return;
-
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => {
-            const filteredAirports = airports.filter(airport =>
-                airport.code.toLowerCase().includes(query) ||
-                airport.name.toLowerCase().includes(query) ||
-                airport.city.toLowerCase().includes(query) ||
-                airport.country.toLowerCase().includes(query)
-            );
-
-            filteredAirports.forEach(airport => {
-                const suggestion = document.createElement("div");
-                suggestionBox.style.display = "block";
-                suggestion.className = "suggestion";
-                suggestion.setAttribute('role', 'option');
-                suggestion.textContent = `${airport.code} - ${airport.name} (${airport.city}, ${airport.country})`;
-                suggestion.addEventListener("click", function () {
-                    input.value = `${airport.code} - ${airport.name}`;
-                    suggestionBox.innerHTML = "";
-                    suggestionBox.style.display = "none";
-
-                });
-                suggestionBox.appendChild(suggestion);
-            });
-
-            if (filteredAirports.length === 0) {
-                suggestionBox.innerHTML = "<div class='suggestion'>No results found</div>";
-            }
-
-            // Position suggestion box correctly
-            positionSuggestionBox(input, suggestionBox);
-        }, 300);  // Debounce delay
-    });
-
-    // Close suggestions when clicking outside
-    document.addEventListener("click", function (e) {
-        if (!input.contains(e.target) && !suggestionBox.contains(e.target)) {
-            suggestionBox.innerHTML = "";
-            suggestionBox.style.display = "none";
-        }
-    });
-
-    // Make suggestions accessible for keyboard users
-    let currentIndex = -1;
-    input.addEventListener("keydown", function (e) {
-        const suggestions = suggestionBox.querySelectorAll(".suggestion");
-        if (suggestions.length === 0) return;
-
-        if (e.key === "ArrowDown" && currentIndex < suggestions.length - 1) {
-            currentIndex++;
-        } else if (e.key === "ArrowUp" && currentIndex > 0) {
-            currentIndex--;
-        } else if (e.key === "Enter" && currentIndex >= 0) {
-            suggestions[currentIndex].click();
+    function destinationAutoSuggest(destination) {
+        addSuggestionBox();
+    
+        const inputs = document.querySelectorAll(destination);
+        if (!inputs.length) {
+            console.error("No input elements found with the provided selector.");
             return;
         }
+    
+        inputs.forEach(input => {
+            const suggestionBox = document.createElement("div");
+            suggestionBox.className = "suggestion-box";
+            suggestionBox.setAttribute('role', 'listbox');
+            document.body.appendChild(suggestionBox);
+    
+            let debounceTimeout;
+            input.addEventListener("input", function () {
+                const query = this.value.toLowerCase().trim();
+                suggestionBox.innerHTML = "";
+    
+                if (!query) return;
+    
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    const filteredAirports = airports.filter(airport =>
+                        airport.city.toLowerCase().includes(query) ||
+                        airport.country.toLowerCase().includes(query)
+                    );
+        
+                    filteredAirports.forEach(airport => {
+                        const suggestion = document.createElement("div");
+                        suggestionBox.style.display = "block";
+                        suggestion.className = "suggestion";
+                        suggestion.setAttribute('role', 'option');
+                        suggestion.textContent = `(${airport.city}, ${airport.country})`;
+                        suggestion.addEventListener("click", function () {
+                            input.value = `${airport.city} - ${airport.country}`;
+                            suggestionBox.innerHTML = "";
+                            suggestionBox.style.display = "none";
+        
+                        });
+                        suggestionBox.appendChild(suggestion);
+                    });
+                    if (filteredHotels.length === 0) {
+                        suggestionBox.innerHTML = "<div class='suggestion no-results'>No results found</div>";
+                    }
+    
+                    positionSuggestionBox(input, suggestionBox);
+                }, 300);
+            });
+    
+            document.addEventListener("click", function (e) {
+                if (!input.contains(e.target) && !suggestionBox.contains(e.target)) {
+                    suggestionBox.innerHTML = "";
+                    suggestionBox.style.display = "none";
+                }
+            });
+    
+            let currentIndex = -1;
+            input.addEventListener("keydown", function (e) {
+                const suggestions = suggestionBox.querySelectorAll(".suggestion");
+                if (suggestions.length === 0) return;
+    
+                if (e.key === "ArrowDown" && currentIndex < suggestions.length - 1) {
+                    currentIndex++;
+                } else if (e.key === "ArrowUp" && currentIndex > 0) {
+                    currentIndex--;
+                } else if (e.key === "Enter" && currentIndex >= 0) {
+                    suggestions[currentIndex].click();
+                    return;
+                }
+    
+                suggestions.forEach((suggestion, index) => {
+                    suggestion.classList.toggle("highlight", index === currentIndex);
+                });
+            });
+        });
+    }
+    
+    window.destinationAutoSuggest = destinationAutoSuggest;
+    export { destinationAutoSuggest };
+    
+    
+    
+    
 
-        suggestions.forEach((suggestion, index) => {
-            suggestion.classList.toggle("highlight", index === currentIndex);
+
+
+
+
+
+
+
+
+function airportAutoSuggest(flightAirport) {
+    addSuggestionBox();
+
+    const inputs = document.querySelectorAll(flightAirport);
+    if (!inputs.length) {
+        console.error("No input elements found with the provided selector.");
+        return;
+    }
+
+    inputs.forEach(input => {
+        const suggestionBox = document.createElement("div");
+        suggestionBox.className = "suggestion-box";
+        suggestionBox.setAttribute('role', 'listbox');
+        document.body.appendChild(suggestionBox);
+
+        let debounceTimeout;
+        input.addEventListener("input", function () {
+            const query = this.value.toLowerCase().trim();
+            suggestionBox.innerHTML = "";
+
+            if (!query) return;
+
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                const filteredAirports = airports.filter(airport =>
+                    airport.code.toLowerCase().includes(query) ||
+                    airport.name.toLowerCase().includes(query) ||
+                    airport.city.toLowerCase().includes(query) ||
+                    airport.country.toLowerCase().includes(query)
+                );
+    
+                filteredAirports.forEach(airport => {
+                    const suggestion = document.createElement("div");
+                    suggestionBox.style.display = "block";
+                    suggestion.className = "suggestion";
+                    suggestion.setAttribute('role', 'option');
+                    suggestion.textContent = `${airport.code} - ${airport.name} (${airport.city}, ${airport.country})`;
+                    suggestion.addEventListener("click", function () {
+                        input.value = `${airport.code} - ${airport.name}`;
+                        suggestionBox.innerHTML = "";
+                        suggestionBox.style.display = "none";
+    
+                    });
+                    suggestionBox.appendChild(suggestion);
+                });
+                if (filteredHotels.length === 0) {
+                    suggestionBox.innerHTML = "<div class='suggestion no-results'>No results found</div>";
+                }
+
+                positionSuggestionBox(input, suggestionBox);
+            }, 300);
+        });
+
+        document.addEventListener("click", function (e) {
+            if (!input.contains(e.target) && !suggestionBox.contains(e.target)) {
+                suggestionBox.innerHTML = "";
+                suggestionBox.style.display = "none";
+            }
+        });
+
+        let currentIndex = -1;
+        input.addEventListener("keydown", function (e) {
+            const suggestions = suggestionBox.querySelectorAll(".suggestion");
+            if (suggestions.length === 0) return;
+
+            if (e.key === "ArrowDown" && currentIndex < suggestions.length - 1) {
+                currentIndex++;
+            } else if (e.key === "ArrowUp" && currentIndex > 0) {
+                currentIndex--;
+            } else if (e.key === "Enter" && currentIndex >= 0) {
+                suggestions[currentIndex].click();
+                return;
+            }
+
+            suggestions.forEach((suggestion, index) => {
+                suggestion.classList.toggle("highlight", index === currentIndex);
+            });
         });
     });
 }
 
-window.destinationAutoSuggest = destinationAutoSuggest;
-export { destinationAutoSuggest };
+window.airportAutoSuggest = airportAutoSuggest;
+export { airportAutoSuggest };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Full Airline Data
 const airlines = [
-    { iata: "AA", name: "American Airlines" },
-    { iata: "DL", name: "Delta Air Lines" },
-    { iata: "UA", name: "United Airlines" },
-    { iata: "AF", name: "Air France" },
-    { iata: "BA", name: "British Airways" },
-    { iata: "LH", name: "Lufthansa" },
-    { iata: "EK", name: "Emirates" },
-    { iata: "QR", name: "Qatar Airways" },
-    { iata: "SQ", name: "Singapore Airlines" },
-    { iata: "CX", name: "Cathay Pacific" },
-    { iata: "QF", name: "Qantas" },
-    { iata: "KL", name: "KLM Royal Dutch Airlines" },
-    { iata: "NH", name: "All Nippon Airways" },
-    { iata: "JL", name: "Japan Airlines" },
-    { iata: "AC", name: "Air Canada" },
-    { iata: "ET", name: "Ethiopian Airlines" },
-    { iata: "TK", name: "Turkish Airlines" },
-    { iata: "IB", name: "Iberia" },
-    { iata: "EY", name: "Etihad Airways" },
-    { iata: "AI", name: "Air India" },
-    { iata: "AZ", name: "ITA Airways" },
-    { iata: "SK", name: "SAS - Scandinavian Airlines" },
-    { iata: "OS", name: "Austrian Airlines" },
-    { iata: "FI", name: "Icelandair" },
-    { iata: "VS", name: "Virgin Atlantic" },
-    { iata: "WN", name: "Southwest Airlines" },
-    { iata: "B6", name: "JetBlue Airways" },
-    { iata: "AS", name: "Alaska Airlines" },
-    { iata: "F9", name: "Frontier Airlines" },
-    { iata: "NK", name: "Spirit Airlines" },
-    { iata: "G3", name: "GOL Linhas Aéreas" },
-    { iata: "CM", name: "Copa Airlines" },
-    { iata: "AM", name: "Aeroméxico" },
-    { iata: "AV", name: "Avianca" },
-    { iata: "H2", name: "Sky Airline" }
+    { iata: "AA", name: "American Airlines", url: "https://www.aa.com" },
+    { iata: "DL", name: "Delta Air Lines", url: "https://www.delta.com" },
+    { iata: "UA", name: "United Airlines", url: "https://www.united.com" },
+    { iata: "AF", name: "Air France", url: "https://www.airfrance.com" },
+    { iata: "BA", name: "British Airways", url: "https://www.britishairways.com" },
+    { iata: "LH", name: "Lufthansa", url: "https://www.lufthansa.com" },
+    { iata: "EK", name: "Emirates", url: "https://www.emirates.com" },
+    { iata: "QR", name: "Qatar Airways", url: "https://www.qatarairways.com" },
+    { iata: "SQ", name: "Singapore Airlines", url: "https://www.singaporeair.com" },
+    { iata: "CX", name: "Cathay Pacific", url: "https://www.cathaypacific.com" },
+    { iata: "QF", name: "Qantas", url: "https://www.qantas.com" },
+    { iata: "KL", name: "KLM Royal Dutch Airlines", url: "https://www.klm.com" },
+    { iata: "NH", name: "All Nippon Airways", url: "https://www.ana.co.jp" },
+    { iata: "JL", name: "Japan Airlines", url: "https://www.jal.co.jp" },
+    { iata: "AC", name: "Air Canada", url: "https://www.aircanada.com" },
+    { iata: "ET", name: "Ethiopian Airlines", url: "https://www.ethiopianairlines.com" },
+    { iata: "TK", name: "Turkish Airlines", url: "https://www.turkishairlines.com" },
+    { iata: "IB", name: "Iberia", url: "https://www.iberia.com" },
+    { iata: "EY", name: "Etihad Airways", url: "https://www.etihad.com" },
+    { iata: "AI", name: "Air India", url: "https://www.airindia.in" },
+    { iata: "AZ", name: "ITA Airways", url: "https://www.ita-airways.com" },
+    { iata: "SK", name: "SAS - Scandinavian Airlines", url: "https://www.flysas.com" },
+    { iata: "OS", name: "Austrian Airlines", url: "https://www.austrian.com" },
+    { iata: "FI", name: "Icelandair", url: "https://www.icelandair.com" },
+    { iata: "VS", name: "Virgin Atlantic", url: "https://www.virginatlantic.com" },
+    { iata: "WN", name: "Southwest Airlines", url: "https://www.southwest.com" },
+    { iata: "B6", name: "JetBlue Airways", url: "https://www.jetblue.com" },
+    { iata: "AS", name: "Alaska Airlines", url: "https://www.alaskaair.com" },
+    { iata: "F9", name: "Frontier Airlines", url: "https://www.flyfrontier.com" },
+    { iata: "NK", name: "Spirit Airlines", url: "https://www.spirit.com" },
+    { iata: "G3", name: "GOL Linhas Aéreas", url: "https://www.voegol.com.br" },
+    { iata: "CM", name: "Copa Airlines", url: "https://www.copaair.com" },
+    { iata: "AM", name: "Aeroméxico", url: "https://www.aeromexico.com" },
+    { iata: "AV", name: "Avianca", url: "https://www.avianca.com" },
+    { iata: "H2", name: "Sky Airline", url: "https://www.skyairline.com" }
 ];
 
 
@@ -537,121 +652,121 @@ export { airlineAutoSuggest };
 
 
 
-const hotels = [
-    { name: "Hilton Hotel" },
-    { name: "Marriott Hotel" },
-    { name: "Hyatt Regency" },
-    { name: "Four Seasons" },
-    { name: "The Ritz-Carlton" },
-    { name: "InterContinental" },
-    { name: "Sheraton Hotel" },
-    { name: "Westin Hotel" },
-    { name: "Waldorf Astoria" },
-    { name: "Fairmont Hotel" },
-    { name: "St. Regis" },
-    { name: "JW Marriott" },
-    { name: "Sofitel Hotel" },
-    { name: "Mandarin Oriental" },
-    { name: "Park Hyatt" },
-    { name: "Shangri-La Hotel" },
-    { name: "Raffles Hotel" },
-    { name: "Rosewood Hotel" },
-    { name: "The Peninsula Hotel" },
-    { name: "The Langham Hotel" },
-    { name: "Radisson Blu" },
-    { name: "Conrad Hotel" },
-    { name: "Le Méridien" },
-    { name: "Kimpton Hotel" },
-    { name: "Loews Hotels" },
-    { name: "Omni Hotels & Resorts" },
-    { name: "Hard Rock Hotel" },
-    { name: "Andaz Hotel" },
-    { name: "Edition Hotels" },
-    { name: "Meliá Hotels International" },
-    { name: "NH Collection Hotels" },
-    { name: "CitizenM Hotels" },
-    { name: "Thompson Hotels" },
-    { name: "Bulgari Hotels & Resorts" },
-    { name: "Anantara Hotels" },
-    { name: "Jumeirah Hotels & Resorts" },
-    { name: "Lotte Hotel" },
-    { name: "Atlantis The Palm" },
-    { name: "SLS Hotels" },
-    { name: "Viceroy Hotels & Resorts" },
-    { name: "Banyan Tree Hotels" },
-    { name: "Capella Hotels" },
-    { name: "Six Senses Hotels" },
-    { name: "Aman Resorts" },
-    { name: "One&Only Resorts" },
-    { name: "The Standard Hotels" },
-    { name: "W Hotels" },
-    { name: "ME by Meliá" },
-    { name: "Sandals Resorts" },
-    { name: "Club Med Resorts" },
-    { name: "Belmond Hotels" },
-    { name: "MGM Resorts" },
-    { name: "Caesars Palace" },
-    { name: "The Venetian Resort" },
-    { name: "Bellagio Hotel" },
-    { name: "The Cosmopolitan" },
-    { name: "The Mirage Hotel" },
-    { name: "Encore at Wynn Las Vegas" },
-    { name: "Resorts World Las Vegas" },
-    { name: "Trump International Hotel" },
-    { name: "The Plaza Hotel New York" },
-    { name: "The Beverly Hills Hotel" },
-    { name: "Fontainebleau Miami Beach" },
-    { name: "Baccarat Hotel New York" },
-    { name: "The Breakers Palm Beach" },
-    { name: "The Broadmoor" },
-    { name: "The Greenbrier" },
-    { name: "The Drake Hotel" },
-    { name: "The Savoy London" },
-    { name: "Claridge's London" },
-    { name: "The Dorchester London" },
-    { name: "Hotel de Crillon Paris" },
-    { name: "Le Meurice Paris" },
-    { name: "Plaza Athénée Paris" },
-    { name: "The Peninsula Paris" },
-    { name: "Ritz Paris" },
-    { name: "Bristol Paris" },
-    { name: "Hotel Negresco Nice" },
-    { name: "Gstaad Palace Switzerland" },
-    { name: "Badrutt's Palace Hotel St. Moritz" },
-    { name: "Hotel Sacher Vienna" },
-    { name: "Adlon Kempinski Berlin" },
-    { name: "Grand Hotel Tremezzo Lake Como" },
-    { name: "Villa d’Este Lake Como" },
-    { name: "Hotel Danieli Venice" },
-    { name: "The Gritti Palace Venice" },
-    { name: "Hotel Hassler Roma" },
-    { name: "Cipriani Venice" },
-    { name: "The Chedi Muscat" },
-    { name: "Burj Al Arab Dubai" },
-    { name: "Armani Hotel Dubai" },
-    { name: "Taj Mahal Palace Mumbai" },
-    { name: "Umaid Bhawan Palace Jodhpur" },
-    { name: "The Oberoi Udaivilas" },
-    { name: "Rambagh Palace Jaipur" },
-    { name: "Ritz-Carlton Tokyo" },
-    { name: "Aman Tokyo" },
-    { name: "The Peninsula Tokyo" },
-    { name: "Mandarin Oriental Tokyo" },
-    { name: "Four Seasons Hotel Kyoto" },
-    { name: "Park Hyatt Sydney" },
-    { name: "Qualia Resort Australia" },
-    { name: "Lizard Island Resort" },
-    { name: "Saffire Freycinet Australia" },
-    { name: "Singita Safari Lodges" },
-    { name: "Royal Malewane South Africa" },
-    { name: "Ulusaba Private Game Reserve" },
-    { name: "Serengeti Safari Camp" },
-    { name: "The Brando Tahiti" },
-    { name: "Amangiri Utah" },
-    { name: "Post Ranch Inn Big Sur" },
-    { name: "Twin Farms Vermont" },
-    { name: "Blackberry Farm Tennessee" },
-    { name: "Calistoga Ranch Napa Valley" }
+const hotels = [ 
+    { name: "Hilton Hotel", rating: 4.5, origin: "USA" },
+    { name: "Marriott Hotel", rating: 4.6, origin: "USA" },
+    { name: "Hyatt Regency", rating: 4.4, origin: "USA" },
+    { name: "Four Seasons", rating: 4.7, origin: "Canada" },
+    { name: "The Ritz-Carlton", rating: 4.8, origin: "USA" },
+    { name: "InterContinental", rating: 4.6, origin: "UK" },
+    { name: "Sheraton Hotel", rating: 4.3, origin: "USA" },
+    { name: "Westin Hotel", rating: 4.5, origin: "USA" },
+    { name: "Waldorf Astoria", rating: 4.7, origin: "USA" },
+    { name: "Fairmont Hotel", rating: 4.6, origin: "Canada" },
+    { name: "St. Regis", rating: 4.8, origin: "USA" },
+    { name: "JW Marriott", rating: 4.5, origin: "USA" },
+    { name: "Sofitel Hotel", rating: 4.4, origin: "France" },
+    { name: "Mandarin Oriental", rating: 4.7, origin: "Hong Kong" },
+    { name: "Park Hyatt", rating: 4.6, origin: "USA" },
+    { name: "Shangri-La Hotel", rating: 4.8, origin: "Hong Kong" },
+    { name: "Raffles Hotel", rating: 4.7, origin: "Singapore" },
+    { name: "Rosewood Hotel", rating: 4.6, origin: "USA" },
+    { name: "The Peninsula Hotel", rating: 4.8, origin: "Hong Kong" },
+    { name: "The Langham Hotel", rating: 4.5, origin: "UK" },
+    { name: "Radisson Blu", rating: 4.3, origin: "USA" },
+    { name: "Conrad Hotel", rating: 4.4, origin: "USA" },
+    { name: "Le Méridien", rating: 4.4, origin: "France" },
+    { name: "Kimpton Hotel", rating: 4.5, origin: "USA" },
+    { name: "Loews Hotels", rating: 4.3, origin: "USA" },
+    { name: "Omni Hotels & Resorts", rating: 4.3, origin: "USA" },
+    { name: "Hard Rock Hotel", rating: 4.6, origin: "USA" },
+    { name: "Andaz Hotel", rating: 4.5, origin: "USA" },
+    { name: "Edition Hotels", rating: 4.7, origin: "USA" },
+    { name: "Meliá Hotels International", rating: 4.4, origin: "Spain" },
+    { name: "NH Collection Hotels", rating: 4.5, origin: "Spain" },
+    { name: "CitizenM Hotels", rating: 4.3, origin: "Netherlands" },
+    { name: "Thompson Hotels", rating: 4.5, origin: "USA" },
+    { name: "Bulgari Hotels & Resorts", rating: 4.8, origin: "Italy" },
+    { name: "Anantara Hotels", rating: 4.7, origin: "Thailand" },
+    { name: "Jumeirah Hotels & Resorts", rating: 4.7, origin: "UAE" },
+    { name: "Lotte Hotel", rating: 4.4, origin: "South Korea" },
+    { name: "Atlantis The Palm", rating: 4.8, origin: "UAE" },
+    { name: "SLS Hotels", rating: 4.5, origin: "USA" },
+    { name: "Viceroy Hotels & Resorts", rating: 4.5, origin: "USA" },
+    { name: "Banyan Tree Hotels", rating: 4.7, origin: "Singapore" },
+    { name: "Capella Hotels", rating: 4.8, origin: "Singapore" },
+    { name: "Six Senses Hotels", rating: 4.7, origin: "Thailand" },
+    { name: "Aman Resorts", rating: 4.8, origin: "USA" },
+    { name: "One&Only Resorts", rating: 4.8, origin: "USA" },
+    { name: "The Standard Hotels", rating: 4.5, origin: "USA" },
+    { name: "W Hotels", rating: 4.6, origin: "USA" },
+    { name: "ME by Meliá", rating: 4.5, origin: "Spain" },
+    { name: "Sandals Resorts", rating: 4.7, origin: "Jamaica" },
+    { name: "Club Med Resorts", rating: 4.4, origin: "France" },
+    { name: "Belmond Hotels", rating: 4.7, origin: "UK" },
+    { name: "MGM Resorts", rating: 4.4, origin: "USA" },
+    { name: "Caesars Palace", rating: 4.5, origin: "USA" },
+    { name: "The Venetian Resort", rating: 4.6, origin: "USA" },
+    { name: "Bellagio Hotel", rating: 4.7, origin: "USA" },
+    { name: "The Cosmopolitan", rating: 4.7, origin: "USA" },
+    { name: "The Mirage Hotel", rating: 4.4, origin: "USA" },
+    { name: "Encore at Wynn Las Vegas", rating: 4.7, origin: "USA" },
+    { name: "Resorts World Las Vegas", rating: 4.3, origin: "USA" },
+    { name: "Trump International Hotel", rating: 4.3, origin: "USA" },
+    { name: "The Plaza Hotel New York", rating: 4.8, origin: "USA" },
+    { name: "The Beverly Hills Hotel", rating: 4.8, origin: "USA" },
+    { name: "Fontainebleau Miami Beach", rating: 4.5, origin: "USA" },
+    { name: "Baccarat Hotel New York", rating: 4.8, origin: "USA" },
+    { name: "The Breakers Palm Beach", rating: 4.7, origin: "USA" },
+    { name: "The Broadmoor", rating: 4.7, origin: "USA" },
+    { name: "The Greenbrier", rating: 4.6, origin: "USA" },
+    { name: "The Drake Hotel", rating: 4.5, origin: "USA" },
+    { name: "The Savoy London", rating: 4.8, origin: "UK" },
+    { name: "Claridge's London", rating: 4.8, origin: "UK" },
+    { name: "The Dorchester London", rating: 4.8, origin: "UK" },
+    { name: "Hotel de Crillon Paris", rating: 4.7, origin: "France" },
+    { name: "Le Meurice Paris", rating: 4.8, origin: "France" },
+    { name: "Plaza Athénée Paris", rating: 4.8, origin: "France" },
+    { name: "The Peninsula Paris", rating: 4.9, origin: "France" },
+    { name: "Ritz Paris", rating: 4.9, origin: "France" },
+    { name: "Bristol Paris", rating: 4.9, origin: "France" },
+    { name: "Hotel Negresco Nice", rating: 4.7, origin: "France" },
+    { name: "Gstaad Palace Switzerland", rating: 4.8, origin: "Switzerland" },
+    { name: "Badrutt's Palace Hotel St. Moritz", rating: 4.9, origin: "Switzerland" },
+    { name: "Hotel Sacher Vienna", rating: 4.9, origin: "Austria" },
+    { name: "Adlon Kempinski Berlin", rating: 4.8, origin: "Germany" },
+    { name: "Grand Hotel Tremezzo Lake Como", rating: 4.8, origin: "Italy" },
+    { name: "Villa d’Este Lake Como", rating: 4.9, origin: "Italy" },
+    { name: "Hotel Danieli Venice", rating: 4.8, origin: "Italy" },
+    { name: "The Gritti Palace Venice", rating: 4.8, origin: "Italy" },
+    { name: "Hotel Hassler Roma", rating: 4.8, origin: "Italy" },
+    { name: "Cipriani Venice", rating: 4.9, origin: "Italy" },
+    { name: "The Chedi Muscat", rating: 4.7, origin: "Oman" },
+    { name: "Burj Al Arab Dubai", rating: 4.9, origin: "UAE" },
+    { name: "Armani Hotel Dubai", rating: 4.8, origin: "UAE" },
+    { name: "Taj Mahal Palace Mumbai", rating: 4.8, origin: "India" },
+    { name: "Umaid Bhawan Palace Jodhpur", rating: 4.8, origin: "India" },
+    { name: "The Oberoi Udaivilas", rating: 4.9, origin: "India" },
+    { name: "Rambagh Palace Jaipur", rating: 4.8, origin: "India" },
+    { name: "Ritz-Carlton Tokyo", rating: 4.8, origin: "Japan" },
+    { name: "Aman Tokyo", rating: 4.9, origin: "Japan" },
+    { name: "The Peninsula Tokyo", rating: 4.9, origin: "Japan" },
+    { name: "Mandarin Oriental Tokyo", rating: 4.8, origin: "Japan" },
+    { name: "Four Seasons Hotel Kyoto", rating: 4.9, origin: "Japan" },
+    { name: "Park Hyatt Sydney", rating: 4.7, origin: "Australia" },
+    { name: "Qualia Resort Australia", rating: 4.9, origin: "Australia" },
+    { name: "Lizard Island Resort", rating: 4.8, origin: "Australia" },
+    { name: "Saffire Freycinet Australia", rating: 4.9, origin: "Australia" },
+    { name: "Singita Safari Lodges", rating: 4.9, origin: "South Africa" },
+    { name: "Royal Malewane South Africa", rating: 4.9, origin: "South Africa" },
+    { name: "Ulusaba Private Game Reserve", rating: 4.9, origin: "South Africa" },
+    { name: "Serengeti Safari Camp", rating: 4.9, origin: "Tanzania" },
+    { name: "The Brando Tahiti", rating: 4.9, origin: "French Polynesia" },
+    { name: "Amangiri Utah", rating: 4.9, origin: "USA" },
+    { name: "Post Ranch Inn Big Sur", rating: 4.9, origin: "USA" },
+    { name: "Twin Farms Vermont", rating: 4.9, origin: "USA" },
+    { name: "Blackberry Farm Tennessee", rating: 4.9, origin: "USA" },
+    { name: "Calistoga Ranch Napa Valley", rating: 4.9, origin: "USA" }
 ];
 
 
