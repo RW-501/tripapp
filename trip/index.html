@@ -1505,28 +1505,28 @@ function createCollage(mediaUrls) {
 }
 
 
-function openImageViewer(index, mediaUrls) {
-    // Ensure mediaUrls is always treated as an array
+function openImageViewer(index, mediaUrls) { 
+    // Ensure mediaUrls is an array (but don't wrap it again if it already is)
     images = Array.isArray(mediaUrls) ? mediaUrls : [mediaUrls];
 
     // Ensure index is within valid range
-    currentImageIndex = Math.max(0, index);
+    currentImageIndex = Math.max(0, Math.min(index, images.length - 1));
+
     const viewerImage = document.getElementById("viewerImage");
     const imageViewer = document.getElementById("imageViewer");
 
-    // Apply fade-out before changing the image
+    // Apply fade-out effect before changing the image
     viewerImage.style.opacity = 0;
 
     setTimeout(() => {
-        viewerImage.src = images[currentImageIndex];
+        viewerImage.src = String(images[currentImageIndex]); // Ensure it's a proper string
         viewerImage.style.opacity = 1;
     }, 200); // Smooth transition effect
 
+    // Show the viewer
     imageViewer.style.display = "flex";
 
-    
-    console.log("Images:", images);
-
+    console.log("Current Image:", images[currentImageIndex]); // Debugging
 }
 
 // Function to close the image viewer
