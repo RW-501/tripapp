@@ -1483,7 +1483,7 @@ function createCollage(mediaUrls) {
 
     // Create collage HTML for the images
     const collageHTML = imagesToShow.map(url => `
-        <img src="${url}" class="collage-image" onClick="openImageViewer('${url}') />
+        <img src="${url}" class="collage-image" onClick="openImageViewer('1, ${url}') />
     `).join("");
 
     // If there are more than 3 images, show the "View Others" button
