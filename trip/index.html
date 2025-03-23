@@ -563,7 +563,6 @@ facebookProvider, destinationAutoSuggest
         } from 'https://rw-501.github.io/tripapp/scripts/js/main.js';
     
         
-        //const storage = getStorage();
 
         function getTripIdFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1291,7 +1290,9 @@ function removeMedia(previewContainer, file, index) {
     document.querySelectorAll(".poll-option").forEach(input => (input.value = ""));
     
     // Optionally, reset the media preview area
-    mediaPreview.style.display = "none"; 
+    mediaPreviewArea.innerHTML = ""; 
+    mediaSection.style.display = "none";
+
     selectedFiles = [];  // Reset selected files array
 }
 
